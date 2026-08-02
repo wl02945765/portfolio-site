@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>CHING'S PROFILE — 後台管理</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <span class="brand">CHING'S PROFILE — 後台管理</span>
+      <nav class="tabs">
+        <button class="tab-btn active" data-tab="photos">攝影 PHOTOGRAPHY</button>
+        <button class="tab-btn" data-tab="videos">影片 VIDEO WORK</button>
+      </nav>
+    </header>
+
+    <main>
+      <section id="panel-photos" class="panel active">
+        <form id="photo-form" class="upload-form">
+          <div id="photo-drop" class="dropzone">
+            <p>拖拉照片到這裡，或點擊選擇檔案</p>
+            <input type="file" id="photo-file" accept="image/*" hidden />
+            <p id="photo-filename" class="filename"></p>
+          </div>
+          <div class="fields">
+            <label>中文說明 <input type="text" name="caption_zh" placeholder="例如：街拍・台北" /></label>
+            <label>English Caption <input type="text" name="caption_en" placeholder="e.g. Street / Taipei" /></label>
+            <label>分類 Category <input type="text" name="category" placeholder="人像 / 商業 / 街拍…" /></label>
+          </div>
+          <button type="submit" class="primary-btn">上傳照片</button>
+          <p class="status" id="photo-status"></p>
+        </form>
+
+        <div id="photo-grid" class="grid"></div>
+      </section>
+
+      <section id="panel-videos" class="panel">
+        <form id="video-form" class="upload-form">
+          <div id="video-drop" class="dropzone">
+            <p>拖拉影片到這裡，或點擊選擇檔案</p>
+            <input type="file" id="video-file" accept="video/*" hidden />
+            <p id="video-filename" class="filename"></p>
+          </div>
+          <div class="fields">
+            <label>中文標題 <input type="text" name="title_zh" placeholder="例如：品牌形象片" /></label>
+            <label>English Title <input type="text" name="title_en" placeholder="e.g. Brand Film" /></label>
+            <label>服務內容（中） <input type="text" name="services_zh" placeholder="企劃・攝影・剪輯" /></label>
+            <label>Services (EN) <input type="text" name="services_en" placeholder="Planning · Shooting · Editing" /></label>
+            <label>年份 Year <input type="text" name="year" placeholder="2026" /></label>
+          </div>
+          <p class="hint">上傳後會自動用 ffmpeg 擷取縮圖，可能需要幾秒鐘。</p>
+          <button type="submit" class="primary-btn">上傳影片</button>
+          <p class="status" id="video-status"></p>
+        </form>
+
+        <div id="video-grid" class="grid"></div>
+      </section>
+    </main>
+
+    <script src="app.js"></script>
+  </body>
+</html>

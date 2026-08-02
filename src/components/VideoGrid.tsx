@@ -1,0 +1,75 @@
+"use client";
+
+import { useRef } from "react";
+import Link from "next/link";
+import { useLanguage } from "@/i18n/LanguageProvider";
+import { PageHeading } from "@/components/PageHeading";
+import type { Video } from "@/lib/content";
+
+function VideoCard({ video }: { video: Video }) {
+  const { locale } = useLanguage();
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  return (
+    <Link
+      href={`/video-work/${video.slug}`}
+      className="group relative block aspect-video w-full overflow-hidden bg-black"
+      onMouseEnter={() => videoRef.current?.play().catch(() => {})}
+      onMouseLeave={() => {
+        const el = videoRef.current;
+        if (!el) return;
+        el.pause();
+        el.currentTime = 0;
+      }}
+    >
+      <img
+        src={video.thumbnail}
+        alt={video.title[locale]}
+        className="absolute inset-0 h-full w-full object-cover transition-opacity duration-300 group-hover:opacity-0"
+      />
+      <video
+        ref={videoRef}
+        src={video.videoSrc}
+        muted
+        loop
+        playsInline
+        preload="none"
+        className="absolute inset-0 h-full w-full object-cover opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+      />
+      <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 to-transparent p-4">
+        <p className="text-sm font-medium uppercase tracking-[0.08em] text-white">
+          {video.title[locale]}
+        </p>
+        <p className="mt-1 text-[11px] tracking-wide text-white/70">
+          {video.services[locale]}
+        </p>
+      </div>
+    </Link>
+  );
+}
+
+export function VideoGrid({ videos }: { videos: Video[] }) {
+  const { t } = useLanguage();
+
+  if (videos.length === 0) {
+    return (
+      <div className="flex flex-1 flex-col">
+        <PageHeading>{t.videoWork.heading}</PageHeading>
+        <div className="flex flex-1 items-center justify-center px-6 py-32 text-sm tracking-wide text-black/40">
+          {t.videoWork.empty}
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="px-6 pb-24 sm:px-10">
+      <PageHeading>{t.videoWork.heading}</PageHeading>
+      <div className="mt-10 grid grid-cols-1 gap-1 sm:grid-cols-2 lg:grid-cols-3">
+        {videos.map((video) => (
+          <VideoCard key={video.id} video={video} />
+        ))}
+      </div>
+    </div>
+  );
+}

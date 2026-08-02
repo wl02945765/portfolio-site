@@ -12,6 +12,7 @@ export type Photo = {
   category: string;
   caption: LocalizedText;
   beforeSrc?: string;
+  isCover?: boolean;
 };
 
 export type Video = {

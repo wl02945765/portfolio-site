@@ -145,18 +145,21 @@ async function loadPhotos() {
 
 function renderPhotoCard(photo) {
   const card = document.createElement("div");
-  card.className = "card";
+  card.className = "card" + (photo.isCover ? " is-cover" : "");
   card.draggable = true;
   card.dataset.id = photo.id;
   card.innerHTML = `
-    <img class="card-thumb" src="${photo.src}" alt="" />
+    <div class="thumb-wrap">
+      <img class="card-thumb" src="${photo.src}" alt="" />
+      ${photo.isCover ? '<span class="cover-badge">★ 分類封面</span>' : ""}
+    </div>
     <div class="card-body">
       <input type="text" data-field="caption_zh" value="${escapeHtml(photo.caption.zh)}" placeholder="中文說明" />
       <input type="text" data-field="caption_en" value="${escapeHtml(photo.caption.en)}" placeholder="English caption" />
       <input type="text" data-field="category" value="${escapeHtml(photo.category)}" placeholder="分類" />
     </div>
     <div class="card-footer">
-      <span class="handle">⠿ 拖曳排序</span>
+      <button class="cover-btn" ${photo.category ? "" : "disabled"}>${photo.isCover ? "★ 已是封面" : "設為封面"}</button>
       <button class="delete-btn">刪除</button>
     </div>
   `;
@@ -166,8 +169,12 @@ function renderPhotoCard(photo) {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ [input.dataset.field]: input.value }),
-      }),
+      }).then(() => loadPhotos()),
     );
+  });
+  card.querySelector(".cover-btn").addEventListener("click", async () => {
+    await fetch(`/api/photos/${photo.id}/set-cover`, { method: "POST" });
+    loadPhotos();
   });
   card.querySelector(".delete-btn").addEventListener("click", async () => {
     if (!confirm("確定要刪除這張照片嗎？")) return;

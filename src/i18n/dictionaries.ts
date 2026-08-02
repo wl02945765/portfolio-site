@@ -8,7 +8,8 @@ export type Dictionary = {
   photography: {
     heading: string;
     empty: string;
-    allCategory: string;
+    folderEmpty: string;
+    backToPhotography: string;
   };
   videoWork: {
     heading: string;
@@ -35,7 +36,8 @@ export const dictionaries: Record<Locale, Dictionary> = {
     photography: {
       heading: "PHOTOGRAPHY",
       empty: "作品準備中，敬請期待。",
-      allCategory: "全部",
+      folderEmpty: "還沒有分類好的照片，請到後台幫照片加上分類。",
+      backToPhotography: "返回 PHOTOGRAPHY",
     },
     videoWork: {
       heading: "VIDEO WORK",
@@ -60,7 +62,8 @@ export const dictionaries: Record<Locale, Dictionary> = {
     photography: {
       heading: "PHOTOGRAPHY",
       empty: "Work in progress — check back soon.",
-      allCategory: "All",
+      folderEmpty: "No categorized photos yet — add a category to a photo in the admin panel.",
+      backToPhotography: "Back to Photography",
     },
     videoWork: {
       heading: "VIDEO WORK",

@@ -140,6 +140,7 @@ app.post("/api/photos", photoUpload.single("file"), (req, res) => {
       zh: req.body.caption_zh || "",
       en: req.body.caption_en || "",
     },
+    isCover: false,
   };
   photos.push(entry);
   writeJSON(PHOTOS_JSON, photos);
@@ -151,9 +152,27 @@ app.patch("/api/photos/:id", (req, res) => {
   const photos = readJSON(PHOTOS_JSON);
   const item = photos.find((p) => p.id === req.params.id);
   if (!item) return res.status(404).json({ error: "not found" });
-  if (req.body.category !== undefined) item.category = req.body.category;
+  if (req.body.category !== undefined && req.body.category !== item.category) {
+    item.category = req.body.category;
+    item.isCover = false; // cover association no longer makes sense in the new category
+  }
   if (req.body.caption_zh !== undefined) item.caption.zh = req.body.caption_zh;
   if (req.body.caption_en !== undefined) item.caption.en = req.body.caption_en;
+  writeJSON(PHOTOS_JSON, photos);
+  schedulePublish();
+  res.json(item);
+});
+
+app.post("/api/photos/:id/set-cover", (req, res) => {
+  const photos = readJSON(PHOTOS_JSON);
+  const item = photos.find((p) => p.id === req.params.id);
+  if (!item) return res.status(404).json({ error: "not found" });
+  if (!item.category) {
+    return res.status(400).json({ error: "photo has no category to be a cover for" });
+  }
+  for (const p of photos) {
+    if (p.category === item.category) p.isCover = p.id === item.id;
+  }
   writeJSON(PHOTOS_JSON, photos);
   schedulePublish();
   res.json(item);

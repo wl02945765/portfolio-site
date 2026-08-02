@@ -1,3 +1,41 @@
+// --- Auto-publish sync indicator ---
+const syncIndicator = document.getElementById("sync-indicator");
+
+function renderSyncStatus(state) {
+  syncIndicator.classList.remove("pending", "publishing", "done", "error");
+  if (state.publishing) {
+    syncIndicator.textContent = "🔄 同步到網站中…";
+    syncIndicator.classList.add("publishing");
+  } else if (state.pending) {
+    syncIndicator.textContent = "⏳ 即將自動同步…";
+    syncIndicator.classList.add("pending");
+  } else if (state.lastError) {
+    syncIndicator.textContent = `⚠️ 同步失敗：${state.lastError}`;
+    syncIndicator.classList.add("error");
+  } else if (state.lastPublishedAt) {
+    const t = new Date(state.lastPublishedAt).toLocaleTimeString("zh-TW", {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+    syncIndicator.textContent = `✅ 已同步 ${t}`;
+    syncIndicator.classList.add("done");
+  } else {
+    syncIndicator.textContent = "";
+  }
+}
+
+async function pollSyncStatus() {
+  try {
+    const state = await fetch("/api/publish-status").then((r) => r.json());
+    renderSyncStatus(state);
+  } catch {
+    // admin server briefly unreachable, ignore and retry next tick
+  }
+}
+
+pollSyncStatus();
+setInterval(pollSyncStatus, 2000);
+
 // --- Tabs ---
 document.querySelectorAll(".tab-btn").forEach((btn) => {
   btn.addEventListener("click", () => {

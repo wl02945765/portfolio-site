@@ -32,6 +32,29 @@ body {
   gap: 20px;
 }
 
+.sync-indicator {
+  font-size: 11px;
+  letter-spacing: 0.05em;
+  color: rgba(0, 0, 0, 0.35);
+  white-space: nowrap;
+}
+
+.sync-indicator.pending {
+  color: #b45309;
+}
+
+.sync-indicator.publishing {
+  color: #b45309;
+}
+
+.sync-indicator.done {
+  color: #15803d;
+}
+
+.sync-indicator.error {
+  color: #b00020;
+}
+
 .tab-btn {
   background: none;
   border: none;

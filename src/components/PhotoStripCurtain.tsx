@@ -5,8 +5,6 @@ import { useLanguage } from "@/i18n/LanguageProvider";
 import { withBasePath } from "@/lib/basePath";
 import type { Photo } from "@/lib/content";
 
-const STRIP_COUNT = 80;
-
 function pseudoRandom(seed: number) {
   const x = Math.sin(seed * 12.9898) * 43758.5453;
   return x - Math.floor(x);
@@ -18,11 +16,12 @@ export function PhotoStripCurtain({ photos }: { photos: Photo[] }) {
 
   if (photos.length === 0) return null;
 
-  const strips = Array.from({ length: STRIP_COUNT }, (_, i) => {
-    const photo = photos[i % photos.length];
-    const positionX = `${Math.round(pseudoRandom(i + 1) * 100)}%`;
-    return { photo, positionX };
-  });
+  // One strip per uploaded photo — never repeated. Gets denser purely as
+  // more photos get uploaded, not by cycling the same ones multiple times.
+  const strips = photos.map((photo, i) => ({
+    photo,
+    positionX: `${Math.round(pseudoRandom(i + 1) * 100)}%`,
+  }));
 
   const hoveredPhoto = hoveredStrip !== null ? strips[hoveredStrip].photo : null;
 

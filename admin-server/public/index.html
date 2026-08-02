@@ -18,22 +18,55 @@
 
     <main>
       <section id="panel-photos" class="panel active">
-        <form id="photo-form" class="upload-form">
-          <div id="photo-drop" class="dropzone">
-            <p>拖拉照片到這裡，或點擊選擇檔案</p>
-            <input type="file" id="photo-file" accept="image/*" hidden />
-            <p id="photo-filename" class="filename"></p>
-          </div>
-          <div class="fields">
-            <label>中文說明 <input type="text" name="caption_zh" placeholder="例如：街拍・台北" /></label>
-            <label>English Caption <input type="text" name="caption_en" placeholder="e.g. Street / Taipei" /></label>
-            <label>分類 Category <input type="text" name="category" placeholder="人像 / 商業 / 街拍…" /></label>
-          </div>
-          <button type="submit" class="primary-btn">上傳照片</button>
-          <p class="status" id="photo-status"></p>
-        </form>
+        <!-- 分類列表 -->
+        <div id="category-list-view">
+          <button id="new-category-btn" class="primary-btn">＋ 新增分類</button>
 
-        <div id="photo-grid" class="grid"></div>
+          <form id="category-form" class="upload-form" style="display: none">
+            <div class="fields">
+              <label>中文名稱 <input type="text" name="name_zh" placeholder="例如：人像" required /></label>
+              <label>English Name <input type="text" name="name_en" placeholder="e.g. Portrait" /></label>
+              <label>中文說明 <input type="text" name="description_zh" placeholder="這個分類的簡短說明" /></label>
+              <label>English Description <input type="text" name="description_en" /></label>
+              <label>中文地點 <input type="text" name="location_zh" placeholder="例如：台北" /></label>
+              <label>English Location <input type="text" name="location_en" /></label>
+            </div>
+            <button type="submit" class="primary-btn">建立分類</button>
+            <button type="button" id="cancel-category-btn" class="cover-btn">取消</button>
+            <p class="status" id="category-status"></p>
+          </form>
+
+          <div id="category-grid" class="grid"></div>
+        </div>
+
+        <!-- 分類內部：管理說明/地點 + 照片 -->
+        <div id="category-detail-view" style="display: none">
+          <button id="back-to-categories-btn" class="cover-btn">← 返回分類列表</button>
+
+          <div class="upload-form">
+            <div class="fields">
+              <label>中文名稱 <input type="text" data-cat-field="name_zh" /></label>
+              <label>English Name <input type="text" data-cat-field="name_en" /></label>
+              <label>中文說明 <input type="text" data-cat-field="description_zh" /></label>
+              <label>English Description <input type="text" data-cat-field="description_en" /></label>
+              <label>中文地點 <input type="text" data-cat-field="location_zh" /></label>
+              <label>English Location <input type="text" data-cat-field="location_en" /></label>
+            </div>
+            <button type="button" id="delete-category-btn" class="delete-btn">刪除這個分類</button>
+          </div>
+
+          <form id="photo-form" class="upload-form">
+            <div id="photo-drop" class="dropzone">
+              <p>拖拉多張照片到這裡，或點擊選擇檔案（可一次選很多張）</p>
+              <input type="file" id="photo-file" accept="image/*" multiple hidden />
+              <p id="photo-filename" class="filename"></p>
+            </div>
+            <button type="submit" class="primary-btn">上傳照片</button>
+            <p class="status" id="photo-status"></p>
+          </form>
+
+          <div id="photo-grid" class="grid"></div>
+        </div>
       </section>
 
       <section id="panel-videos" class="panel">

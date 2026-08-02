@@ -77,14 +77,44 @@ function wireDropzone(dropEl, inputEl, filenameEl, onFile) {
   });
 }
 
-let selectedPhotoFile = null;
+// --- Multi-file dropzone (photos can be uploaded many at once) ---
+function wireMultiDropzone(dropEl, inputEl, filenameEl, onFiles) {
+  dropEl.addEventListener("click", () => inputEl.click());
+  inputEl.addEventListener("change", () => {
+    if (inputEl.files.length) {
+      filenameEl.textContent = `已選擇 ${inputEl.files.length} 張`;
+      onFiles(Array.from(inputEl.files));
+    }
+  });
+  ["dragenter", "dragover"].forEach((evt) =>
+    dropEl.addEventListener(evt, (e) => {
+      e.preventDefault();
+      dropEl.classList.add("drag-over");
+    }),
+  );
+  ["dragleave", "drop"].forEach((evt) =>
+    dropEl.addEventListener(evt, (e) => {
+      e.preventDefault();
+      dropEl.classList.remove("drag-over");
+    }),
+  );
+  dropEl.addEventListener("drop", (e) => {
+    const files = Array.from(e.dataTransfer.files || []);
+    if (files.length) {
+      filenameEl.textContent = `已選擇 ${files.length} 張`;
+      onFiles(files);
+    }
+  });
+}
+
+let selectedPhotoFiles = [];
 let selectedVideoFile = null;
 
-wireDropzone(
+wireMultiDropzone(
   document.getElementById("photo-drop"),
   document.getElementById("photo-file"),
   document.getElementById("photo-filename"),
-  (file) => (selectedPhotoFile = file),
+  (files) => (selectedPhotoFiles = files),
 );
 wireDropzone(
   document.getElementById("video-drop"),
@@ -133,33 +163,159 @@ function wireReorder(gridEl, onReordered) {
   });
 }
 
-// --- Photos ---
+// --- Categories + Photos ---
+const categoryListView = document.getElementById("category-list-view");
+const categoryDetailView = document.getElementById("category-detail-view");
+const categoryGrid = document.getElementById("category-grid");
+const categoryStatus = document.getElementById("category-status");
 const photoGrid = document.getElementById("photo-grid");
 const photoStatus = document.getElementById("photo-status");
 
-async function loadPhotos() {
-  const photos = await fetch("/api/photos").then((r) => r.json());
-  photoGrid.innerHTML = "";
-  photos.forEach((photo) => photoGrid.appendChild(renderPhotoCard(photo)));
+let currentCategoryId = null;
+let allCategories = [];
+let allPhotos = [];
+
+async function loadCategories() {
+  [allCategories, allPhotos] = await Promise.all([
+    fetch("/api/categories").then((r) => r.json()),
+    fetch("/api/photos").then((r) => r.json()),
+  ]);
+  renderCategoryGrid();
+  if (currentCategoryId) renderCategoryDetail();
 }
 
-function renderPhotoCard(photo) {
+function renderCategoryGrid() {
+  categoryGrid.innerHTML = "";
+  allCategories.forEach((cat) => {
+    const count = allPhotos.filter((p) => p.categoryId === cat.id).length;
+    const cover =
+      allPhotos.find((p) => p.id === cat.coverPhotoId) ??
+      allPhotos.find((p) => p.categoryId === cat.id);
+    const card = document.createElement("div");
+    card.className = "card";
+    card.style.cursor = "pointer";
+    card.innerHTML = `
+      <div class="thumb-wrap">
+        ${
+          cover
+            ? `<img class="card-thumb" src="${cover.src}" alt="" />`
+            : `<div class="card-thumb" style="display:flex;align-items:center;justify-content:center;color:rgba(0,0,0,0.3);font-size:11px;">尚無照片</div>`
+        }
+      </div>
+      <div class="card-body">
+        <p style="margin:0;font-size:13px;font-weight:600;">${escapeHtml(cat.name.zh || cat.name.en || "未命名")}</p>
+        <p style="margin:0;font-size:11px;color:rgba(0,0,0,0.4);">${count} 張照片</p>
+      </div>
+    `;
+    card.addEventListener("click", () => openCategory(cat.id));
+    categoryGrid.appendChild(card);
+  });
+}
+
+function openCategory(id) {
+  currentCategoryId = id;
+  categoryListView.style.display = "none";
+  categoryDetailView.style.display = "block";
+  renderCategoryDetail();
+}
+
+function backToCategories() {
+  currentCategoryId = null;
+  categoryDetailView.style.display = "none";
+  categoryListView.style.display = "block";
+}
+
+document.getElementById("back-to-categories-btn").addEventListener("click", backToCategories);
+
+function renderCategoryDetail() {
+  const cat = allCategories.find((c) => c.id === currentCategoryId);
+  if (!cat) return backToCategories();
+
+  categoryDetailView.querySelectorAll("[data-cat-field]").forEach((input) => {
+    const [group, lang] = input.dataset.catField.split("_");
+    input.value = cat[group]?.[lang] || "";
+    input.onblur = async () => {
+      await fetch(`/api/categories/${cat.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ [input.dataset.catField]: input.value }),
+      });
+      loadCategories();
+    };
+  });
+
+  const categoryPhotos = allPhotos.filter((p) => p.categoryId === cat.id);
+  photoGrid.innerHTML = "";
+  categoryPhotos.forEach((photo) => photoGrid.appendChild(renderPhotoCard(photo, cat)));
+}
+
+document.getElementById("delete-category-btn").addEventListener("click", async () => {
+  if (!confirm("確定要刪除這個分類嗎？（分類內還有照片的話無法刪除）")) return;
+  const res = await fetch(`/api/categories/${currentCategoryId}`, { method: "DELETE" });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    alert(err.error || "刪除失敗");
+    return;
+  }
+  backToCategories();
+  loadCategories();
+});
+
+// --- New category form ---
+const newCategoryBtn = document.getElementById("new-category-btn");
+const categoryForm = document.getElementById("category-form");
+newCategoryBtn.addEventListener("click", () => {
+  categoryForm.style.display = categoryForm.style.display === "none" ? "block" : "none";
+});
+document.getElementById("cancel-category-btn").addEventListener("click", () => {
+  categoryForm.reset();
+  categoryForm.style.display = "none";
+});
+categoryForm.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const form = e.target;
+  const body = {
+    name_zh: form.name_zh.value,
+    name_en: form.name_en.value,
+    description_zh: form.description_zh.value,
+    description_en: form.description_en.value,
+    location_zh: form.location_zh.value,
+    location_en: form.location_en.value,
+  };
+  categoryStatus.textContent = "建立中…";
+  try {
+    const res = await fetch("/api/categories", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    });
+    if (!res.ok) throw new Error(await res.text());
+    categoryStatus.textContent = "";
+    form.reset();
+    form.style.display = "none";
+    loadCategories();
+  } catch (err) {
+    categoryStatus.textContent = `建立失敗：${err.message}`;
+  }
+});
+
+function renderPhotoCard(photo, category) {
+  const isCover = category.coverPhotoId === photo.id;
   const card = document.createElement("div");
-  card.className = "card" + (photo.isCover ? " is-cover" : "");
+  card.className = "card" + (isCover ? " is-cover" : "");
   card.draggable = true;
   card.dataset.id = photo.id;
   card.innerHTML = `
     <div class="thumb-wrap">
       <img class="card-thumb" src="${photo.src}" alt="" />
-      ${photo.isCover ? '<span class="cover-badge">★ 分類封面</span>' : ""}
+      ${isCover ? '<span class="cover-badge">★ 分類封面</span>' : ""}
     </div>
     <div class="card-body">
       <input type="text" data-field="caption_zh" value="${escapeHtml(photo.caption.zh)}" placeholder="中文說明" />
       <input type="text" data-field="caption_en" value="${escapeHtml(photo.caption.en)}" placeholder="English caption" />
-      <input type="text" data-field="category" value="${escapeHtml(photo.category)}" placeholder="分類" />
     </div>
     <div class="card-footer">
-      <button class="cover-btn" ${photo.category ? "" : "disabled"}>${photo.isCover ? "★ 已是封面" : "設為封面"}</button>
+      <button class="cover-btn">${isCover ? "★ 已是封面" : "設為封面"}</button>
       <button class="delete-btn">刪除</button>
     </div>
   `;
@@ -169,17 +325,21 @@ function renderPhotoCard(photo) {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ [input.dataset.field]: input.value }),
-      }).then(() => loadPhotos()),
+      }).then(() => loadCategories()),
     );
   });
   card.querySelector(".cover-btn").addEventListener("click", async () => {
-    await fetch(`/api/photos/${photo.id}/set-cover`, { method: "POST" });
-    loadPhotos();
+    await fetch(`/api/categories/${category.id}/set-cover`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ photoId: photo.id }),
+    });
+    loadCategories();
   });
   card.querySelector(".delete-btn").addEventListener("click", async () => {
     if (!confirm("確定要刪除這張照片嗎？")) return;
     await fetch(`/api/photos/${photo.id}`, { method: "DELETE" });
-    loadPhotos();
+    loadCategories();
   });
   return card;
 }
@@ -194,28 +354,27 @@ wireReorder(photoGrid, (order) =>
 
 document.getElementById("photo-form").addEventListener("submit", async (e) => {
   e.preventDefault();
-  if (!selectedPhotoFile) {
-    photoStatus.textContent = "請先選擇一張照片";
+  if (!selectedPhotoFiles.length) {
+    photoStatus.textContent = "請先選擇照片";
     return;
   }
-  const form = e.target;
   const fd = new FormData();
-  fd.append("file", selectedPhotoFile);
-  fd.append("caption_zh", form.caption_zh.value);
-  fd.append("caption_en", form.caption_en.value);
-  fd.append("category", form.category.value);
+  selectedPhotoFiles.forEach((f) => fd.append("files", f));
 
-  photoStatus.textContent = "上傳中…";
-  const submitBtn = form.querySelector("button[type=submit]");
+  photoStatus.textContent = `上傳 ${selectedPhotoFiles.length} 張中…`;
+  const submitBtn = e.target.querySelector("button[type=submit]");
   submitBtn.disabled = true;
   try {
-    const res = await fetch("/api/photos", { method: "POST", body: fd });
+    const res = await fetch(`/api/categories/${currentCategoryId}/photos`, {
+      method: "POST",
+      body: fd,
+    });
     if (!res.ok) throw new Error(await res.text());
     photoStatus.textContent = "上傳完成！";
-    form.reset();
+    e.target.reset();
     document.getElementById("photo-filename").textContent = "";
-    selectedPhotoFile = null;
-    loadPhotos();
+    selectedPhotoFiles = [];
+    loadCategories();
   } catch (err) {
     photoStatus.textContent = `上傳失敗：${err.message}`;
   } finally {
@@ -317,5 +476,5 @@ function escapeHtml(str) {
   );
 }
 
-loadPhotos();
+loadCategories();
 loadVideos();

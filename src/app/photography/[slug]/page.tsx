@@ -1,19 +1,15 @@
 import { notFound } from "next/navigation";
 import { CategoryDetail } from "@/components/CategoryDetail";
-import { getPhotos } from "@/lib/content";
-import { encodeCategorySlug, decodeCategorySlug } from "@/lib/categorySlug";
+import { getPhotos, getCategories } from "@/lib/content";
 
 export const dynamicParams = false;
 
 export async function generateStaticParams() {
-  const photos = getPhotos();
-  const categories = Array.from(
-    new Set(photos.map((p) => p.category).filter((c): c is string => Boolean(c))),
-  );
+  const categories = getCategories();
   if (categories.length === 0) {
     return [{ slug: "_placeholder" }];
   }
-  return categories.map((category) => ({ slug: encodeCategorySlug(category) }));
+  return categories.map((category) => ({ slug: category.id }));
 }
 
 export default async function CategoryPage({
@@ -22,10 +18,10 @@ export default async function CategoryPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const category = decodeCategorySlug(slug);
-  const photos = getPhotos().filter((p) => p.category === category);
+  const category = getCategories().find((c) => c.id === slug);
+  const photos = getPhotos().filter((p) => p.categoryId === slug);
 
-  if (photos.length === 0) {
+  if (!category || photos.length === 0) {
     notFound();
   }
 

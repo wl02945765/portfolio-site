@@ -4,9 +4,15 @@ import { useLanguage } from "@/i18n/LanguageProvider";
 import { PageHeading } from "@/components/PageHeading";
 import { PhotoStripCurtain } from "@/components/PhotoStripCurtain";
 import { CategoryFolders } from "@/components/CategoryFolders";
-import type { Photo } from "@/lib/content";
+import type { Category, Photo } from "@/lib/content";
 
-export function PhotoGallery({ photos }: { photos: Photo[] }) {
+export function PhotoGallery({
+  photos,
+  categories,
+}: {
+  photos: Photo[];
+  categories: Category[];
+}) {
   const { t } = useLanguage();
 
   if (photos.length === 0) {
@@ -23,7 +29,7 @@ export function PhotoGallery({ photos }: { photos: Photo[] }) {
   return (
     <div className="pb-24">
       <PhotoStripCurtain photos={photos} />
-      <CategoryFolders photos={photos} />
+      <CategoryFolders categories={categories} photos={photos} />
     </div>
   );
 }

@@ -11,6 +11,7 @@ const ROOT = path.resolve(__dirname, "..");
 const CONTENT_DIR = path.join(ROOT, "content");
 const MEDIA_DIR = path.join(ROOT, "public", "media");
 const PHOTOS_JSON = path.join(CONTENT_DIR, "photos.json");
+const CATEGORIES_JSON = path.join(CONTENT_DIR, "categories.json");
 const VIDEOS_JSON = path.join(CONTENT_DIR, "videos.json");
 const PHOTOS_DIR = path.join(MEDIA_DIR, "photos");
 const VIDEOS_DIR = path.join(MEDIA_DIR, "videos");
@@ -68,9 +69,10 @@ function runPublish() {
   publishState.publishing = true;
   publishState.lastError = null;
   try {
-    execSync("git add content/photos.json content/videos.json public/media", {
-      cwd: ROOT,
-    });
+    execSync(
+      "git add content/photos.json content/categories.json content/videos.json public/media",
+      { cwd: ROOT },
+    );
     const diff = spawnSync("git", ["diff", "--cached", "--quiet"], { cwd: ROOT });
     if (diff.status === 0) {
       return; // nothing changed
@@ -123,56 +125,112 @@ app.get("/api/publish-status", (_req, res) => {
   res.json(publishState);
 });
 
+// ---------- Categories ----------
+
+app.get("/api/categories", (_req, res) => {
+  res.json(readJSON(CATEGORIES_JSON));
+});
+
+app.post("/api/categories", (req, res) => {
+  const categories = readJSON(CATEGORIES_JSON);
+  const entry = {
+    id: randomUUID(),
+    name: { zh: req.body.name_zh || "", en: req.body.name_en || "" },
+    description: { zh: req.body.description_zh || "", en: req.body.description_en || "" },
+    location: { zh: req.body.location_zh || "", en: req.body.location_en || "" },
+    coverPhotoId: null,
+  };
+  categories.push(entry);
+  writeJSON(CATEGORIES_JSON, categories);
+  schedulePublish();
+  res.json(entry);
+});
+
+app.patch("/api/categories/:id", (req, res) => {
+  const categories = readJSON(CATEGORIES_JSON);
+  const item = categories.find((c) => c.id === req.params.id);
+  if (!item) return res.status(404).json({ error: "not found" });
+  if (req.body.name_zh !== undefined) item.name.zh = req.body.name_zh;
+  if (req.body.name_en !== undefined) item.name.en = req.body.name_en;
+  if (req.body.description_zh !== undefined) item.description.zh = req.body.description_zh;
+  if (req.body.description_en !== undefined) item.description.en = req.body.description_en;
+  if (req.body.location_zh !== undefined) item.location.zh = req.body.location_zh;
+  if (req.body.location_en !== undefined) item.location.en = req.body.location_en;
+  writeJSON(CATEGORIES_JSON, categories);
+  schedulePublish();
+  res.json(item);
+});
+
+app.post("/api/categories/:id/set-cover", (req, res) => {
+  const { photoId } = req.body;
+  const categories = readJSON(CATEGORIES_JSON);
+  const category = categories.find((c) => c.id === req.params.id);
+  if (!category) return res.status(404).json({ error: "category not found" });
+  const photos = readJSON(PHOTOS_JSON);
+  const photo = photos.find((p) => p.id === photoId && p.categoryId === category.id);
+  if (!photo) return res.status(400).json({ error: "photo not in this category" });
+  category.coverPhotoId = photoId;
+  writeJSON(CATEGORIES_JSON, categories);
+  schedulePublish();
+  res.json(category);
+});
+
+app.delete("/api/categories/:id", (req, res) => {
+  const categories = readJSON(CATEGORIES_JSON);
+  const photos = readJSON(PHOTOS_JSON);
+  const hasPhotos = photos.some((p) => p.categoryId === req.params.id);
+  if (hasPhotos) {
+    return res
+      .status(400)
+      .json({ error: "category still has photos — delete or move them first" });
+  }
+  writeJSON(
+    CATEGORIES_JSON,
+    categories.filter((c) => c.id !== req.params.id),
+  );
+  schedulePublish();
+  res.json({ ok: true });
+});
+
 // ---------- Photos ----------
 
 app.get("/api/photos", (_req, res) => {
   res.json(readJSON(PHOTOS_JSON));
 });
 
-app.post("/api/photos", photoUpload.single("file"), (req, res) => {
-  if (!req.file) return res.status(400).json({ error: "missing file" });
+app.post("/api/categories/:id/photos", photoUpload.array("files", 30), (req, res) => {
+  if (!req.files || req.files.length === 0) {
+    return res.status(400).json({ error: "missing files" });
+  }
+  const categories = readJSON(CATEGORIES_JSON);
+  const category = categories.find((c) => c.id === req.params.id);
+  if (!category) return res.status(404).json({ error: "category not found" });
+
   const photos = readJSON(PHOTOS_JSON);
-  const entry = {
+  const created = req.files.map((file) => ({
     id: randomUUID(),
-    src: `/media/photos/${req.file.filename}`,
-    category: req.body.category || "",
-    caption: {
-      zh: req.body.caption_zh || "",
-      en: req.body.caption_en || "",
-    },
-    isCover: false,
-  };
-  photos.push(entry);
+    src: `/media/photos/${file.filename}`,
+    categoryId: category.id,
+    caption: { zh: "", en: "" },
+  }));
+  photos.push(...created);
   writeJSON(PHOTOS_JSON, photos);
+
+  if (!category.coverPhotoId) {
+    category.coverPhotoId = created[0].id;
+    writeJSON(CATEGORIES_JSON, categories);
+  }
+
   schedulePublish();
-  res.json(entry);
+  res.json(created);
 });
 
 app.patch("/api/photos/:id", (req, res) => {
   const photos = readJSON(PHOTOS_JSON);
   const item = photos.find((p) => p.id === req.params.id);
   if (!item) return res.status(404).json({ error: "not found" });
-  if (req.body.category !== undefined && req.body.category !== item.category) {
-    item.category = req.body.category;
-    item.isCover = false; // cover association no longer makes sense in the new category
-  }
   if (req.body.caption_zh !== undefined) item.caption.zh = req.body.caption_zh;
   if (req.body.caption_en !== undefined) item.caption.en = req.body.caption_en;
-  writeJSON(PHOTOS_JSON, photos);
-  schedulePublish();
-  res.json(item);
-});
-
-app.post("/api/photos/:id/set-cover", (req, res) => {
-  const photos = readJSON(PHOTOS_JSON);
-  const item = photos.find((p) => p.id === req.params.id);
-  if (!item) return res.status(404).json({ error: "not found" });
-  if (!item.category) {
-    return res.status(400).json({ error: "photo has no category to be a cover for" });
-  }
-  for (const p of photos) {
-    if (p.category === item.category) p.isCover = p.id === item.id;
-  }
   writeJSON(PHOTOS_JSON, photos);
   schedulePublish();
   res.json(item);
@@ -188,18 +246,37 @@ app.delete("/api/photos/:id", (req, res) => {
     PHOTOS_JSON,
     photos.filter((p) => p.id !== req.params.id),
   );
+
+  const categories = readJSON(CATEGORIES_JSON);
+  const category = categories.find((c) => c.id === item.categoryId);
+  if (category && category.coverPhotoId === item.id) {
+    const remaining = photos.filter(
+      (p) => p.categoryId === item.categoryId && p.id !== item.id,
+    );
+    category.coverPhotoId = remaining[0]?.id ?? null;
+    writeJSON(CATEGORIES_JSON, categories);
+  }
+
   schedulePublish();
   res.json({ ok: true });
 });
 
 app.post("/api/photos/reorder", (req, res) => {
+  // `order` only lists the ids of one category's photos (that's all the admin
+  // UI shows at a time) — reorder just that subsequence in place, keeping
+  // every other category's photos exactly where they were.
   const { order } = req.body;
   const photos = readJSON(PHOTOS_JSON);
   const byId = new Map(photos.map((p) => [p.id, p]));
-  const reordered = order.map((id) => byId.get(id)).filter(Boolean);
-  writeJSON(PHOTOS_JSON, reordered);
+  const reorderedSubset = order.map((id) => byId.get(id)).filter(Boolean);
+  const orderSet = new Set(order);
+
+  let cursor = 0;
+  const result = photos.map((p) => (orderSet.has(p.id) ? reorderedSubset[cursor++] : p));
+
+  writeJSON(PHOTOS_JSON, result);
   schedulePublish();
-  res.json(reordered);
+  res.json(result);
 });
 
 // ---------- Videos ----------

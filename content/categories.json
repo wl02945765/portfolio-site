@@ -14,5 +14,21 @@
       "en": ""
     },
     "coverPhotoId": "14983dad-903a-4bfd-aacd-06a751860780"
+  },
+  {
+    "id": "1a6fcc83-3e20-4c5e-9995-f772504bcb3a",
+    "name": {
+      "zh": "景",
+      "en": ""
+    },
+    "description": {
+      "zh": "",
+      "en": ""
+    },
+    "location": {
+      "zh": "",
+      "en": ""
+    },
+    "coverPhotoId": null
   }
 ]

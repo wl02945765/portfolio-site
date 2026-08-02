@@ -34,14 +34,5 @@
       "zh": "中國",
       "en": "CHINA"
     }
-  },
-  {
-    "id": "95217318-47b1-442b-a700-db996e9ebf77",
-    "src": "/media/photos/a024a13c-5ecd-44b8-b4a0-4942e4cbe51a.jpg",
-    "category": "test",
-    "caption": {
-      "zh": "自動發布測試",
-      "en": "Auto Publish Test"
-    }
   }
 ]

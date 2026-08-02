@@ -2,17 +2,14 @@
 
 import Link from "next/link";
 import { useLanguage } from "@/i18n/LanguageProvider";
-import { HeroStrips } from "@/components/HeroStrips";
-import type { Photo } from "@/lib/content";
+import { NoiseCanvas } from "@/components/NoiseCanvas";
 
-export function Hero({ photos }: { photos: Photo[] }) {
+export function Hero() {
   const { t } = useLanguage();
 
   return (
     <section className="relative h-[calc(100svh-57px)] w-full overflow-hidden bg-black">
-      <HeroStrips photos={photos} />
-
-      <div className="absolute inset-0 bg-black/45" />
+      <NoiseCanvas className="absolute inset-0 opacity-70" />
 
       <div className="relative flex h-full flex-col items-center justify-center px-6 text-center">
         <h1 className="text-4xl font-semibold tracking-[0.08em] text-white sm:text-6xl md:text-7xl">

@@ -1,12 +1,9 @@
 import { Hero } from "@/components/Hero";
-import { getPhotos } from "@/lib/content";
 
 export default function Home() {
-  const photos = getPhotos();
-
   return (
     <div className="flex flex-1 flex-col">
-      <Hero photos={photos} />
+      <Hero />
     </div>
   );
 }

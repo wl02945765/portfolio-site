@@ -84,7 +84,7 @@ export function PhotoGallery({ photos }: { photos: Photo[] }) {
           <button
             key={photo.id}
             onClick={() => setLightboxIndex(i)}
-            className="group relative mb-3 block w-full break-inside-avoid overflow-hidden"
+            className="group relative mb-3 block aspect-[4/5] w-full break-inside-avoid overflow-hidden bg-black"
           >
             <Image
               src={photo.src}
@@ -92,8 +92,9 @@ export function PhotoGallery({ photos }: { photos: Photo[] }) {
               width={800}
               height={1000}
               unoptimized
-              className="w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.03]"
+              className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]"
             />
+            <div className="absolute inset-0 bg-black transition-opacity duration-500 ease-out group-hover:opacity-0" />
             <span className="absolute inset-x-0 bottom-0 translate-y-full bg-gradient-to-t from-black/70 to-transparent p-3 text-left text-xs text-white opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100">
               {photo.caption[locale]}
             </span>

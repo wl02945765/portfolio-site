@@ -6,6 +6,8 @@ import { useLanguage } from "@/i18n/LanguageProvider";
 import { PageHeading } from "@/components/PageHeading";
 import type { Video } from "@/lib/content";
 
+const HIGHLIGHT_SECONDS = 10;
+
 function VideoCard({ video }: { video: Video }) {
   const { locale } = useLanguage();
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -14,7 +16,12 @@ function VideoCard({ video }: { video: Video }) {
     <Link
       href={`/video-work/${video.slug}`}
       className="group relative block aspect-video w-full overflow-hidden bg-black"
-      onMouseEnter={() => videoRef.current?.play().catch(() => {})}
+      onMouseEnter={() => {
+        const el = videoRef.current;
+        if (!el) return;
+        el.currentTime = 0;
+        el.play().catch(() => {});
+      }}
       onMouseLeave={() => {
         const el = videoRef.current;
         if (!el) return;
@@ -34,6 +41,11 @@ function VideoCard({ video }: { video: Video }) {
         loop
         playsInline
         preload="none"
+        onTimeUpdate={(e) => {
+          if (e.currentTarget.currentTime > HIGHLIGHT_SECONDS) {
+            e.currentTarget.currentTime = 0;
+          }
+        }}
         className="absolute inset-0 h-full w-full object-cover opacity-0 transition-opacity duration-300 group-hover:opacity-100"
       />
       <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 to-transparent p-4">

@@ -11,7 +11,7 @@ export function VideoDetail({ video }: { video: Video }) {
     <div className="flex flex-1 flex-col px-6 pb-24 pt-16 sm:px-10 sm:pt-20">
       <Link
         href="/video-work"
-        className="mb-8 inline-block w-fit text-[11px] uppercase tracking-[0.15em] text-black/45 hover:text-black"
+        className="mb-8 inline-block w-fit text-[11px] uppercase tracking-[0.15em] text-white/45 hover:text-white"
       >
         ← {t.videoWork.backToList}
       </Link>
@@ -29,10 +29,10 @@ export function VideoDetail({ video }: { video: Video }) {
           {video.title[locale]}
         </h1>
         {video.year && (
-          <span className="text-xs tracking-wide text-black/40">{video.year}</span>
+          <span className="text-xs tracking-wide text-white/40">{video.year}</span>
         )}
       </div>
-      <p className="mt-2 text-sm tracking-wide text-black/60">
+      <p className="mt-2 text-sm tracking-wide text-white/60">
         {video.services[locale]}
       </p>
     </div>

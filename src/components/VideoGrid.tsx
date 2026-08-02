@@ -67,7 +67,7 @@ export function VideoGrid({ videos }: { videos: Video[] }) {
     return (
       <div className="flex flex-1 flex-col">
         <PageHeading>{t.videoWork.heading}</PageHeading>
-        <div className="flex flex-1 items-center justify-center px-6 py-32 text-sm tracking-wide text-black/40">
+        <div className="flex flex-1 items-center justify-center px-6 py-32 text-sm tracking-wide text-white/40">
           {t.videoWork.empty}
         </div>
       </div>

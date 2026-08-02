@@ -45,7 +45,7 @@ export function PhotoGallery({ photos }: { photos: Photo[] }) {
     return (
       <div className="flex flex-1 flex-col">
         <PageHeading>{t.photography.heading}</PageHeading>
-        <div className="flex flex-1 items-center justify-center px-6 py-32 text-sm tracking-wide text-black/40">
+        <div className="flex flex-1 items-center justify-center px-6 py-32 text-sm tracking-wide text-white/40">
           {t.photography.empty}
         </div>
       </div>
@@ -60,7 +60,7 @@ export function PhotoGallery({ photos }: { photos: Photo[] }) {
           <button
             onClick={() => setCategory("all")}
             className={`text-[11px] uppercase tracking-[0.15em] ${
-              category === "all" ? "text-black" : "text-black/40 hover:text-black"
+              category === "all" ? "text-white" : "text-white/40 hover:text-white"
             }`}
           >
             {t.photography.allCategory}
@@ -70,7 +70,7 @@ export function PhotoGallery({ photos }: { photos: Photo[] }) {
               key={c}
               onClick={() => setCategory(c)}
               className={`text-[11px] uppercase tracking-[0.15em] ${
-                category === c ? "text-black" : "text-black/40 hover:text-black"
+                category === c ? "text-white" : "text-white/40 hover:text-white"
               }`}
             >
               {c}

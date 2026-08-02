@@ -2,10 +2,8 @@
 
 import { useEffect, useRef } from "react";
 
-const BUFFER_WIDTH = 400;
-const BUFFER_HEIGHT = 250;
 const FRAME_MS = 80;
-const LIT_PROBABILITY = 0.15;
+const LIT_PROBABILITY = 0.06;
 
 export function NoiseCanvas({ className }: { className?: string }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -15,26 +13,41 @@ export function NoiseCanvas({ className }: { className?: string }) {
     const ctx = canvas?.getContext("2d");
     if (!canvas || !ctx) return;
 
-    canvas.width = BUFFER_WIDTH;
-    canvas.height = BUFFER_HEIGHT;
-    const imageData = ctx.createImageData(BUFFER_WIDTH, BUFFER_HEIGHT);
-    const buffer = imageData.data;
+    let width = 0;
+    let height = 0;
+    let imageData: ImageData | null = null;
+
+    const resize = () => {
+      width = canvas.clientWidth;
+      height = canvas.clientHeight;
+      canvas.width = width;
+      canvas.height = height;
+      imageData = width > 0 && height > 0 ? ctx.createImageData(width, height) : null;
+    };
+
+    resize();
+    const resizeObserver = new ResizeObserver(resize);
+    resizeObserver.observe(canvas);
 
     const draw = () => {
+      if (!imageData) return;
+      const buffer = imageData.data;
       for (let i = 0; i < buffer.length; i += 4) {
         const lit = Math.random() < LIT_PROBABILITY;
-        const v = lit ? Math.round(80 + Math.random() * 175) : 0;
+        const v = lit ? Math.round(120 + Math.random() * 135) : 0;
         buffer[i] = v;
         buffer[i + 1] = v;
         buffer[i + 2] = v;
-        buffer[i + 3] = lit ? Math.round(Math.random() * 255) : 0;
+        buffer[i + 3] = lit ? Math.round(90 + Math.random() * 165) : 0;
       }
       ctx.putImageData(imageData, 0, 0);
     };
 
-    draw();
     const interval = window.setInterval(draw, FRAME_MS);
-    return () => window.clearInterval(interval);
+    return () => {
+      window.clearInterval(interval);
+      resizeObserver.disconnect();
+    };
   }, []);
 
   return (

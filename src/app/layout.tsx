@@ -3,7 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { LanguageProvider } from "@/i18n/LanguageProvider";
 import { NavBar } from "@/components/NavBar";
-import { NoiseBackground } from "@/components/NoiseBackground";
+import { NoiseCanvas } from "@/components/NoiseCanvas";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -30,9 +30,9 @@ export default function RootLayout({
       lang="zh-Hant"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col bg-white text-black">
+      <body className="min-h-full flex flex-col bg-black text-white">
         <LanguageProvider>
-          <NoiseBackground />
+          <NoiseCanvas className="fixed inset-0 -z-10 opacity-70" />
           <NavBar />
           <main className="flex flex-1 flex-col pt-[57px]">{children}</main>
         </LanguageProvider>

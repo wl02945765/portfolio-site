@@ -5,54 +5,69 @@ import { useLanguage } from "@/i18n/LanguageProvider";
 import { withBasePath } from "@/lib/basePath";
 import type { Photo } from "@/lib/content";
 
-const EXPANDED_WIDTH = 45; // percent
+const STRIP_COUNT = 80;
+
+function pseudoRandom(seed: number) {
+  const x = Math.sin(seed * 12.9898) * 43758.5453;
+  return x - Math.floor(x);
+}
 
 export function PhotoStripCurtain({ photos }: { photos: Photo[] }) {
   const { locale } = useLanguage();
-  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+  const [hoveredStrip, setHoveredStrip] = useState<number | null>(null);
 
   if (photos.length === 0) return null;
 
-  const restWidth =
-    hoveredIndex === null
-      ? 100 / photos.length
-      : (100 - EXPANDED_WIDTH) / (photos.length - 1 || 1);
+  const strips = Array.from({ length: STRIP_COUNT }, (_, i) => {
+    const photo = photos[i % photos.length];
+    const positionX = `${Math.round(pseudoRandom(i + 1) * 100)}%`;
+    return { photo, positionX };
+  });
+
+  const hoveredPhoto = hoveredStrip !== null ? strips[hoveredStrip].photo : null;
 
   return (
-    <section className="relative flex h-[65vh] w-full items-stretch justify-center overflow-hidden bg-black">
-      {photos.map((photo, i) => {
-        const isHovered = hoveredIndex === i;
-        const width = hoveredIndex === null ? 100 / photos.length : isHovered ? EXPANDED_WIDTH : restWidth;
-
-        return (
+    <section className="relative h-[65vh] w-full overflow-hidden bg-black">
+      <div className="absolute inset-0 flex">
+        {strips.map((strip, i) => (
           <div
-            key={photo.id}
-            className="relative h-full overflow-hidden transition-[width] duration-500 ease-out"
-            style={{ width: `${width}%` }}
-            onMouseEnter={() => setHoveredIndex(i)}
-            onMouseLeave={() => setHoveredIndex(null)}
-          >
-            <div
-              className="absolute inset-0 bg-cover bg-center transition-opacity duration-500 ease-out"
-              style={{
-                backgroundImage: `url(${withBasePath(photo.src)})`,
-                opacity: isHovered ? 1 : 0,
-              }}
-            />
-            {isHovered && (
-              <span className="absolute bottom-4 left-4 text-xs tracking-wide text-zinc-200">
-                {photo.caption[locale]}
-              </span>
-            )}
-          </div>
-        );
-      })}
+            key={i}
+            className="h-full flex-1"
+            style={{
+              backgroundImage: `url(${withBasePath(strip.photo.src)})`,
+              backgroundSize: "auto 100%",
+              backgroundPositionX: strip.positionX,
+              backgroundPositionY: "center",
+              backgroundRepeat: "no-repeat",
+            }}
+            onMouseEnter={() => setHoveredStrip(i)}
+            onMouseLeave={() => setHoveredStrip(null)}
+          />
+        ))}
+      </div>
 
-      <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
-        <div
-          className="rounded-full border border-white/30 bg-black/70 px-5 py-4 text-center backdrop-blur-sm transition-opacity duration-300"
-          style={{ opacity: hoveredIndex === null ? 1 : 0 }}
-        >
+      <div
+        className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center transition-opacity duration-500 ease-out"
+        style={{ opacity: hoveredPhoto ? 1 : 0 }}
+      >
+        {hoveredPhoto && (
+          <>
+            <div
+              className="h-[55vh] w-[70vw] max-w-3xl bg-black bg-cover bg-center shadow-2xl"
+              style={{ backgroundImage: `url(${withBasePath(hoveredPhoto.src)})` }}
+            />
+            <p className="mt-4 text-xs tracking-wide text-zinc-300">
+              {hoveredPhoto.caption[locale]}
+            </p>
+          </>
+        )}
+      </div>
+
+      <div
+        className="pointer-events-none absolute inset-0 flex items-center justify-center transition-opacity duration-300"
+        style={{ opacity: hoveredPhoto ? 0 : 1 }}
+      >
+        <div className="rounded-full border border-white/30 bg-black/70 px-5 py-4 text-center backdrop-blur-sm">
           <p className="text-[10px] font-medium uppercase tracking-[0.2em] text-zinc-200">
             Ching&apos;s
           </p>

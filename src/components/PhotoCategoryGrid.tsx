@@ -44,7 +44,6 @@ export function PhotoCategoryGrid({ photos }: { photos: Photo[] }) {
               unoptimized
               className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]"
             />
-            <div className="absolute inset-0 bg-black transition-opacity duration-500 ease-out group-hover:opacity-0" />
             <span className="absolute inset-x-0 bottom-0 translate-y-full bg-gradient-to-t from-black/70 to-transparent p-3 text-left text-xs text-zinc-200 opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100">
               {photo.caption[locale]}
             </span>

@@ -1,0 +1,34 @@
+[
+  {
+    "id": "76afb2cf-dabe-4b8e-828f-5e0bf7f21e83",
+    "name": {
+      "zh": "人像",
+      "en": "Portrait"
+    },
+    "description": {
+      "zh": "",
+      "en": ""
+    },
+    "location": {
+      "zh": "",
+      "en": ""
+    },
+    "coverPhotoId": "14983dad-903a-4bfd-aacd-06a751860780"
+  },
+  {
+    "id": "9d7ea2c6-5bf3-4c95-9417-cb71485cc228",
+    "name": {
+      "zh": "測試分類",
+      "en": "Test Category"
+    },
+    "description": {
+      "zh": "這是說明",
+      "en": ""
+    },
+    "location": {
+      "zh": "台北",
+      "en": ""
+    },
+    "coverPhotoId": null
+  }
+]

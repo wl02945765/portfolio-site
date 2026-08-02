@@ -28,38 +28,51 @@ export function PhotoStripCurtain({ photos }: { photos: Photo[] }) {
   return (
     <section className="relative h-[65vh] w-full overflow-hidden bg-black">
       <div className="absolute inset-0 flex">
-        {strips.map((strip, i) => (
-          <div
-            key={i}
-            className="h-full flex-1"
-            style={{
-              backgroundImage: `url(${withBasePath(strip.photo.src)})`,
-              backgroundSize: "auto 100%",
-              backgroundPositionX: strip.positionX,
-              backgroundPositionY: "center",
-              backgroundRepeat: "no-repeat",
-            }}
-            onMouseEnter={() => setHoveredStrip(i)}
-            onMouseLeave={() => setHoveredStrip(null)}
-          />
-        ))}
-      </div>
-
-      <div
-        className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center transition-opacity duration-500 ease-out"
-        style={{ opacity: hoveredPhoto ? 1 : 0 }}
-      >
-        {hoveredPhoto && (
-          <>
+        {strips.map((strip, i) => {
+          const isHovered = i === hoveredStrip;
+          return (
             <div
-              className="h-[55vh] w-[70vw] max-w-3xl bg-black bg-cover bg-center shadow-2xl"
-              style={{ backgroundImage: `url(${withBasePath(hoveredPhoto.src)})` }}
-            />
-            <p className="mt-4 text-xs tracking-wide text-zinc-300">
-              {hoveredPhoto.caption[locale]}
-            </p>
-          </>
-        )}
+              key={i}
+              className="relative h-full flex flex-col items-center justify-center bg-black"
+              style={{
+                flex: isHovered ? "0 0 clamp(280px, 42vw, 640px)" : "1 1 0%",
+                transition: "flex-basis 450ms ease, flex-grow 450ms ease",
+              }}
+              onMouseEnter={() => setHoveredStrip(i)}
+              onMouseLeave={() => setHoveredStrip(null)}
+            >
+              <div
+                className="absolute inset-0"
+                style={{
+                  backgroundImage: `url(${withBasePath(strip.photo.src)})`,
+                  backgroundSize: "auto 100%",
+                  backgroundPositionX: strip.positionX,
+                  backgroundPositionY: "center",
+                  backgroundRepeat: "no-repeat",
+                  opacity: isHovered ? 0 : 1,
+                  transition: "opacity 300ms ease",
+                }}
+              />
+              <div
+                className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center p-6 sm:p-10"
+                style={{ opacity: isHovered ? 1 : 0, transition: "opacity 300ms ease 150ms" }}
+              >
+                <div
+                  className="h-full w-full max-w-none"
+                  style={{
+                    backgroundImage: `url(${withBasePath(strip.photo.src)})`,
+                    backgroundSize: "contain",
+                    backgroundPosition: "center",
+                    backgroundRepeat: "no-repeat",
+                  }}
+                />
+                <p className="mt-4 shrink-0 text-xs tracking-wide text-zinc-300">
+                  {strip.photo.caption[locale]}
+                </p>
+              </div>
+            </div>
+          );
+        })}
       </div>
 
       <div

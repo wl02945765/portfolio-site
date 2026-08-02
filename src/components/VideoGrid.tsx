@@ -4,6 +4,7 @@ import { useRef } from "react";
 import Link from "next/link";
 import { useLanguage } from "@/i18n/LanguageProvider";
 import { PageHeading } from "@/components/PageHeading";
+import { withBasePath } from "@/lib/basePath";
 import type { Video } from "@/lib/content";
 
 const HIGHLIGHT_SECONDS = 10;
@@ -30,13 +31,13 @@ function VideoCard({ video }: { video: Video }) {
       }}
     >
       <img
-        src={video.thumbnail}
+        src={withBasePath(video.thumbnail)}
         alt={video.title[locale]}
         className="absolute inset-0 h-full w-full object-cover transition-opacity duration-300 group-hover:opacity-0"
       />
       <video
         ref={videoRef}
-        src={video.videoSrc}
+        src={withBasePath(video.videoSrc)}
         muted
         loop
         playsInline

@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import { useLanguage } from "@/i18n/LanguageProvider";
 import { PageHeading } from "@/components/PageHeading";
+import { withBasePath } from "@/lib/basePath";
 import type { Photo } from "@/lib/content";
 
 export function PhotoGallery({ photos }: { photos: Photo[] }) {
@@ -87,7 +88,7 @@ export function PhotoGallery({ photos }: { photos: Photo[] }) {
             className="group relative mb-3 block aspect-[4/5] w-full break-inside-avoid overflow-hidden bg-black"
           >
             <Image
-              src={photo.src}
+              src={withBasePath(photo.src)}
               alt={photo.caption[locale]}
               width={800}
               height={1000}
@@ -140,7 +141,7 @@ export function PhotoGallery({ photos }: { photos: Photo[] }) {
             onClick={(e) => e.stopPropagation()}
           >
             <Image
-              src={filtered[lightboxIndex].src}
+              src={withBasePath(filtered[lightboxIndex].src)}
               alt={filtered[lightboxIndex].caption[locale]}
               width={1600}
               height={1200}

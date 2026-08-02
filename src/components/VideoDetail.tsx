@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useLanguage } from "@/i18n/LanguageProvider";
+import { withBasePath } from "@/lib/basePath";
 import type { Video } from "@/lib/content";
 
 export function VideoDetail({ video }: { video: Video }) {
@@ -17,8 +18,8 @@ export function VideoDetail({ video }: { video: Video }) {
       </Link>
 
       <video
-        src={video.videoSrc}
-        poster={video.thumbnail}
+        src={withBasePath(video.videoSrc)}
+        poster={withBasePath(video.thumbnail)}
         controls
         playsInline
         className="w-full bg-black"

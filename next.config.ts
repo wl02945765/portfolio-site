@@ -4,6 +4,9 @@ const isStaticExport = process.env.STATIC_EXPORT === "true";
 const basePath = process.env.GITHUB_PAGES_BASE_PATH || "";
 
 const nextConfig: NextConfig = {
+  env: {
+    NEXT_PUBLIC_BASE_PATH: basePath,
+  },
   ...(isStaticExport && {
     output: "export",
     images: { unoptimized: true },

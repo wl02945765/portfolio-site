@@ -72,20 +72,11 @@
     }
   },
   {
-    "id": "b08a3894-55ec-46f4-bdfe-97fa1ce5e411",
-    "src": "/media/photos/b6fff7fe-5421-4ac5-9ecd-bcd28bd3e460.JPG",
-    "categoryId": "76afb2cf-dabe-4b8e-828f-5e0bf7f21e83",
-    "caption": {
-      "zh": "威尼斯",
-      "en": ""
-    }
-  },
-  {
     "id": "b0fec5fd-b038-4063-a81a-bbe3104138d8",
     "src": "/media/photos/f7f0c280-3b5b-4ee3-a5b9-a8729be3f599.jpg",
     "categoryId": "76afb2cf-dabe-4b8e-828f-5e0bf7f21e83",
     "caption": {
-      "zh": "",
+      "zh": "威尼斯",
       "en": ""
     }
   },
@@ -105,6 +96,15 @@
     "caption": {
       "zh": "",
       "en": ""
+    }
+  },
+  {
+    "id": "b08a3894-55ec-46f4-bdfe-97fa1ce5e411",
+    "src": "/media/photos/b6fff7fe-5421-4ac5-9ecd-bcd28bd3e460.JPG",
+    "categoryId": "76afb2cf-dabe-4b8e-828f-5e0bf7f21e83",
+    "caption": {
+      "zh": "威尼斯",
+      "en": "Venice"
     }
   },
   {

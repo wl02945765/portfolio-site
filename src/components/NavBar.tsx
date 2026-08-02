@@ -33,7 +33,7 @@ export function NavBar() {
                 key={item.href}
                 href={item.href}
                 className={`text-[11px] font-medium uppercase tracking-[0.15em] transition-colors ${
-                  active ? "text-white" : "text-zinc-400 hover:text-white"
+                  active ? "text-zinc-200" : "text-zinc-500 hover:text-zinc-200"
                 }`}
               >
                 {item.label}
@@ -44,7 +44,7 @@ export function NavBar() {
           <button
             type="button"
             onClick={() => setLocale(locale === "zh" ? "en" : "zh")}
-            className="text-[11px] font-medium tracking-[0.15em] text-zinc-400 transition-colors hover:text-white"
+            className="text-[11px] font-medium tracking-[0.15em] text-zinc-500 transition-colors hover:text-zinc-200"
             aria-label="Switch language"
           >
             {locale === "zh" ? "中 / EN" : "EN / 中"}

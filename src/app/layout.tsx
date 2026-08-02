@@ -30,9 +30,9 @@ export default function RootLayout({
       lang="zh-Hant"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col bg-black text-white">
+      <body className="min-h-full flex flex-col bg-black text-zinc-300">
         <LanguageProvider>
-          <NoiseCanvas className="fixed inset-0 -z-10 opacity-70" />
+          <NoiseCanvas className="fixed inset-0 -z-10 opacity-50" />
           <NavBar />
           <main className="flex flex-1 flex-col pt-[57px]">{children}</main>
         </LanguageProvider>

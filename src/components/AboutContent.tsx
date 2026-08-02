@@ -9,7 +9,7 @@ export function AboutContent() {
   return (
     <div className="flex flex-1 flex-col px-6 pb-24 sm:px-10">
       <PageHeading>{t.about.heading}</PageHeading>
-      <p className="mt-10 max-w-2xl text-base leading-8 tracking-wide text-white/80">
+      <p className="mt-10 max-w-2xl text-base leading-8 tracking-wide text-zinc-400">
         {t.about.body}
       </p>
     </div>

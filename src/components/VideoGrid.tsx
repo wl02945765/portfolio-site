@@ -49,10 +49,10 @@ function VideoCard({ video }: { video: Video }) {
         className="absolute inset-0 h-full w-full object-cover opacity-0 transition-opacity duration-300 group-hover:opacity-100"
       />
       <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 to-transparent p-4">
-        <p className="text-sm font-medium uppercase tracking-[0.08em] text-white">
+        <p className="text-sm font-medium uppercase tracking-[0.08em] text-zinc-200">
           {video.title[locale]}
         </p>
-        <p className="mt-1 text-[11px] tracking-wide text-white/70">
+        <p className="mt-1 text-[11px] tracking-wide text-zinc-400">
           {video.services[locale]}
         </p>
       </div>
@@ -67,7 +67,7 @@ export function VideoGrid({ videos }: { videos: Video[] }) {
     return (
       <div className="flex flex-1 flex-col">
         <PageHeading>{t.videoWork.heading}</PageHeading>
-        <div className="flex flex-1 items-center justify-center px-6 py-32 text-sm tracking-wide text-white/40">
+        <div className="flex flex-1 items-center justify-center px-6 py-32 text-sm tracking-wide text-zinc-500">
           {t.videoWork.empty}
         </div>
       </div>

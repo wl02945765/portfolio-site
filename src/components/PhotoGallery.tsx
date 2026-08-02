@@ -45,7 +45,7 @@ export function PhotoGallery({ photos }: { photos: Photo[] }) {
     return (
       <div className="flex flex-1 flex-col">
         <PageHeading>{t.photography.heading}</PageHeading>
-        <div className="flex flex-1 items-center justify-center px-6 py-32 text-sm tracking-wide text-white/40">
+        <div className="flex flex-1 items-center justify-center px-6 py-32 text-sm tracking-wide text-zinc-500">
           {t.photography.empty}
         </div>
       </div>
@@ -60,7 +60,7 @@ export function PhotoGallery({ photos }: { photos: Photo[] }) {
           <button
             onClick={() => setCategory("all")}
             className={`text-[11px] uppercase tracking-[0.15em] ${
-              category === "all" ? "text-white" : "text-white/40 hover:text-white"
+              category === "all" ? "text-zinc-200" : "text-zinc-500 hover:text-zinc-200"
             }`}
           >
             {t.photography.allCategory}
@@ -70,7 +70,7 @@ export function PhotoGallery({ photos }: { photos: Photo[] }) {
               key={c}
               onClick={() => setCategory(c)}
               className={`text-[11px] uppercase tracking-[0.15em] ${
-                category === c ? "text-white" : "text-white/40 hover:text-white"
+                category === c ? "text-zinc-200" : "text-zinc-500 hover:text-zinc-200"
               }`}
             >
               {c}
@@ -95,7 +95,7 @@ export function PhotoGallery({ photos }: { photos: Photo[] }) {
               className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]"
             />
             <div className="absolute inset-0 bg-black transition-opacity duration-500 ease-out group-hover:opacity-0" />
-            <span className="absolute inset-x-0 bottom-0 translate-y-full bg-gradient-to-t from-black/70 to-transparent p-3 text-left text-xs text-white opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100">
+            <span className="absolute inset-x-0 bottom-0 translate-y-full bg-gradient-to-t from-black/70 to-transparent p-3 text-left text-xs text-zinc-200 opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100">
               {photo.caption[locale]}
             </span>
           </button>
@@ -108,14 +108,14 @@ export function PhotoGallery({ photos }: { photos: Photo[] }) {
           onClick={closeLightbox}
         >
           <button
-            className="absolute right-6 top-6 text-2xl text-white/70 hover:text-white"
+            className="absolute right-6 top-6 text-2xl text-zinc-400 hover:text-zinc-200"
             onClick={closeLightbox}
             aria-label="Close"
           >
             ×
           </button>
           <button
-            className="absolute left-2 top-1/2 -translate-y-1/2 px-4 py-8 text-3xl text-white/60 hover:text-white sm:left-6"
+            className="absolute left-2 top-1/2 -translate-y-1/2 px-4 py-8 text-3xl text-zinc-400 hover:text-zinc-200 sm:left-6"
             onClick={(e) => {
               e.stopPropagation();
               showPrev();
@@ -125,7 +125,7 @@ export function PhotoGallery({ photos }: { photos: Photo[] }) {
             ‹
           </button>
           <button
-            className="absolute right-2 top-1/2 -translate-y-1/2 px-4 py-8 text-3xl text-white/60 hover:text-white sm:right-6"
+            className="absolute right-2 top-1/2 -translate-y-1/2 px-4 py-8 text-3xl text-zinc-400 hover:text-zinc-200 sm:right-6"
             onClick={(e) => {
               e.stopPropagation();
               showNext();
@@ -147,7 +147,7 @@ export function PhotoGallery({ photos }: { photos: Photo[] }) {
               unoptimized
               className="max-h-[80vh] w-auto object-contain"
             />
-            <p className="mt-4 text-xs tracking-wide text-white/70">
+            <p className="mt-4 text-xs tracking-wide text-zinc-400">
               {filtered[lightboxIndex].caption[locale]}
             </p>
           </div>

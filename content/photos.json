@@ -412,5 +412,23 @@
       "zh": "",
       "en": ""
     }
+  },
+  {
+    "id": "c2be65e5-f565-4942-b59c-39c5c5a029fc",
+    "src": "/media/photos/b2495a79-3147-458a-8a46-88bba3101fce.JPG",
+    "categoryId": "1a6fcc83-3e20-4c5e-9995-f772504bcb3a",
+    "caption": {
+      "zh": "",
+      "en": ""
+    }
+  },
+  {
+    "id": "26730905-6ba5-403d-94ce-c85b848995ab",
+    "src": "/media/photos/83b0b141-a59a-4c07-b95b-804303d93852.JPG",
+    "categoryId": "1a6fcc83-3e20-4c5e-9995-f772504bcb3a",
+    "caption": {
+      "zh": "",
+      "en": ""
+    }
   }
 ]

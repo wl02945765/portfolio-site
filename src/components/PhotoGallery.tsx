@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import { useLanguage } from "@/i18n/LanguageProvider";
 import { PageHeading } from "@/components/PageHeading";
+import { PhotoStripCurtain } from "@/components/PhotoStripCurtain";
 import { withBasePath } from "@/lib/basePath";
 import type { Photo } from "@/lib/content";
 
@@ -54,7 +55,10 @@ export function PhotoGallery({ photos }: { photos: Photo[] }) {
   }
 
   return (
-    <div className="px-6 pb-24 sm:px-10">
+    <div className="pb-24">
+      <PhotoStripCurtain photos={photos} />
+
+      <div className="px-6 sm:px-10">
       <PageHeading>{t.photography.heading}</PageHeading>
       {categories.length > 1 && (
         <div className="mb-8 mt-10 flex flex-wrap gap-4">
@@ -154,6 +158,7 @@ export function PhotoGallery({ photos }: { photos: Photo[] }) {
           </div>
         </div>
       )}
+      </div>
     </div>
   );
 }

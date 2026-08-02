@@ -14,21 +14,5 @@
       "en": ""
     },
     "coverPhotoId": "14983dad-903a-4bfd-aacd-06a751860780"
-  },
-  {
-    "id": "9d7ea2c6-5bf3-4c95-9417-cb71485cc228",
-    "name": {
-      "zh": "測試分類",
-      "en": "Test Category"
-    },
-    "description": {
-      "zh": "這是說明",
-      "en": ""
-    },
-    "location": {
-      "zh": "台北",
-      "en": ""
-    },
-    "coverPhotoId": "888cde4c-2c02-4862-9029-e632e7d7807d"
   }
 ]

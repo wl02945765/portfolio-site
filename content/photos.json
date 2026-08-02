@@ -340,5 +340,32 @@
       "zh": "",
       "en": ""
     }
+  },
+  {
+    "id": "7bc1c01e-4f67-4efa-bef6-a5521873efbd",
+    "src": "/media/photos/6eeb5ee3-7315-46c0-b28f-fbebef4a9594.jpg",
+    "categoryId": "1a6fcc83-3e20-4c5e-9995-f772504bcb3a",
+    "caption": {
+      "zh": "",
+      "en": ""
+    }
+  },
+  {
+    "id": "7783b3e0-b899-45a2-afd4-4ac4bc9dc59b",
+    "src": "/media/photos/14d378ac-c62f-474d-b5f9-2b2cd5355b02.jpg",
+    "categoryId": "1a6fcc83-3e20-4c5e-9995-f772504bcb3a",
+    "caption": {
+      "zh": "",
+      "en": ""
+    }
+  },
+  {
+    "id": "1d41770d-8b49-412b-88c2-31c87c40010d",
+    "src": "/media/photos/1935b5b7-9a96-4f1c-9c67-efb01bcb86e4.jpg",
+    "categoryId": "1a6fcc83-3e20-4c5e-9995-f772504bcb3a",
+    "caption": {
+      "zh": "",
+      "en": ""
+    }
   }
 ]

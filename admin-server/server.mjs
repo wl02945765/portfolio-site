@@ -52,6 +52,54 @@ function uniqueSlug(base, existing) {
   return slug;
 }
 
+// Camera-original photos (5-8MB, HEIC) were pinning visitors' CPUs and
+// rendering as broken images in every non-Safari browser. Every upload now
+// gets converted to JPEG and downsized to something reasonable for web
+// display, using macOS's built-in `sips` (same pattern as the ffmpeg call
+// below for video thumbnails — a system tool, not another npm dependency).
+const MAX_PHOTO_DIMENSION = 2400;
+const JPEG_QUALITY = 82;
+
+function getImageDimensions(filePath) {
+  const result = spawnSync("sips", ["-g", "pixelWidth", "-g", "pixelHeight", filePath]);
+  const out = result.stdout?.toString() || "";
+  return {
+    width: Number(out.match(/pixelWidth:\s*(\d+)/)?.[1] || 0),
+    height: Number(out.match(/pixelHeight:\s*(\d+)/)?.[1] || 0),
+  };
+}
+
+// Converts HEIC/HEIF to JPEG and downsizes anything larger than
+// MAX_PHOTO_DIMENSION, in place. Returns the filename to use (unchanged
+// unless the format was converted). Never upscales smaller images.
+function optimizePhoto(dir, filename) {
+  const ext = path.extname(filename).toLowerCase();
+  let filePath = path.join(dir, filename);
+  let outFilename = filename;
+
+  if (ext === ".heic" || ext === ".heif") {
+    outFilename = filename.slice(0, -ext.length) + ".jpg";
+    const outPath = path.join(dir, outFilename);
+    spawnSync("sips", ["-s", "format", "jpeg", filePath, "--out", outPath]);
+    fs.unlinkSync(filePath);
+    filePath = outPath;
+  }
+
+  const { width, height } = getImageDimensions(filePath);
+  if (Math.max(width, height) > MAX_PHOTO_DIMENSION) {
+    spawnSync("sips", [
+      "-Z",
+      String(MAX_PHOTO_DIMENSION),
+      "--setProperty",
+      "formatOptions",
+      String(JPEG_QUALITY),
+      filePath,
+    ]);
+  }
+
+  return outFilename;
+}
+
 // Recursively merges a partial nested patch (e.g. { zh: { photography: { heading: "..." } } })
 // into the existing site-text object, leaving every other field untouched.
 function deepMerge(target, patch) {
@@ -313,12 +361,15 @@ app.post("/api/categories/:id/photos", photoUpload.array("files", 30), (req, res
   if (!category) return res.status(404).json({ error: "category not found" });
 
   const photos = readJSON(PHOTOS_JSON);
-  const created = req.files.map((file) => ({
-    id: randomUUID(),
-    src: `/media/photos/${file.filename}`,
-    categoryId: category.id,
-    caption: { zh: "", en: "" },
-  }));
+  const created = req.files.map((file) => {
+    const filename = optimizePhoto(PHOTOS_DIR, file.filename);
+    return {
+      id: randomUUID(),
+      src: `/media/photos/${filename}`,
+      categoryId: category.id,
+      caption: { zh: "", en: "" },
+    };
+  });
   photos.push(...created);
   writeJSON(PHOTOS_JSON, photos);
 

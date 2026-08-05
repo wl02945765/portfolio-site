@@ -20,7 +20,7 @@ export function NavBar() {
       <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4 sm:px-10">
         <Link
           href="/"
-          className="text-[11px] font-medium tracking-[0.2em] text-zinc-300"
+          className="heading-font text-[11px] font-medium tracking-[0.2em] text-zinc-300"
         >
           CHING&apos;S PROFILE
         </Link>

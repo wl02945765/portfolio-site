@@ -26,7 +26,7 @@ export function VideoDetail({ video }: { video: Video }) {
       />
 
       <div className="mt-6 flex flex-col gap-1 sm:flex-row sm:items-baseline sm:justify-between">
-        <h1 className="text-xl font-semibold uppercase tracking-[0.06em]">
+        <h1 className="heading-font text-xl font-medium uppercase tracking-[0.06em]">
           {video.title[locale]}
         </h1>
         {video.year && (

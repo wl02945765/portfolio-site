@@ -25,7 +25,7 @@ export function CategoryDetail({
         ← {t.photography.backToPhotography}
       </Link>
 
-      <h1 className="text-2xl font-semibold uppercase tracking-[0.1em] text-zinc-300 sm:text-3xl">
+      <h1 className="heading-font text-2xl font-medium uppercase tracking-[0.1em] text-zinc-300 sm:text-3xl">
         {category.name[locale]}
       </h1>
       {location && (

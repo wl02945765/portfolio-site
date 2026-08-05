@@ -3,7 +3,7 @@ import { Geist_Mono, Inter, EB_Garamond, LXGW_WenKai_TC, Chiron_Hei_HK } from "n
 import "./globals.css";
 import { LanguageProvider } from "@/i18n/LanguageProvider";
 import { NavBar } from "@/components/NavBar";
-import { NoiseCanvas } from "@/components/NoiseCanvas";
+import { NoiseOverlay } from "@/components/NoiseOverlay";
 import { dictionaries } from "@/i18n/dictionaries";
 
 const inter = Inter({
@@ -55,7 +55,7 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col bg-black text-zinc-300">
         <LanguageProvider>
-          <NoiseCanvas className="fixed inset-0 -z-10 opacity-50" />
+          <NoiseOverlay className="fixed inset-0 -z-10 opacity-50" />
           <NavBar />
           <main className="flex flex-1 flex-col pt-[57px]">{children}</main>
         </LanguageProvider>

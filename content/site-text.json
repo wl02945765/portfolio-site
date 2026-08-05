@@ -3,8 +3,8 @@
     "brandName": "CHING'S PROFILE",
     "nav": {
       "aboutLabel": "About Me",
-      "photographyLabel": "Photography",
-      "videoWorkLabel": "Video Work",
+      "photographyLabel": "Visuals",
+      "videoWorkLabel": "Motion",
       "soundLabel": "Sound",
       "contactLabel": "Contact"
     },
@@ -53,7 +53,7 @@
     "brandName": "CHING'S PROFILE",
     "nav": {
       "aboutLabel": "About Me",
-      "photographyLabel": "Photography",
+      "photographyLabel": "Visuals",
       "videoWorkLabel": "Video Work",
       "soundLabel": "Sound",
       "contactLabel": "Contact"

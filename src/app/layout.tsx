@@ -4,6 +4,7 @@ import "./globals.css";
 import { LanguageProvider } from "@/i18n/LanguageProvider";
 import { NavBar } from "@/components/NavBar";
 import { NoiseCanvas } from "@/components/NoiseCanvas";
+import { dictionaries } from "@/i18n/dictionaries";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -38,7 +39,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "CHING'S PROFILE",
+  title: dictionaries.zh.brandName,
   description: "Photography, retouching, video editing & audio mixing — Ching's portfolio.",
 };
 

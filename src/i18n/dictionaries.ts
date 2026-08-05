@@ -3,6 +3,7 @@ import siteText from "../../content/site-text.json";
 export type Locale = "zh" | "en";
 
 export type Dictionary = {
+  brandName: string;
   heroTitle: string;
   heroSlogan: string;
   heroCtaPhotography: string;

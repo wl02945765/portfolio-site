@@ -593,6 +593,10 @@ loadSound();
 // --- Site text (About/Hero/etc copy editing) ---
 const TEXT_SCHEMA = [
   {
+    section: "全站導覽列",
+    fields: [{ path: "brandName", label: "左上角品牌標題（同時也是瀏覽器分頁標題）" }],
+  },
+  {
     section: "首頁 Hero",
     fields: [
       { path: "heroTitle", label: "主標題" },

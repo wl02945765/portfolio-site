@@ -14,7 +14,7 @@ const NAV_ITEMS = [
 
 export function NavBar() {
   const pathname = usePathname();
-  const { locale, setLocale } = useLanguage();
+  const { t, locale, setLocale } = useLanguage();
 
   return (
     <header className="fixed top-0 left-0 right-0 z-40 border-b border-white/10 bg-black">
@@ -23,7 +23,7 @@ export function NavBar() {
           href="/"
           className="heading-font text-[11px] font-medium tracking-[0.2em] text-zinc-300"
         >
-          CHING&apos;S PROFILE
+          {t.brandName}
         </Link>
 
         <nav className="flex items-center gap-5 sm:gap-8">

@@ -12,16 +12,5 @@
     "zh": "",
     "en": ""
   },
-  "links": [
-    {
-      "id": "1b82f8d6-b3d1-4058-9d30-a5a64970be87",
-      "label": "Spotify",
-      "url": "https://open.spotify.com"
-    },
-    {
-      "id": "d636d976-8a64-4504-9fce-fc4521a76b34",
-      "label": "Apple Podcasts",
-      "url": "https://podcasts.apple.com"
-    }
-  ]
+  "links": []
 }

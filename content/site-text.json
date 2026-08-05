@@ -8,7 +8,7 @@
       "heading": "Visuals",
       "empty": "作品準備中，敬請期待。",
       "folderEmpty": "還沒有分類好的照片，請到後台幫照片加上分類。",
-      "backToPhotography": "返回 PHOTOGRAPHY"
+      "backToPhotography": "返回 Visuals"
     },
     "videoWork": {
       "heading": "VIDEO WORK",
@@ -34,7 +34,7 @@
       "heading": "Visuals",
       "empty": "Work in progress — check back soon.",
       "folderEmpty": "No categorized photos yet — add a category to a photo in the admin panel.",
-      "backToPhotography": "Back to Photography"
+      "backToPhotography": "Back to Visuals"
     },
     "videoWork": {
       "heading": "VIDEO WORK",

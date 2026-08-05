@@ -25,7 +25,18 @@ export type Dictionary = {
   };
   about: {
     heading: string;
-    body: string;
+    heroDescription: string;
+    storyTitle: string;
+    storyBody: string;
+    timelineTitle: string;
+    philosophyTitle: string;
+    philosophyIntro: string;
+    philosophyClosing: string;
+    beyondTitle: string;
+    beyondBody: string;
+    skillsTitle: string;
+    ctaText: string;
+    ctaButton: string;
   };
   contact: {
     heading: string;

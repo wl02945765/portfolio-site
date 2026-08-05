@@ -1,6 +1,7 @@
 import photosData from "../../content/photos.json";
 import categoriesData from "../../content/categories.json";
 import videosData from "../../content/videos.json";
+import soundData from "../../content/sound.json";
 
 export type LocalizedText = {
   zh: string;
@@ -33,6 +34,20 @@ export type Video = {
   year?: string;
 };
 
+export type SoundLink = {
+  id: string;
+  label: string;
+  url: string;
+};
+
+export type Sound = {
+  coverImage: string;
+  showName: LocalizedText;
+  showDescription: LocalizedText;
+  role: LocalizedText;
+  links: SoundLink[];
+};
+
 export function getPhotos(): Photo[] {
   return photosData as Photo[];
 }
@@ -43,4 +58,8 @@ export function getCategories(): Category[] {
 
 export function getVideos(): Video[] {
   return videosData as Video[];
+}
+
+export function getSound(): Sound {
+  return soundData as Sound;
 }

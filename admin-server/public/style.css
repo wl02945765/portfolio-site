@@ -205,17 +205,20 @@ main {
   color: var(--ink-soft);
 }
 
-.fields input {
+.fields input,
+.fields textarea {
   font-size: 13px;
   padding: 9px 11px;
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
   font-family: inherit;
   background: var(--surface);
+  resize: vertical;
   transition: border-color 0.15s, box-shadow 0.15s;
 }
 
-.fields input:focus {
+.fields input:focus,
+.fields textarea:focus {
   outline: none;
   border-color: var(--accent);
   box-shadow: 0 0 0 3px var(--accent-soft);

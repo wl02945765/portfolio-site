@@ -14,11 +14,13 @@ const PHOTOS_JSON = path.join(CONTENT_DIR, "photos.json");
 const CATEGORIES_JSON = path.join(CONTENT_DIR, "categories.json");
 const VIDEOS_JSON = path.join(CONTENT_DIR, "videos.json");
 const SITE_TEXT_JSON = path.join(CONTENT_DIR, "site-text.json");
+const SOUND_JSON = path.join(CONTENT_DIR, "sound.json");
 const PHOTOS_DIR = path.join(MEDIA_DIR, "photos");
 const VIDEOS_DIR = path.join(MEDIA_DIR, "videos");
 const THUMBS_DIR = path.join(VIDEOS_DIR, "thumbs");
+const SOUND_DIR = path.join(MEDIA_DIR, "sound");
 
-for (const dir of [PHOTOS_DIR, VIDEOS_DIR, THUMBS_DIR]) {
+for (const dir of [PHOTOS_DIR, VIDEOS_DIR, THUMBS_DIR, SOUND_DIR]) {
   fs.mkdirSync(dir, { recursive: true });
 }
 
@@ -85,7 +87,7 @@ function runPublish() {
   publishState.lastError = null;
   try {
     execSync(
-      "git add content/photos.json content/categories.json content/videos.json content/site-text.json public/media",
+      "git add content/photos.json content/categories.json content/videos.json content/site-text.json content/sound.json public/media",
       { cwd: ROOT },
     );
     const diff = spawnSync("git", ["diff", "--cached", "--quiet"], { cwd: ROOT });
@@ -136,6 +138,15 @@ const videoUpload = multer({
   limits: { fileSize: 1024 * 1024 * 1024 },
 });
 
+const soundCoverUpload = multer({
+  storage: multer.diskStorage({
+    destination: SOUND_DIR,
+    filename: (_req, file, cb) =>
+      cb(null, `cover-${randomUUID()}${path.extname(file.originalname)}`),
+  }),
+  limits: { fileSize: 50 * 1024 * 1024 },
+});
+
 app.get("/api/publish-status", (_req, res) => {
   res.json(publishState);
 });
@@ -152,6 +163,72 @@ app.patch("/api/site-text", (req, res) => {
   writeJSON(SITE_TEXT_JSON, data);
   schedulePublish();
   res.json(data);
+});
+
+// ---------- Sound (single-show page: cover, copy, and platform links) ----------
+
+app.get("/api/sound", (_req, res) => {
+  res.json(readJSON(SOUND_JSON));
+});
+
+app.patch("/api/sound", (req, res) => {
+  const data = readJSON(SOUND_JSON);
+  const { links, ...textPatch } = req.body; // links have their own endpoints below
+  deepMerge(data, textPatch);
+  writeJSON(SOUND_JSON, data);
+  schedulePublish();
+  res.json(data);
+});
+
+app.post("/api/sound/cover", soundCoverUpload.single("file"), (req, res) => {
+  if (!req.file) return res.status(400).json({ error: "missing file" });
+  const data = readJSON(SOUND_JSON);
+  if (data.coverImage) {
+    const oldPath = path.join(ROOT, "public", data.coverImage);
+    if (fs.existsSync(oldPath)) fs.unlinkSync(oldPath);
+  }
+  data.coverImage = `/media/sound/${req.file.filename}`;
+  writeJSON(SOUND_JSON, data);
+  schedulePublish();
+  res.json(data);
+});
+
+app.post("/api/sound/links", (req, res) => {
+  const data = readJSON(SOUND_JSON);
+  const link = { id: randomUUID(), label: req.body.label || "", url: req.body.url || "" };
+  data.links.push(link);
+  writeJSON(SOUND_JSON, data);
+  schedulePublish();
+  res.json(link);
+});
+
+app.patch("/api/sound/links/:id", (req, res) => {
+  const data = readJSON(SOUND_JSON);
+  const link = data.links.find((l) => l.id === req.params.id);
+  if (!link) return res.status(404).json({ error: "not found" });
+  if (req.body.label !== undefined) link.label = req.body.label;
+  if (req.body.url !== undefined) link.url = req.body.url;
+  writeJSON(SOUND_JSON, data);
+  schedulePublish();
+  res.json(link);
+});
+
+app.delete("/api/sound/links/:id", (req, res) => {
+  const data = readJSON(SOUND_JSON);
+  data.links = data.links.filter((l) => l.id !== req.params.id);
+  writeJSON(SOUND_JSON, data);
+  schedulePublish();
+  res.json({ ok: true });
+});
+
+app.post("/api/sound/links/reorder", (req, res) => {
+  const { order } = req.body;
+  const data = readJSON(SOUND_JSON);
+  const byId = new Map(data.links.map((l) => [l.id, l]));
+  data.links = order.map((id) => byId.get(id)).filter(Boolean);
+  writeJSON(SOUND_JSON, data);
+  schedulePublish();
+  res.json(data.links);
 });
 
 // ---------- Categories ----------

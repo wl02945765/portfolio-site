@@ -18,6 +18,7 @@
       <nav class="tabs">
         <button class="tab-btn active" data-tab="photos">攝影</button>
         <button class="tab-btn" data-tab="videos">影片</button>
+        <button class="tab-btn" data-tab="sound">Sound</button>
         <button class="tab-btn" data-tab="text">文字內容</button>
       </nav>
       <span id="sync-indicator" class="sync-indicator"></span>
@@ -96,6 +97,41 @@
         </form>
 
         <div id="video-grid" class="grid"></div>
+      </section>
+
+      <section id="panel-sound" class="panel">
+        <div class="upload-form">
+          <div id="sound-cover-drop" class="dropzone">
+            <p>拖拉節目封面圖到這裡，或點擊選擇檔案</p>
+            <input type="file" id="sound-cover-file" accept="image/*" hidden />
+            <p id="sound-cover-filename" class="filename"></p>
+          </div>
+          <img id="sound-cover-preview" style="display: none; max-width: 200px; border-radius: 8px; margin-top: 16px" />
+
+          <div class="fields" style="margin-top: 24px">
+            <label>節目名稱（中文） <input type="text" data-sound-field="showName_zh" /></label>
+            <label>Show Name（English） <input type="text" data-sound-field="showName_en" /></label>
+          </div>
+          <div class="fields">
+            <label>節目簡介（中文） <textarea data-sound-field="showDescription_zh" rows="3"></textarea></label>
+            <label>Show Description（English） <textarea data-sound-field="showDescription_en" rows="3"></textarea></label>
+          </div>
+          <div class="fields">
+            <label>我負責的部分（中文） <textarea data-sound-field="role_zh" rows="3"></textarea></label>
+            <label>My Role（English） <textarea data-sound-field="role_en" rows="3"></textarea></label>
+          </div>
+        </div>
+
+        <form id="sound-link-form" class="upload-form">
+          <div class="fields">
+            <label>平台名稱 <input type="text" name="label" placeholder="例如：Spotify" required /></label>
+            <label>連結網址 <input type="url" name="url" placeholder="https://..." required /></label>
+          </div>
+          <button type="submit" class="primary-btn">＋ 新增收聽連結</button>
+          <p class="status" id="sound-link-status"></p>
+        </form>
+
+        <div id="sound-link-grid" class="grid"></div>
       </section>
 
       <section id="panel-text" class="panel">

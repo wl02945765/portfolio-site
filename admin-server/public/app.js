@@ -469,6 +469,127 @@ document.getElementById("video-form").addEventListener("submit", async (e) => {
   }
 });
 
+// --- Sound (single show: cover, copy, platform links) ---
+let selectedSoundCoverFile = null;
+let currentSound = null;
+
+wireDropzone(
+  document.getElementById("sound-cover-drop"),
+  document.getElementById("sound-cover-file"),
+  document.getElementById("sound-cover-filename"),
+  (file) => {
+    selectedSoundCoverFile = file;
+    uploadSoundCover(file);
+  },
+);
+
+async function uploadSoundCover(file) {
+  const fd = new FormData();
+  fd.append("file", file);
+  document.getElementById("sound-cover-filename").textContent = "上傳中…";
+  const res = await fetch("/api/sound/cover", { method: "POST", body: fd });
+  currentSound = await res.json();
+  document.getElementById("sound-cover-filename").textContent = "已更新封面";
+  renderSoundCoverPreview();
+}
+
+function renderSoundCoverPreview() {
+  const preview = document.getElementById("sound-cover-preview");
+  if (currentSound?.coverImage) {
+    preview.src = currentSound.coverImage;
+    preview.style.display = "block";
+  } else {
+    preview.style.display = "none";
+  }
+}
+
+async function loadSound() {
+  currentSound = await fetch("/api/sound").then((r) => r.json());
+  renderSoundCoverPreview();
+
+  document.querySelectorAll("[data-sound-field]").forEach((el) => {
+    const [group, lang] = el.dataset.soundField.split("_");
+    el.value = currentSound[group]?.[lang] || "";
+    el.onblur = async () => {
+      const res = await fetch("/api/sound", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ [group]: { [lang]: el.value } }),
+      });
+      currentSound = await res.json();
+    };
+  });
+
+  renderSoundLinks();
+}
+
+const soundLinkGrid = document.getElementById("sound-link-grid");
+const soundLinkStatus = document.getElementById("sound-link-status");
+
+function renderSoundLinks() {
+  soundLinkGrid.innerHTML = "";
+  (currentSound.links || []).forEach((link) => {
+    const card = document.createElement("div");
+    card.className = "card";
+    card.draggable = true;
+    card.dataset.id = link.id;
+    card.innerHTML = `
+      <div class="card-body">
+        <input type="text" data-field="label" value="${escapeHtml(link.label)}" placeholder="平台名稱" />
+        <input type="text" data-field="url" value="${escapeHtml(link.url)}" placeholder="連結網址" />
+      </div>
+      <div class="card-footer">
+        <span class="handle">⠿ 拖曳排序</span>
+        <button class="delete-btn">刪除</button>
+      </div>
+    `;
+    card.querySelectorAll("input").forEach((input) => {
+      input.addEventListener("blur", () =>
+        fetch(`/api/sound/links/${link.id}`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ [input.dataset.field]: input.value }),
+        }),
+      );
+    });
+    card.querySelector(".delete-btn").addEventListener("click", async () => {
+      if (!confirm("確定要刪除這個連結嗎？")) return;
+      await fetch(`/api/sound/links/${link.id}`, { method: "DELETE" });
+      loadSound();
+    });
+    soundLinkGrid.appendChild(card);
+  });
+}
+
+wireReorder(soundLinkGrid, (order) =>
+  fetch("/api/sound/links/reorder", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ order }),
+  }),
+);
+
+document.getElementById("sound-link-form").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const form = e.target;
+  soundLinkStatus.textContent = "新增中…";
+  try {
+    const res = await fetch("/api/sound/links", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ label: form.label.value, url: form.url.value }),
+    });
+    if (!res.ok) throw new Error(await res.text());
+    soundLinkStatus.textContent = "";
+    form.reset();
+    loadSound();
+  } catch (err) {
+    soundLinkStatus.textContent = `新增失敗：${err.message}`;
+  }
+});
+
+loadSound();
+
 // --- Site text (About/Hero/etc copy editing) ---
 const TEXT_SCHEMA = [
   {

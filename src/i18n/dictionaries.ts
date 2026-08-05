@@ -18,6 +18,11 @@ export type Dictionary = {
     empty: string;
     backToList: string;
   };
+  sound: {
+    heading: string;
+    linksHeading: string;
+    roleHeading: string;
+  };
   about: {
     heading: string;
     body: string;

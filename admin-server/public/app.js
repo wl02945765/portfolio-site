@@ -469,6 +469,119 @@ document.getElementById("video-form").addEventListener("submit", async (e) => {
   }
 });
 
+// --- Site text (About/Hero/etc copy editing) ---
+const TEXT_SCHEMA = [
+  {
+    section: "首頁 Hero",
+    fields: [
+      { path: "heroTitle", label: "主標題" },
+      { path: "heroSlogan", label: "標語", type: "textarea" },
+      { path: "heroCtaPhotography", label: "「查看照片作品」按鈕文字" },
+      { path: "heroCtaVideoWork", label: "「查看影片作品」按鈕文字" },
+    ],
+  },
+  {
+    section: "Photography 頁",
+    fields: [
+      { path: "photography.heading", label: "頁面標題" },
+      { path: "photography.empty", label: "尚無作品時的提示文字" },
+      { path: "photography.folderEmpty", label: "分類內尚無照片時的提示文字" },
+      { path: "photography.backToPhotography", label: "「返回」連結文字" },
+    ],
+  },
+  {
+    section: "Video Work 頁",
+    fields: [
+      { path: "videoWork.heading", label: "頁面標題" },
+      { path: "videoWork.empty", label: "尚無作品時的提示文字" },
+      { path: "videoWork.backToList", label: "「返回」連結文字" },
+    ],
+  },
+  {
+    section: "About 頁",
+    fields: [
+      { path: "about.heading", label: "頁面標題" },
+      { path: "about.body", label: "自我介紹內文", type: "textarea" },
+    ],
+  },
+  {
+    section: "Contact 頁",
+    fields: [
+      { path: "contact.heading", label: "頁面標題" },
+      { path: "contact.body", label: "說明文字", type: "textarea" },
+      { path: "contact.emailLabel", label: "Email 欄位標籤" },
+    ],
+  },
+];
+
+function getPath(obj, path) {
+  return path.split(".").reduce((o, k) => (o && o[k] !== undefined ? o[k] : ""), obj);
+}
+
+function nestedFromPath(path, value) {
+  const parts = path.split(".");
+  const root = {};
+  let cursor = root;
+  parts.forEach((part, i) => {
+    if (i === parts.length - 1) {
+      cursor[part] = value;
+    } else {
+      cursor[part] = {};
+      cursor = cursor[part];
+    }
+  });
+  return root;
+}
+
+const textSectionsEl = document.getElementById("text-sections");
+let siteText = { zh: {}, en: {} };
+
+async function loadSiteText() {
+  siteText = await fetch("/api/site-text").then((r) => r.json());
+  renderTextSections();
+}
+
+function renderTextSections() {
+  textSectionsEl.innerHTML = "";
+  TEXT_SCHEMA.forEach((group) => {
+    const section = document.createElement("div");
+    section.className = "text-section";
+    section.innerHTML = `<h3>${group.section}</h3>`;
+
+    group.fields.forEach((field) => {
+      const row = document.createElement("div");
+      row.className = "text-field-pair";
+      row.innerHTML = ["zh", "en"]
+        .map((lang) => {
+          const value = escapeHtml(getPath(siteText[lang], field.path));
+          const langLabel = lang === "zh" ? "中文" : "English";
+          const control =
+            field.type === "textarea"
+              ? `<textarea data-lang="${lang}" data-path="${field.path}" rows="3">${value}</textarea>`
+              : `<input type="text" data-lang="${lang}" data-path="${field.path}" value="${value}" />`;
+          return `<label>${field.label}（${langLabel}）${control}</label>`;
+        })
+        .join("");
+      section.appendChild(row);
+    });
+
+    textSectionsEl.appendChild(section);
+  });
+
+  textSectionsEl.querySelectorAll("input, textarea").forEach((el) => {
+    el.addEventListener("blur", async () => {
+      const { lang, path } = el.dataset;
+      await fetch("/api/site-text", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ [lang]: nestedFromPath(path, el.value) }),
+      });
+    });
+  });
+}
+
+loadSiteText();
+
 function escapeHtml(str) {
   return String(str ?? "").replace(
     /[&<>"']/g,

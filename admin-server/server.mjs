@@ -13,6 +13,7 @@ const MEDIA_DIR = path.join(ROOT, "public", "media");
 const PHOTOS_JSON = path.join(CONTENT_DIR, "photos.json");
 const CATEGORIES_JSON = path.join(CONTENT_DIR, "categories.json");
 const VIDEOS_JSON = path.join(CONTENT_DIR, "videos.json");
+const SITE_TEXT_JSON = path.join(CONTENT_DIR, "site-text.json");
 const PHOTOS_DIR = path.join(MEDIA_DIR, "photos");
 const VIDEOS_DIR = path.join(MEDIA_DIR, "videos");
 const THUMBS_DIR = path.join(VIDEOS_DIR, "thumbs");
@@ -49,6 +50,20 @@ function uniqueSlug(base, existing) {
   return slug;
 }
 
+// Recursively merges a partial nested patch (e.g. { zh: { photography: { heading: "..." } } })
+// into the existing site-text object, leaving every other field untouched.
+function deepMerge(target, patch) {
+  for (const key of Object.keys(patch)) {
+    const value = patch[key];
+    if (value && typeof value === "object" && !Array.isArray(value)) {
+      target[key] = deepMerge(target[key] && typeof target[key] === "object" ? target[key] : {}, value);
+    } else {
+      target[key] = value;
+    }
+  }
+  return target;
+}
+
 // ---------- Auto-publish ----------
 // Debounces rapid edits (multiple uploads, several caption tweaks) into a
 // single commit+push, instead of triggering a GitHub Actions run per click.
@@ -70,7 +85,7 @@ function runPublish() {
   publishState.lastError = null;
   try {
     execSync(
-      "git add content/photos.json content/categories.json content/videos.json public/media",
+      "git add content/photos.json content/categories.json content/videos.json content/site-text.json public/media",
       { cwd: ROOT },
     );
     const diff = spawnSync("git", ["diff", "--cached", "--quiet"], { cwd: ROOT });
@@ -123,6 +138,20 @@ const videoUpload = multer({
 
 app.get("/api/publish-status", (_req, res) => {
   res.json(publishState);
+});
+
+// ---------- Site text ----------
+
+app.get("/api/site-text", (_req, res) => {
+  res.json(readJSON(SITE_TEXT_JSON));
+});
+
+app.patch("/api/site-text", (req, res) => {
+  const data = readJSON(SITE_TEXT_JSON);
+  deepMerge(data, req.body);
+  writeJSON(SITE_TEXT_JSON, data);
+  schedulePublish();
+  res.json(data);
 });
 
 // ---------- Categories ----------

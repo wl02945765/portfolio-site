@@ -1,16 +1,27 @@
 {
-  "coverImage": "",
+  "coverImage": "/media/photos/be5a30ba-e0d8-4fa4-bf2a-fcfea1ddd632.jpg",
   "showName": {
-    "zh": "",
-    "en": ""
+    "zh": "測試節目名稱",
+    "en": "Test Show Name"
   },
   "showDescription": {
-    "zh": "",
-    "en": ""
+    "zh": "這是節目簡介測試文字，用來確認排版效果。",
+    "en": "This is a test show description to confirm the layout."
   },
   "role": {
-    "zh": "",
-    "en": ""
+    "zh": "混音・後期製作",
+    "en": "Mixing & Post-Production"
   },
-  "links": []
+  "links": [
+    {
+      "id": "1b82f8d6-b3d1-4058-9d30-a5a64970be87",
+      "label": "Spotify",
+      "url": "https://open.spotify.com"
+    },
+    {
+      "id": "d636d976-8a64-4504-9fce-fc4521a76b34",
+      "label": "Apple Podcasts",
+      "url": "https://podcasts.apple.com"
+    }
+  ]
 }

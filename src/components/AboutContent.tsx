@@ -108,14 +108,14 @@ export function AboutContent() {
         variants={stagger}
         className="px-6 py-28 sm:px-10 sm:py-36"
       >
-        <div className="mx-auto max-w-2xl">
+        <div className="mx-auto max-w-4xl">
           <motion.h2
             variants={fadeUp}
             className="heading-font text-3xl font-medium text-zinc-100 sm:text-4xl"
           >
             {a.storyTitle}
           </motion.h2>
-          <div className="mt-10 flex flex-col gap-6">
+          <div className="mt-10 flex max-w-2xl flex-col gap-6">
             {paragraphs(a.storyBody).map((p, i) => (
               <motion.p
                 key={i}
@@ -131,7 +131,7 @@ export function AboutContent() {
 
       {/* Section 3 — Timeline */}
       <section className="px-6 py-28 sm:px-10 sm:py-36">
-        <div className="mx-auto max-w-3xl">
+        <div className="mx-auto max-w-4xl">
           <motion.h2
             initial="hidden"
             whileInView="visible"
@@ -192,7 +192,7 @@ export function AboutContent() {
         variants={stagger}
         className="bg-white/[0.02] px-6 py-28 sm:px-10 sm:py-36"
       >
-        <div className="mx-auto max-w-2xl">
+        <div className="mx-auto max-w-4xl">
           <motion.h2
             variants={fadeUp}
             className="heading-font text-3xl font-medium text-zinc-100 sm:text-4xl"
@@ -200,31 +200,33 @@ export function AboutContent() {
             {a.philosophyTitle}
           </motion.h2>
 
-          <motion.p
-            variants={fadeUp}
-            className="mt-10 text-base leading-8 tracking-wide text-zinc-400 sm:text-lg"
-          >
-            {a.philosophyIntro}
-          </motion.p>
+          <div className="max-w-2xl">
+            <motion.p
+              variants={fadeUp}
+              className="mt-10 text-base leading-8 tracking-wide text-zinc-400 sm:text-lg"
+            >
+              {a.philosophyIntro}
+            </motion.p>
 
-          <div className="mt-10 flex flex-col gap-3">
-            {philosophyLines.map((line) => (
-              <motion.p
-                key={line.en}
-                variants={fadeUp}
-                className="heading-font text-xl text-zinc-200 sm:text-2xl"
-              >
-                {line[locale]}
-              </motion.p>
-            ))}
+            <div className="mt-10 flex flex-col gap-3">
+              {philosophyLines.map((line) => (
+                <motion.p
+                  key={line.en}
+                  variants={fadeUp}
+                  className="heading-font text-xl text-zinc-200 sm:text-2xl"
+                >
+                  {line[locale]}
+                </motion.p>
+              ))}
+            </div>
+
+            <motion.p
+              variants={fadeUp}
+              className="mt-10 text-base leading-8 tracking-wide text-zinc-400 sm:text-lg"
+            >
+              {a.philosophyClosing}
+            </motion.p>
           </div>
-
-          <motion.p
-            variants={fadeUp}
-            className="mt-10 text-base leading-8 tracking-wide text-zinc-400 sm:text-lg"
-          >
-            {a.philosophyClosing}
-          </motion.p>
         </div>
       </motion.section>
 

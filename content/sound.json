@@ -1,16 +1,16 @@
 {
-  "coverImage": "/media/photos/be5a30ba-e0d8-4fa4-bf2a-fcfea1ddd632.jpg",
+  "coverImage": "",
   "showName": {
-    "zh": "測試節目名稱",
-    "en": "Test Show Name"
+    "zh": "",
+    "en": ""
   },
   "showDescription": {
-    "zh": "這是節目簡介測試文字，用來確認排版效果。",
-    "en": "This is a test show description to confirm the layout."
+    "zh": "",
+    "en": ""
   },
   "role": {
-    "zh": "混音・後期製作",
-    "en": "Mixing & Post-Production"
+    "zh": "",
+    "en": ""
   },
   "links": [
     {

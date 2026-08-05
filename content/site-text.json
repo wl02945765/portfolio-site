@@ -1,6 +1,13 @@
 {
   "zh": {
     "brandName": "CHING'S PROFILE",
+    "nav": {
+      "aboutLabel": "About Me",
+      "photographyLabel": "Photography",
+      "videoWorkLabel": "Video Work",
+      "soundLabel": "Sound",
+      "contactLabel": "Contact"
+    },
     "heroTitle": "STORIES, SEEN. HEARD. FELT.",
     "heroSlogan": "視覺設計・攝影・動態影像・聲音",
     "heroCtaPhotography": "查看照片作品",
@@ -44,6 +51,13 @@
   },
   "en": {
     "brandName": "CHING'S PROFILE",
+    "nav": {
+      "aboutLabel": "About Me",
+      "photographyLabel": "Photography",
+      "videoWorkLabel": "Video Work",
+      "soundLabel": "Sound",
+      "contactLabel": "Contact"
+    },
     "heroTitle": "STORIES, SEEN. HEARD. FELT.",
     "heroSlogan": "Visual Design · Photography · Motion · Sound",
     "heroCtaPhotography": "View Photography",

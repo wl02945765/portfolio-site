@@ -4,17 +4,17 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useLanguage } from "@/i18n/LanguageProvider";
 
-const NAV_ITEMS = [
-  { href: "/about", label: "About Me" },
-  { href: "/photography", label: "Photography" },
-  { href: "/video-work", label: "Video Work" },
-  { href: "/sound", label: "Sound" },
-  { href: "/contact", label: "Contact" },
-];
-
 export function NavBar() {
   const pathname = usePathname();
   const { t, locale, setLocale } = useLanguage();
+
+  const navItems = [
+    { href: "/about", label: t.nav.aboutLabel },
+    { href: "/photography", label: t.nav.photographyLabel },
+    { href: "/video-work", label: t.nav.videoWorkLabel },
+    { href: "/sound", label: t.nav.soundLabel },
+    { href: "/contact", label: t.nav.contactLabel },
+  ];
 
   return (
     <header className="fixed top-0 left-0 right-0 z-40 border-b border-white/10 bg-black">
@@ -27,13 +27,13 @@ export function NavBar() {
         </Link>
 
         <nav className="flex items-center gap-5 sm:gap-8">
-          {NAV_ITEMS.map((item) => {
+          {navItems.map((item) => {
             const active = pathname === item.href;
             return (
               <Link
                 key={item.href}
                 href={item.href}
-                className={`text-[11px] font-medium uppercase tracking-[0.15em] transition-colors ${
+                className={`heading-font text-[11px] font-medium uppercase tracking-[0.15em] transition-colors ${
                   active ? "text-zinc-200" : "text-zinc-500 hover:text-zinc-200"
                 }`}
               >

@@ -4,6 +4,13 @@ export type Locale = "zh" | "en";
 
 export type Dictionary = {
   brandName: string;
+  nav: {
+    aboutLabel: string;
+    photographyLabel: string;
+    videoWorkLabel: string;
+    soundLabel: string;
+    contactLabel: string;
+  };
   heroTitle: string;
   heroSlogan: string;
   heroCtaPhotography: string;

@@ -594,7 +594,14 @@ loadSound();
 const TEXT_SCHEMA = [
   {
     section: "全站導覽列",
-    fields: [{ path: "brandName", label: "左上角品牌標題（同時也是瀏覽器分頁標題）" }],
+    fields: [
+      { path: "brandName", label: "左上角品牌標題（同時也是瀏覽器分頁標題）" },
+      { path: "nav.aboutLabel", label: "導覽列「About Me」項目文字" },
+      { path: "nav.photographyLabel", label: "導覽列「Photography」項目文字" },
+      { path: "nav.videoWorkLabel", label: "導覽列「Video Work」項目文字" },
+      { path: "nav.soundLabel", label: "導覽列「Sound」項目文字" },
+      { path: "nav.contactLabel", label: "導覽列「Contact」項目文字" },
+    ],
   },
   {
     section: "首頁 Hero",

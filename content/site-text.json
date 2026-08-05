@@ -1,6 +1,6 @@
 {
   "zh": {
-    "heroTitle": "Stories, Seen. Heard. Felt.",
+    "heroTitle": "STORIES, SEEN. HEARD. FELT.",
     "heroSlogan": "視覺設計・攝影・動態影像・聲音",
     "heroCtaPhotography": "查看照片作品",
     "heroCtaVideoWork": "查看影片作品",
@@ -22,7 +22,18 @@
     },
     "about": {
       "heading": "ABOUT",
-      "body": "影視設計背景出身，橫跨攝影、修圖、影片剪輯與 Podcast 混音。無論是單一環節的協助，或是從企劃、攝影、燈光佈置、場地協調到後期混音的完整製作，都能一手包辦。"
+      "heroDescription": "我是一位透過設計、影像與聲音探索故事的創作者。",
+      "storyTitle": "我的故事",
+      "storyBody": "創作，從童年就已經是我生活的一部分。\n\n成長過程中，我深受父親對攝影的熱愛所影響。他經常帶著相機捕捉日常片刻，讓我很早就與影像、觀察和說故事建立起連結。\n\n除了攝影，我也喜歡畫畫、動手創作，並經常參觀展覽。這些經驗逐漸形塑了我對視覺表達與美感的理解。",
+      "timelineTitle": "從視覺到聲音",
+      "philosophyTitle": "我的創作觀",
+      "philosophyIntro": "對我來說，每一種媒介都有自己的語言。",
+      "philosophyClosing": "我相信創作不只是做出好看的作品，而是把經驗與情感轉化成能讓人產生共鳴的東西。",
+      "beyondTitle": "工作之外",
+      "beyondBody": "我喜歡旅行，探索陌生的地方。\n\n在澳洲生活與工作的經驗，讓我有機會體驗不同的文化與環境。這些經歷開拓了我的視野，也成為創作靈感的重要來源。\n\n每一趟旅程，都讓我用不同的方式觀看世界，發現新的故事。",
+      "skillsTitle": "專業技能",
+      "ctaText": "一起創作有意義的作品吧。",
+      "ctaButton": "聯絡我"
     },
     "contact": {
       "heading": "CONTACT",
@@ -53,7 +64,18 @@
     },
     "about": {
       "heading": "ABOUT",
-      "body": "Background in film & media design, working across photography, retouching, video editing, and podcast mixing. Available for a single piece of the puzzle, or full production — planning, shooting, lighting, location scouting, and post — start to finish."
+      "heroDescription": "I am a creator who explores stories through design, image, and sound.",
+      "storyTitle": "My Journey",
+      "storyBody": "Creativity has been part of my life since childhood.\n\nGrowing up, I was influenced by my father's passion for photography. He often brought a camera to capture everyday moments, which allowed me to develop an early connection with images, observation, and storytelling.\n\nAlongside photography, I enjoyed drawing, creating, and visiting exhibitions. These experiences gradually shaped my understanding of visual expression and aesthetics.",
+      "timelineTitle": "From Vision to Voice",
+      "philosophyTitle": "My Approach",
+      "philosophyIntro": "To me, every medium has its own language.",
+      "philosophyClosing": "I believe creativity is not only about creating beautiful work, but about transforming experiences and emotions into something people can connect with.",
+      "beyondTitle": "Beyond Work",
+      "beyondBody": "I enjoy traveling and exploring unfamiliar places.\n\nLiving and working in Australia gave me the opportunity to experience different cultures and environments. These experiences expanded my perspective and became an important source of inspiration for my creative work.\n\nEvery journey allows me to observe the world differently and discover new stories.",
+      "skillsTitle": "Skills",
+      "ctaText": "Let's create something meaningful together.",
+      "ctaButton": "Contact Me"
     },
     "contact": {
       "heading": "CONTACT",

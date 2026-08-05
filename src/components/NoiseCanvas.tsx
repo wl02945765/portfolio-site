@@ -4,7 +4,13 @@ import { useEffect, useRef } from "react";
 
 const FRAME_MS = 80;
 const LIT_PROBABILITY = 0.05;
-const MAX_DPR = 2;
+// Redrawing at full viewport resolution (millions of pixels, ~12x/sec,
+// forever, on every page) pinned the CPU hard enough to heat up phones and
+// laptops just from having the site open. A small fixed-size buffer
+// stretched to fill the screen via CSS looks visually the same for random
+// grain — the softening from upscaling actually reads as film grain — but
+// is ~100x cheaper to redraw.
+const NOISE_SIZE = 420;
 
 export function NoiseCanvas({ className }: { className?: string }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -14,26 +20,14 @@ export function NoiseCanvas({ className }: { className?: string }) {
     const ctx = canvas?.getContext("2d");
     if (!canvas || !ctx) return;
 
-    let width = 0;
-    let height = 0;
-    let imageData: ImageData | null = null;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
-    const resize = () => {
-      const dpr = Math.min(window.devicePixelRatio || 1, MAX_DPR);
-      width = Math.round(canvas.clientWidth * dpr);
-      height = Math.round(canvas.clientHeight * dpr);
-      canvas.width = width;
-      canvas.height = height;
-      imageData = width > 0 && height > 0 ? ctx.createImageData(width, height) : null;
-    };
-
-    resize();
-    const resizeObserver = new ResizeObserver(resize);
-    resizeObserver.observe(canvas);
+    canvas.width = NOISE_SIZE;
+    canvas.height = NOISE_SIZE;
+    const imageData = ctx.createImageData(NOISE_SIZE, NOISE_SIZE);
+    const buffer = imageData.data;
 
     const draw = () => {
-      if (!imageData) return;
-      const buffer = imageData.data;
       for (let i = 0; i < buffer.length; i += 4) {
         const lit = Math.random() < LIT_PROBABILITY;
         // grayish, not pure white — keeps the flicker easy on the eyes
@@ -46,10 +40,28 @@ export function NoiseCanvas({ className }: { className?: string }) {
       ctx.putImageData(imageData, 0, 0);
     };
 
-    const interval = window.setInterval(draw, FRAME_MS);
+    let interval: number | null = null;
+    const start = () => {
+      if (interval == null) interval = window.setInterval(draw, FRAME_MS);
+    };
+    const stop = () => {
+      if (interval != null) {
+        window.clearInterval(interval);
+        interval = null;
+      }
+    };
+    const onVisibilityChange = () => {
+      if (document.hidden) stop();
+      else start();
+    };
+
+    draw();
+    start();
+    document.addEventListener("visibilitychange", onVisibilityChange);
+
     return () => {
-      window.clearInterval(interval);
-      resizeObserver.disconnect();
+      stop();
+      document.removeEventListener("visibilitychange", onVisibilityChange);
     };
   }, []);
 

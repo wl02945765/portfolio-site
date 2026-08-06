@@ -238,7 +238,10 @@ const videoUpload = multer({
     filename: (_req, file, cb) =>
       cb(null, `${randomUUID()}${path.extname(file.originalname)}`),
   }),
-  limits: { fileSize: 1024 * 1024 * 1024 },
+  // Raw camera originals routinely exceed 1GB; compressVideo() transcodes
+  // every upload down to a web-sized mp4 regardless of source size, so this
+  // cap only needs to guard against runaway disk usage, not gate quality.
+  limits: { fileSize: 20 * 1024 * 1024 * 1024 },
 });
 
 const soundCoverUpload = multer({
@@ -620,6 +623,19 @@ app.post("/api/videos/reorder", (req, res) => {
   writeJSON(VIDEOS_JSON, reordered);
   schedulePublish();
   res.json(reordered);
+});
+
+// Without this, multer/busboy errors (e.g. file over the size cap) bubble up
+// as Express's default handler, which serves a raw HTML stack trace that the
+// admin UI then dumps verbatim into the status text.
+app.use((err, _req, res, _next) => {
+  if (err instanceof multer.MulterError) {
+    const message =
+      err.code === "LIMIT_FILE_SIZE" ? "檔案太大，超過上傳上限" : err.message;
+    return res.status(400).json({ error: message });
+  }
+  console.error("[server] unhandled error:", err);
+  res.status(500).json({ error: err.message || "未知錯誤" });
 });
 
 const PORT = process.env.ADMIN_PORT || 4321;

@@ -5,5 +5,12 @@
       "zh": "旅行",
       "en": "Travel"
     }
+  },
+  {
+    "id": "df4fffe0-daa8-45c3-a817-8c4d818f8cc7",
+    "name": {
+      "zh": "工作",
+      "en": "Work"
+    }
   }
 ]

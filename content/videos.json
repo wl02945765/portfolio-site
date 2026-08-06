@@ -30,5 +30,21 @@
     },
     "year": "",
     "categoryId": "fda3e473-4029-4d19-bcff-c202cdb1a124"
+  },
+  {
+    "id": "a39fa458-7574-4120-98b9-84c8fbaaa436",
+    "slug": "test-upload",
+    "thumbnail": "/media/videos/thumbs/a39fa458-7574-4120-98b9-84c8fbaaa436.jpg",
+    "videoSrc": "/media/videos/dc9af2bf-276e-4a57-ad69-90e360390a00.mp4",
+    "title": {
+      "zh": "測試上傳",
+      "en": "Test Upload"
+    },
+    "services": {
+      "zh": "",
+      "en": ""
+    },
+    "year": "2026",
+    "categoryId": null
   }
 ]

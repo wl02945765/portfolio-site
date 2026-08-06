@@ -60,7 +60,10 @@ function ReelRow({ label, videos, direction }: { label: string; videos: Video[];
               ? ({
                   "--reel-viewport": `${sizes.viewport}px`,
                   "--reel-track": `${sizes.track}px`,
-                  animation: `video-reel-${direction} ${duration}s linear infinite`,
+                  animationName: `video-reel-${direction}`,
+                  animationDuration: `${duration}s`,
+                  animationTimingFunction: "linear",
+                  animationIterationCount: "infinite",
                   animationPlayState: paused ? "paused" : "running",
                 } as React.CSSProperties)
               : undefined

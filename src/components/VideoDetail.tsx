@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import Link from "next/link";
 import { AnimatePresence, motion, type Variants } from "framer-motion";
 import { useLanguage } from "@/i18n/LanguageProvider";
@@ -20,9 +20,11 @@ const stagger: Variants = {
 };
 
 const videoReveal: Variants = {
-  hidden: { opacity: 0, scale: 1.02 },
-  visible: { opacity: 1, scale: 1, transition: { duration: 0.9, ease: EASE } },
+  hidden: { opacity: 0 },
+  visible: { opacity: 1, transition: { duration: 0.5, ease: EASE } },
 };
+
+const SPEEDS = [0.5, 1, 1.25, 1.5, 2];
 
 export function VideoDetail({ video }: { video: Video }) {
   const { t, locale } = useLanguage();
@@ -33,19 +35,20 @@ export function VideoDetail({ video }: { video: Video }) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
   const [infosOpen, setInfosOpen] = useState(false);
-  const [canHover, setCanHover] = useState(false);
-  const [cursorVisible, setCursorVisible] = useState(false);
-  const [cursorPos, setCursorPos] = useState({ x: 0, y: 0 });
-
-  useEffect(() => {
-    setCanHover(window.matchMedia("(hover: hover)").matches);
-  }, []);
+  const [speed, setSpeed] = useState(1);
 
   function togglePlay() {
     const el = videoRef.current;
     if (!el) return;
     if (el.paused) el.play().catch(() => {});
     else el.pause();
+  }
+
+  function cycleSpeed() {
+    const el = videoRef.current;
+    const next = SPEEDS[(SPEEDS.indexOf(speed) + 1) % SPEEDS.length];
+    setSpeed(next);
+    if (el) el.playbackRate = next;
   }
 
   function handleProgressClick(e: React.MouseEvent<HTMLDivElement>) {
@@ -77,13 +80,6 @@ export function VideoDetail({ video }: { video: Video }) {
           ref={containerRef}
           variants={videoReveal}
           className="group relative w-full select-none overflow-hidden bg-black"
-          onMouseMove={(e) => {
-            if (!canHover) return;
-            const rect = e.currentTarget.getBoundingClientRect();
-            setCursorPos({ x: e.clientX - rect.left, y: e.clientY - rect.top });
-          }}
-          onMouseEnter={() => canHover && setCursorVisible(true)}
-          onMouseLeave={() => setCursorVisible(false)}
         >
           <video
             ref={videoRef}
@@ -97,37 +93,23 @@ export function VideoDetail({ video }: { video: Video }) {
               const el = e.currentTarget;
               if (el.duration) setProgress(el.currentTime / el.duration);
             }}
-            className="aspect-video w-full cursor-none bg-black"
+            className="aspect-video w-full cursor-pointer bg-black"
           />
 
-          {/* Desktop: custom text cursor that follows the mouse */}
-          {canHover && (
-            <div
-              className="pointer-events-none absolute z-10 -translate-x-1/2 -translate-y-1/2 text-[11px] uppercase tracking-[0.2em] text-white transition-opacity duration-150"
-              style={{
-                left: cursorPos.x,
-                top: cursorPos.y,
-                opacity: cursorVisible ? 1 : 0,
-              }}
-            >
-              {isPlaying ? "pause" : "play"}
+          {/* Centered play button, fades out once playing — click anywhere to toggle */}
+          <button
+            onClick={togglePlay}
+            aria-label={isPlaying ? "Pause" : "Play"}
+            className={`absolute inset-0 flex items-center justify-center transition-opacity duration-300 ${
+              isPlaying ? "pointer-events-none opacity-0" : "opacity-100"
+            }`}
+          >
+            <div className="flex h-16 w-16 items-center justify-center rounded-full border border-white/40 bg-black/40 transition-transform duration-200 hover:scale-110">
+              <div className="ml-1 h-0 w-0 border-y-[10px] border-l-[16px] border-y-transparent border-l-white" />
             </div>
-          )}
+          </button>
 
-          {/* Touch fallback: centered play icon, fades out once playing */}
-          {!canHover && (
-            <div
-              className={`pointer-events-none absolute inset-0 flex items-center justify-center transition-opacity duration-300 ${
-                isPlaying ? "opacity-0" : "opacity-100"
-              }`}
-            >
-              <div className="flex h-14 w-14 items-center justify-center rounded-full border border-white/40 bg-black/30">
-                <div className="ml-1 h-0 w-0 border-y-[9px] border-l-[14px] border-y-transparent border-l-white" />
-              </div>
-            </div>
-          )}
-
-          {/* Bottom control bar: progress + text buttons */}
+          {/* Bottom control bar: progress + play/pause + speed + text buttons */}
           <div className="absolute inset-x-0 bottom-0 z-10 bg-gradient-to-t from-black/70 to-transparent px-4 pb-3 pt-8">
             <div
               onClick={handleProgressClick}
@@ -139,18 +121,42 @@ export function VideoDetail({ video }: { video: Video }) {
               />
             </div>
             <div className="flex items-center justify-between">
-              <button
-                onClick={handleFullscreen}
-                className="text-[11px] uppercase tracking-[0.15em] text-zinc-300 hover:text-white"
-              >
-                Fullscreen
-              </button>
-              <button
-                onClick={() => setInfosOpen(true)}
-                className="text-[11px] uppercase tracking-[0.15em] text-zinc-300 hover:text-white"
-              >
-                Infos
-              </button>
+              <div className="flex items-center gap-4">
+                <button
+                  onClick={togglePlay}
+                  aria-label={isPlaying ? "Pause" : "Play"}
+                  className="flex h-4 w-4 items-center justify-center text-zinc-300 hover:text-white"
+                >
+                  {isPlaying ? (
+                    <div className="flex gap-[3px]">
+                      <div className="h-3.5 w-[3px] bg-current" />
+                      <div className="h-3.5 w-[3px] bg-current" />
+                    </div>
+                  ) : (
+                    <div className="h-0 w-0 border-y-[6px] border-l-[10px] border-y-transparent border-l-current" />
+                  )}
+                </button>
+                <button
+                  onClick={cycleSpeed}
+                  className="text-[11px] uppercase tracking-[0.15em] text-zinc-300 hover:text-white"
+                >
+                  {speed}x
+                </button>
+              </div>
+              <div className="flex items-center gap-4">
+                <button
+                  onClick={handleFullscreen}
+                  className="text-[11px] uppercase tracking-[0.15em] text-zinc-300 hover:text-white"
+                >
+                  Fullscreen
+                </button>
+                <button
+                  onClick={() => setInfosOpen(true)}
+                  className="text-[11px] uppercase tracking-[0.15em] text-zinc-300 hover:text-white"
+                >
+                  Infos
+                </button>
+              </div>
             </div>
           </div>
         </motion.div>

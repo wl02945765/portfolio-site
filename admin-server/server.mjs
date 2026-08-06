@@ -100,6 +100,60 @@ function optimizePhoto(dir, filename) {
   return outFilename;
 }
 
+// Camera-original videos (raw H.264/ProRes, hundreds of MB to 1GB+) were
+// committed straight into git by auto-publish — pushing that much binary
+// data to GitHub over normal home upload bandwidth just hangs, and any
+// single file over 100MB is hard-rejected by GitHub regardless. Every
+// upload now gets transcoded to a web-friendly H.264/AAC mp4 capped at
+// 1080p (never upscales smaller sources) before it's ever written to
+// content/videos.json or handed to git.
+const VIDEO_MAX_WIDTH = 1920;
+const VIDEO_MAX_HEIGHT = 1080;
+const VIDEO_CRF = 23;
+
+function compressVideo(dir, filename) {
+  const inputPath = path.join(dir, filename);
+  const ext = path.extname(filename).toLowerCase();
+  const base = filename.slice(0, -ext.length) || filename;
+  const finalFilename = `${base}.mp4`;
+  const tmpPath = path.join(dir, `${base}.compressing.mp4`);
+
+  const result = spawnSync("ffmpeg", [
+    "-y",
+    "-i",
+    inputPath,
+    "-vf",
+    `scale=${VIDEO_MAX_WIDTH}:${VIDEO_MAX_HEIGHT}:force_original_aspect_ratio=decrease:force_divisible_by=2`,
+    "-c:v",
+    "libx264",
+    "-crf",
+    String(VIDEO_CRF),
+    "-preset",
+    "faster",
+    "-maxrate",
+    "4M",
+    "-bufsize",
+    "8M",
+    "-c:a",
+    "aac",
+    "-b:a",
+    "128k",
+    "-movflags",
+    "+faststart",
+    tmpPath,
+  ]);
+
+  if (result.status !== 0 || !fs.existsSync(tmpPath)) {
+    if (fs.existsSync(tmpPath)) fs.unlinkSync(tmpPath);
+    console.error("[video] ffmpeg compression failed, keeping raw upload:", result.stderr?.toString().slice(-2000));
+    return filename;
+  }
+
+  fs.unlinkSync(inputPath);
+  fs.renameSync(tmpPath, path.join(dir, finalFilename));
+  return finalFilename;
+}
+
 // Recursively merges a partial nested patch (e.g. { zh: { photography: { heading: "..." } } })
 // into the existing site-text object, leaving every other field untouched.
 function deepMerge(target, patch) {
@@ -448,7 +502,8 @@ app.post("/api/videos", videoUpload.single("file"), (req, res) => {
   const id = randomUUID();
   const titleEn = req.body.title_en || req.body.title_zh || "untitled";
   const slug = uniqueSlug(slugify(titleEn), videos);
-  const videoPath = path.join(VIDEOS_DIR, req.file.filename);
+  const filename = compressVideo(VIDEOS_DIR, req.file.filename);
+  const videoPath = path.join(VIDEOS_DIR, filename);
   const thumbName = `${id}.jpg`;
   const thumbPath = path.join(THUMBS_DIR, thumbName);
 
@@ -471,7 +526,7 @@ app.post("/api/videos", videoUpload.single("file"), (req, res) => {
     id,
     slug,
     thumbnail,
-    videoSrc: `/media/videos/${req.file.filename}`,
+    videoSrc: `/media/videos/${filename}`,
     title: { zh: req.body.title_zh || "", en: req.body.title_en || "" },
     services: {
       zh: req.body.services_zh || "",

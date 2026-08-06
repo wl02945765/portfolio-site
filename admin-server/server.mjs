@@ -110,7 +110,13 @@ function optimizePhoto(dir, filename) {
 // content/videos.json or handed to git.
 const VIDEO_MAX_WIDTH = 1920;
 const VIDEO_MAX_HEIGHT = 1080;
-const VIDEO_CRF = 23;
+// CRF 23 + a 4M maxrate cap was visibly blocky on high-motion footage (drone,
+// racing) — CRF 23 is already a fairly compressed target, and the low cap
+// throttled it further right when fast motion needed the most bits. CRF 18
+// is close to visually lossless for x264, "slow" trades encode time for
+// better quality-per-bit, and 12M only bounds worst-case runaway bitrate
+// rather than actively capping normal scenes.
+const VIDEO_CRF = 18;
 
 function compressVideo(dir, filename) {
   const inputPath = path.join(dir, filename);
@@ -130,15 +136,15 @@ function compressVideo(dir, filename) {
     "-crf",
     String(VIDEO_CRF),
     "-preset",
-    "faster",
+    "slow",
     "-maxrate",
-    "4M",
+    "12M",
     "-bufsize",
-    "8M",
+    "24M",
     "-c:a",
     "aac",
     "-b:a",
-    "128k",
+    "192k",
     "-movflags",
     "+faststart",
     tmpPath,

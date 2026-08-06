@@ -21,7 +21,8 @@
     "videoWork": {
       "heading": "Motion",
       "empty": "作品準備中，敬請期待。",
-      "backToList": "返回 Motion"
+      "backToList": "返回 Motion",
+      "uncategorized": "其他"
     },
     "sound": {
       "heading": "Sound",
@@ -71,7 +72,8 @@
     "videoWork": {
       "heading": "Motion",
       "empty": "Work in progress — check back soon.",
-      "backToList": "Back to all Motion"
+      "backToList": "Back to all Motion",
+      "uncategorized": "Other"
     },
     "sound": {
       "heading": "Sound",

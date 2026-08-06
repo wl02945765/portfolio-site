@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useLanguage } from "@/i18n/LanguageProvider";
 import { PageHeading } from "@/components/PageHeading";
@@ -9,11 +9,37 @@ import type { Video, VideoCategory } from "@/lib/content";
 
 type Row = { key: string; label: string; videos: Video[] };
 
+// Constant px/sec so a row of 3 videos and a row of 30 feel the same
+// instead of one crawling and one racing.
+const REEL_SPEED_PX_PER_SEC = 45;
+
 function ReelRow({ label, videos, direction }: { label: string; videos: Video[]; direction: "left" | "right" }) {
   const { locale } = useLanguage();
   const [paused, setPaused] = useState(false);
-  // Doubled so translateX(-50%) loops seamlessly regardless of row length.
-  const doubled = [...videos, ...videos];
+  // null until measured, so we don't flash an animation sized for a 0-width track.
+  const [sizes, setSizes] = useState<{ viewport: number; track: number } | null>(null);
+  const viewportRef = useRef<HTMLDivElement>(null);
+  const trackRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function measure() {
+      const viewport = viewportRef.current;
+      const track = trackRef.current;
+      if (!viewport || !track) return;
+      setSizes({ viewport: viewport.clientWidth, track: track.scrollWidth });
+    }
+    measure();
+    window.addEventListener("resize", measure);
+    return () => window.removeEventListener("resize", measure);
+  }, [videos]);
+
+  // The row always keeps moving, one direction, single (non-duplicated) set
+  // of videos: it sweeps fully off one edge before reappearing at the other,
+  // so the wrap happens while nothing is on screen — no visible jump, and no
+  // video tile ever appears twice at once. Looping the whole set again is
+  // fine; showing two copies side by side at the same time is not.
+  const travel = sizes ? sizes.viewport + sizes.track : 0;
+  const duration = travel > 0 ? Math.max(travel / REEL_SPEED_PX_PER_SEC, 6) : 0;
 
   return (
     <div>
@@ -21,20 +47,28 @@ function ReelRow({ label, videos, direction }: { label: string; videos: Video[];
         {label}
       </p>
       <div
+        ref={viewportRef}
         className="overflow-hidden py-2"
         onMouseEnter={() => setPaused(true)}
         onMouseLeave={() => setPaused(false)}
       >
         <div
+          ref={trackRef}
           className="flex w-max gap-3 sm:gap-4"
-          style={{
-            animation: `video-reel-${direction} 34s linear infinite`,
-            animationPlayState: paused ? "paused" : "running",
-          }}
+          style={
+            sizes
+              ? ({
+                  "--reel-viewport": `${sizes.viewport}px`,
+                  "--reel-track": `${sizes.track}px`,
+                  animation: `video-reel-${direction} ${duration}s linear infinite`,
+                  animationPlayState: paused ? "paused" : "running",
+                } as React.CSSProperties)
+              : undefined
+          }
         >
-          {doubled.map((video, i) => (
+          {videos.map((video) => (
             <Link
-              key={`${video.id}-${i}`}
+              key={video.id}
               href={`/video-work/${video.slug}`}
               className="group relative h-[26vh] flex-shrink-0 overflow-hidden bg-black transition-transform duration-300 hover:z-10 hover:scale-[1.03] sm:h-[38vh]"
               style={{ aspectRatio: "16 / 9" }}
@@ -117,12 +151,12 @@ export function VideoGrid({
     <div className="pb-24">
       <style>{`
         @keyframes video-reel-left {
-          from { transform: translateX(0); }
-          to { transform: translateX(-50%); }
+          from { transform: translateX(var(--reel-viewport, 0px)); }
+          to { transform: translateX(calc(-1 * var(--reel-track, 0px))); }
         }
         @keyframes video-reel-right {
-          from { transform: translateX(-50%); }
-          to { transform: translateX(0); }
+          from { transform: translateX(calc(-1 * var(--reel-track, 0px))); }
+          to { transform: translateX(var(--reel-viewport, 0px)); }
         }
       `}</style>
 

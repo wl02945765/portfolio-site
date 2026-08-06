@@ -206,7 +206,8 @@ main {
 }
 
 .fields input,
-.fields textarea {
+.fields textarea,
+.fields select {
   font-size: 13px;
   padding: 9px 11px;
   border: 1px solid var(--border);
@@ -218,10 +219,43 @@ main {
 }
 
 .fields input:focus,
-.fields textarea:focus {
+.fields textarea:focus,
+.fields select:focus {
   outline: none;
   border-color: var(--accent);
   box-shadow: 0 0 0 3px var(--accent-soft);
+}
+
+.tag-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 14px 0 4px;
+}
+
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px 6px 14px;
+  border-radius: 999px;
+  background: var(--accent-soft);
+  color: var(--ink);
+  font-size: 12px;
+}
+
+.tag button {
+  border: none;
+  background: none;
+  color: var(--ink-faint);
+  cursor: pointer;
+  font-size: 12px;
+  line-height: 1;
+  padding: 4px;
+}
+
+.tag button:hover {
+  color: var(--danger);
 }
 
 .hint {

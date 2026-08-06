@@ -25,6 +25,7 @@ export type Dictionary = {
     heading: string;
     empty: string;
     backToList: string;
+    uncategorized: string;
   };
   sound: {
     heading: string;

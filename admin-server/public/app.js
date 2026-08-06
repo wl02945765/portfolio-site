@@ -385,6 +385,71 @@ document.getElementById("photo-form").addEventListener("submit", async (e) => {
 // --- Videos ---
 const videoGrid = document.getElementById("video-grid");
 const videoStatus = document.getElementById("video-status");
+const videoCategorySelect = document.getElementById("video-category-select");
+const videoCategoryList = document.getElementById("video-category-list");
+const videoCategoryStatus = document.getElementById("video-category-status");
+
+let allVideoCategories = [];
+
+async function loadVideoCategories() {
+  allVideoCategories = await fetch("/api/video-categories").then((r) => r.json());
+  renderVideoCategoryOptions();
+  renderVideoCategoryList();
+}
+
+function renderVideoCategoryOptions() {
+  const current = videoCategorySelect.value;
+  videoCategorySelect.innerHTML =
+    `<option value="">（未分類）</option>` +
+    allVideoCategories
+      .map((c) => `<option value="${c.id}">${escapeHtml(c.name.zh || c.name.en)}</option>`)
+      .join("");
+  videoCategorySelect.value = current;
+}
+
+function renderVideoCategoryList() {
+  videoCategoryList.innerHTML = allVideoCategories
+    .map(
+      (c) => `
+      <span class="tag" data-id="${c.id}">
+        ${escapeHtml(c.name.zh || c.name.en || "未命名")}
+        <button type="button" title="刪除分類">✕</button>
+      </span>
+    `,
+    )
+    .join("");
+  videoCategoryList.querySelectorAll(".tag button").forEach((btn) => {
+    btn.addEventListener("click", async () => {
+      const id = btn.closest(".tag").dataset.id;
+      const res = await fetch(`/api/video-categories/${id}`, { method: "DELETE" });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        alert(err.error || "刪除失敗");
+        return;
+      }
+      loadVideoCategories().then(loadVideos);
+    });
+  });
+}
+
+document.getElementById("video-category-form").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const form = e.target;
+  videoCategoryStatus.textContent = "建立中…";
+  try {
+    const res = await fetch("/api/video-categories", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name_zh: form.name_zh.value, name_en: form.name_en.value }),
+    });
+    if (!res.ok) throw new Error(await res.text());
+    videoCategoryStatus.textContent = "";
+    form.reset();
+    loadVideoCategories().then(loadVideos);
+  } catch (err) {
+    videoCategoryStatus.textContent = `建立失敗：${err.message}`;
+  }
+});
 
 async function loadVideos() {
   const videos = await fetch("/api/videos").then((r) => r.json());
@@ -393,6 +458,15 @@ async function loadVideos() {
 }
 
 function renderVideoCard(video) {
+  const categoryOptions =
+    `<option value="">（未分類）</option>` +
+    allVideoCategories
+      .map(
+        (c) =>
+          `<option value="${c.id}" ${c.id === video.categoryId ? "selected" : ""}>${escapeHtml(c.name.zh || c.name.en)}</option>`,
+      )
+      .join("");
+
   const card = document.createElement("div");
   card.className = "card";
   card.draggable = true;
@@ -405,14 +479,16 @@ function renderVideoCard(video) {
       <input type="text" data-field="services_zh" value="${escapeHtml(video.services.zh)}" placeholder="服務內容" />
       <input type="text" data-field="services_en" value="${escapeHtml(video.services.en)}" placeholder="Services" />
       <input type="text" data-field="year" value="${escapeHtml(video.year || "")}" placeholder="年份" />
+      <select data-field="category_id">${categoryOptions}</select>
     </div>
     <div class="card-footer">
       <span class="handle">⠿ 拖曳排序</span>
       <button class="delete-btn">刪除</button>
     </div>
   `;
-  card.querySelectorAll("input").forEach((input) => {
-    input.addEventListener("blur", () =>
+  card.querySelectorAll("input, select").forEach((input) => {
+    const evt = input.tagName === "SELECT" ? "change" : "blur";
+    input.addEventListener(evt, () =>
       fetch(`/api/videos/${video.id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
@@ -450,6 +526,7 @@ document.getElementById("video-form").addEventListener("submit", async (e) => {
   fd.append("services_zh", form.services_zh.value);
   fd.append("services_en", form.services_en.value);
   fd.append("year", form.year.value);
+  fd.append("category_id", form.category_id.value);
 
   videoStatus.textContent = "上傳中，並產生縮圖…";
   const submitBtn = form.querySelector("button[type=submit]");
@@ -627,6 +704,7 @@ const TEXT_SCHEMA = [
       { path: "videoWork.heading", label: "頁面標題" },
       { path: "videoWork.empty", label: "尚無作品時的提示文字" },
       { path: "videoWork.backToList", label: "「返回」連結文字" },
+      { path: "videoWork.uncategorized", label: "未分類影片的分行標籤" },
     ],
   },
   {
@@ -733,4 +811,4 @@ function escapeHtml(str) {
 }
 
 loadCategories();
-loadVideos();
+loadVideoCategories().then(loadVideos);

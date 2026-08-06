@@ -13,6 +13,7 @@ const MEDIA_DIR = path.join(ROOT, "public", "media");
 const PHOTOS_JSON = path.join(CONTENT_DIR, "photos.json");
 const CATEGORIES_JSON = path.join(CONTENT_DIR, "categories.json");
 const VIDEOS_JSON = path.join(CONTENT_DIR, "videos.json");
+const VIDEO_CATEGORIES_JSON = path.join(CONTENT_DIR, "videoCategories.json");
 const SITE_TEXT_JSON = path.join(CONTENT_DIR, "site-text.json");
 const SOUND_JSON = path.join(CONTENT_DIR, "sound.json");
 const PHOTOS_DIR = path.join(MEDIA_DIR, "photos");
@@ -189,7 +190,7 @@ function runPublish() {
   publishState.lastError = null;
   try {
     execSync(
-      "git add content/photos.json content/categories.json content/videos.json content/site-text.json content/sound.json public/media",
+      "git add content/photos.json content/categories.json content/videos.json content/videoCategories.json content/site-text.json content/sound.json public/media",
       { cwd: ROOT },
     );
     const diff = spawnSync("git", ["diff", "--cached", "--quiet"], { cwd: ROOT });
@@ -490,6 +491,43 @@ app.post("/api/photos/reorder", (req, res) => {
   res.json(result);
 });
 
+// ---------- Video categories ----------
+// Deliberately lighter than photo categories (no description/location/cover)
+// — here a category is just a named row on the Video Work filmstrip.
+
+app.get("/api/video-categories", (_req, res) => {
+  res.json(readJSON(VIDEO_CATEGORIES_JSON));
+});
+
+app.post("/api/video-categories", (req, res) => {
+  const categories = readJSON(VIDEO_CATEGORIES_JSON);
+  const entry = {
+    id: randomUUID(),
+    name: { zh: req.body.name_zh || "", en: req.body.name_en || "" },
+  };
+  categories.push(entry);
+  writeJSON(VIDEO_CATEGORIES_JSON, categories);
+  schedulePublish();
+  res.json(entry);
+});
+
+app.delete("/api/video-categories/:id", (req, res) => {
+  const categories = readJSON(VIDEO_CATEGORIES_JSON);
+  const videos = readJSON(VIDEOS_JSON);
+  const hasVideos = videos.some((v) => v.categoryId === req.params.id);
+  if (hasVideos) {
+    return res
+      .status(400)
+      .json({ error: "category still has videos — reassign or delete them first" });
+  }
+  writeJSON(
+    VIDEO_CATEGORIES_JSON,
+    categories.filter((c) => c.id !== req.params.id),
+  );
+  schedulePublish();
+  res.json({ ok: true });
+});
+
 // ---------- Videos ----------
 
 app.get("/api/videos", (_req, res) => {
@@ -533,6 +571,7 @@ app.post("/api/videos", videoUpload.single("file"), (req, res) => {
       en: req.body.services_en || "",
     },
     year: req.body.year || "",
+    categoryId: req.body.category_id || null,
   };
   videos.push(entry);
   writeJSON(VIDEOS_JSON, videos);
@@ -549,6 +588,7 @@ app.patch("/api/videos/:id", (req, res) => {
   if (req.body.services_zh !== undefined) item.services.zh = req.body.services_zh;
   if (req.body.services_en !== undefined) item.services.en = req.body.services_en;
   if (req.body.year !== undefined) item.year = req.body.year;
+  if (req.body.category_id !== undefined) item.categoryId = req.body.category_id || null;
   writeJSON(VIDEOS_JSON, videos);
   schedulePublish();
   res.json(item);

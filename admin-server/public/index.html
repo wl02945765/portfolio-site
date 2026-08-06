@@ -78,6 +78,17 @@
       </section>
 
       <section id="panel-videos" class="panel">
+        <div class="upload-form">
+          <p class="hint">分類會決定影片列表頁的膠捲分行（例如「旅行」一條、「工作」一條）。</p>
+          <form id="video-category-form" class="fields" style="align-items: flex-end">
+            <label>新分類（中文） <input type="text" name="name_zh" placeholder="例如：旅行" required /></label>
+            <label>New Category (EN) <input type="text" name="name_en" placeholder="e.g. Travel" /></label>
+            <button type="submit" class="primary-btn">＋ 新增分類</button>
+          </form>
+          <p class="status" id="video-category-status"></p>
+          <div id="video-category-list" class="tag-list"></div>
+        </div>
+
         <form id="video-form" class="upload-form">
           <div id="video-drop" class="dropzone">
             <p>拖拉影片到這裡，或點擊選擇檔案</p>
@@ -90,6 +101,7 @@
             <label>服務內容（中） <input type="text" name="services_zh" placeholder="企劃・攝影・剪輯" /></label>
             <label>Services (EN) <input type="text" name="services_en" placeholder="Planning · Shooting · Editing" /></label>
             <label>年份 Year <input type="text" name="year" placeholder="2026" /></label>
+            <label>分類 <select name="category_id" id="video-category-select"><option value="">（未分類）</option></select></label>
           </div>
           <p class="hint">上傳後會自動用 ffmpeg 擷取縮圖，可能需要幾秒鐘。</p>
           <button type="submit" class="primary-btn">上傳影片</button>

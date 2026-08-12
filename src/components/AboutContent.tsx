@@ -190,7 +190,7 @@ export function AboutContent() {
         whileInView="visible"
         viewport={{ once: true, margin: "-100px" }}
         variants={stagger}
-        className="bg-white/[0.02] px-6 py-28 sm:px-10 sm:py-36"
+        className="px-6 py-28 sm:px-10 sm:py-36"
       >
         <div className="mx-auto max-w-4xl">
           <motion.h2

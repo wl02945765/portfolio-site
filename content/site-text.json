@@ -1,4 +1,7 @@
 {
+  "typography": {
+    "fontScale": 1.1
+  },
   "zh": {
     "brandName": "CHING'S PROFILE",
     "nav": {

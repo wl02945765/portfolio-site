@@ -5,6 +5,7 @@ import { LanguageProvider } from "@/i18n/LanguageProvider";
 import { NavBar } from "@/components/NavBar";
 import { NoiseOverlay } from "@/components/NoiseOverlay";
 import { dictionaries } from "@/i18n/dictionaries";
+import siteText from "../../content/site-text.json";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -48,10 +49,12 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const fontScale = siteText.typography?.fontScale ?? 1;
   return (
     <html
       lang="zh-Hant"
       className={`${inter.variable} ${ebGaramond.variable} ${lxgwWenKaiTC.variable} ${chironHeiHK.variable} ${geistMono.variable} h-full antialiased`}
+      style={{ fontSize: `${Math.round(fontScale * 10000) / 100}%` }}
     >
       <body className="min-h-full flex flex-col bg-black text-zinc-300">
         <LanguageProvider>

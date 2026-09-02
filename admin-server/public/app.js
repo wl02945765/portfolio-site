@@ -757,10 +757,34 @@ function nestedFromPath(path, value) {
 const textSectionsEl = document.getElementById("text-sections");
 let siteText = { zh: {}, en: {} };
 
+const fontScaleSlider = document.getElementById("font-scale-slider");
+const fontScaleValueEl = document.getElementById("font-scale-value");
+
 async function loadSiteText() {
   siteText = await fetch("/api/site-text").then((r) => r.json());
   renderTextSections();
+  renderFontScale();
 }
+
+function renderFontScale() {
+  const scale = siteText.typography?.fontScale ?? 1;
+  fontScaleSlider.value = scale;
+  fontScaleValueEl.textContent = `${Math.round(scale * 100)}%`;
+}
+
+fontScaleSlider.addEventListener("input", () => {
+  fontScaleValueEl.textContent = `${Math.round(Number(fontScaleSlider.value) * 100)}%`;
+});
+
+fontScaleSlider.addEventListener("change", async () => {
+  const fontScale = Number(fontScaleSlider.value);
+  await fetch("/api/site-text", {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ typography: { fontScale } }),
+  });
+  siteText.typography = { fontScale };
+});
 
 function renderTextSections() {
   textSectionsEl.innerHTML = "";

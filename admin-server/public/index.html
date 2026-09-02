@@ -147,6 +147,15 @@
       </section>
 
       <section id="panel-text" class="panel">
+        <div class="text-section">
+          <h3>字體大小</h3>
+          <p class="hint">調整整個網站的文字大小，拖曳後會自動存檔並發布，不用另外跟 Claude 說。</p>
+          <label>
+            字體大小 <span id="font-scale-value">100%</span>
+            <input type="range" id="font-scale-slider" min="0.8" max="1.5" step="0.05" value="1" />
+          </label>
+        </div>
+
         <p class="hint">網站上會顯示的文字，中英文分開編輯，改完點別的地方就會自動存檔。</p>
         <div id="text-sections"></div>
       </section>

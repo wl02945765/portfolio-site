@@ -30,5 +30,21 @@
       "en": "Milan"
     },
     "coverPhotoId": "7aeea6b5-a17e-4f73-befd-d728f8f1c8ea"
+  },
+  {
+    "id": "48e16848-fbbb-4f25-8724-4dbf33529fc8",
+    "name": {
+      "zh": "商品",
+      "en": "Product"
+    },
+    "description": {
+      "zh": "一些我拍攝過的商品",
+      "en": "Some products I've photographed before"
+    },
+    "location": {
+      "zh": "",
+      "en": ""
+    },
+    "coverPhotoId": null
   }
 ]

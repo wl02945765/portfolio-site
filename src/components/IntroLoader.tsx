@@ -143,7 +143,7 @@ export function IntroLoader() {
         }}
       />
 
-      <p className="heading-font absolute left-6 top-6 text-[10px] uppercase tracking-[0.32em] text-zinc-600 sm:left-10 sm:top-8">
+      <p className="heading-font absolute left-1/2 top-[38%] -translate-x-1/2 -translate-y-1/2 text-xs uppercase tracking-[0.32em] text-zinc-600">
         {label}
       </p>
     </div>

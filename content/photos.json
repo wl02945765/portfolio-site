@@ -1353,17 +1353,6 @@
     "height": 1606
   },
   {
-    "id": "8eb7c30c-dd02-4cf0-a0c8-f09278982c16",
-    "src": "/media/photos/537bcf47-ebc3-4508-912c-67f191ef366f.JPG",
-    "categoryId": "2e001a7a-9e1a-4079-ad81-f023f1a8ec90",
-    "caption": {
-      "zh": "",
-      "en": ""
-    },
-    "width": 2048,
-    "height": 1151
-  },
-  {
     "id": "15833fde-5981-4f7f-89ed-cfbc744bd570",
     "src": "/media/photos/6f854af4-2d3d-4bc2-bef4-27c4c47fd362.JPG",
     "categoryId": "2e001a7a-9e1a-4079-ad81-f023f1a8ec90",
@@ -1373,6 +1362,17 @@
     },
     "width": 2400,
     "height": 1349
+  },
+  {
+    "id": "8eb7c30c-dd02-4cf0-a0c8-f09278982c16",
+    "src": "/media/photos/537bcf47-ebc3-4508-912c-67f191ef366f.JPG",
+    "categoryId": "2e001a7a-9e1a-4079-ad81-f023f1a8ec90",
+    "caption": {
+      "zh": "",
+      "en": ""
+    },
+    "width": 2048,
+    "height": 1151
   },
   {
     "id": "02155218-7cc5-49fe-b34a-bf7cfbbee469",

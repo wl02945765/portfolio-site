@@ -9,65 +9,65 @@ import type { Video, VideoCategory } from "@/lib/content";
 
 type Row = { key: string; label: string; videos: Video[] };
 
-// Constant px/sec so a row of 3 videos and a row of 30 feel the same
-// instead of one crawling and one racing.
-const REEL_SPEED_PX_PER_SEC = 45;
+const SCROLL_EDGE_TOLERANCE = 4;
 
-function ReelRow({ label, videos, direction }: { label: string; videos: Video[]; direction: "left" | "right" }) {
+function ReelRow({ label, videos }: { label: string; videos: Video[] }) {
   const { locale } = useLanguage();
-  const [paused, setPaused] = useState(false);
-  // null until measured, so we don't flash an animation sized for a 0-width track.
-  const [sizes, setSizes] = useState<{ viewport: number; track: number } | null>(null);
   const viewportRef = useRef<HTMLDivElement>(null);
-  const trackRef = useRef<HTMLDivElement>(null);
+  const [atStart, setAtStart] = useState(true);
+  const [atEnd, setAtEnd] = useState(false);
+
+  const updateEdges = () => {
+    const el = viewportRef.current;
+    if (!el) return;
+    setAtStart(el.scrollLeft <= SCROLL_EDGE_TOLERANCE);
+    setAtEnd(el.scrollLeft + el.clientWidth >= el.scrollWidth - SCROLL_EDGE_TOLERANCE);
+  };
 
   useEffect(() => {
-    function measure() {
-      const viewport = viewportRef.current;
-      const track = trackRef.current;
-      if (!viewport || !track) return;
-      setSizes({ viewport: viewport.clientWidth, track: track.scrollWidth });
-    }
-    measure();
-    window.addEventListener("resize", measure);
-    return () => window.removeEventListener("resize", measure);
+    updateEdges();
+    window.addEventListener("resize", updateEdges);
+    return () => window.removeEventListener("resize", updateEdges);
   }, [videos]);
 
-  // The row always keeps moving, one direction, single (non-duplicated) set
-  // of videos: it sweeps fully off one edge before reappearing at the other,
-  // so the wrap happens while nothing is on screen — no visible jump, and no
-  // video tile ever appears twice at once. Looping the whole set again is
-  // fine; showing two copies side by side at the same time is not.
-  const travel = sizes ? sizes.viewport + sizes.track : 0;
-  const duration = travel > 0 ? Math.max(travel / REEL_SPEED_PX_PER_SEC, 6) : 0;
+  const scrollByPage = (dir: 1 | -1) => {
+    const el = viewportRef.current;
+    if (!el) return;
+    el.scrollBy({ left: dir * el.clientWidth * 0.85 });
+  };
 
   return (
-    <div>
+    <div className="group/row relative">
       <p className="mb-3 px-6 text-[11px] uppercase tracking-[0.3em] text-zinc-500 sm:px-10">
         {label}
       </p>
-      <div
-        ref={viewportRef}
-        className="overflow-hidden py-2"
-        onMouseEnter={() => setPaused(true)}
-        onMouseLeave={() => setPaused(false)}
-      >
+
+      <div className="relative">
+        {!atStart && (
+          <button
+            type="button"
+            onClick={() => scrollByPage(-1)}
+            aria-label="Scroll left"
+            className="absolute inset-y-0 left-0 z-20 hidden w-12 items-center justify-center bg-gradient-to-r from-black/80 to-transparent text-2xl text-zinc-200 opacity-0 transition-opacity duration-200 group-hover/row:opacity-100 hover:text-white sm:flex sm:w-16"
+          >
+            ‹
+          </button>
+        )}
+        {!atEnd && (
+          <button
+            type="button"
+            onClick={() => scrollByPage(1)}
+            aria-label="Scroll right"
+            className="absolute inset-y-0 right-0 z-20 hidden w-12 items-center justify-center bg-gradient-to-l from-black/80 to-transparent text-2xl text-zinc-200 opacity-0 transition-opacity duration-200 group-hover/row:opacity-100 hover:text-white sm:flex sm:w-16"
+          >
+            ›
+          </button>
+        )}
+
         <div
-          ref={trackRef}
-          className="flex w-max gap-3 sm:gap-4"
-          style={
-            sizes
-              ? ({
-                  "--reel-viewport": `${sizes.viewport}px`,
-                  "--reel-track": `${sizes.track}px`,
-                  animationName: `video-reel-${direction}`,
-                  animationDuration: `${duration}s`,
-                  animationTimingFunction: "linear",
-                  animationIterationCount: "infinite",
-                  animationPlayState: paused ? "paused" : "running",
-                } as React.CSSProperties)
-              : undefined
-          }
+          ref={viewportRef}
+          onScroll={updateEdges}
+          className="flex scroll-smooth gap-3 overflow-x-auto px-6 py-2 [scrollbar-width:none] sm:gap-4 sm:px-10 [&::-webkit-scrollbar]:hidden"
         >
           {videos.map((video) => (
             <Link
@@ -152,26 +152,14 @@ export function VideoGrid({
 
   return (
     <div className="pb-24">
-      <style>{`
-        @keyframes video-reel-left {
-          from { transform: translateX(var(--reel-viewport, 0px)); }
-          to { transform: translateX(calc(-1 * var(--reel-track, 0px))); }
-        }
-        @keyframes video-reel-right {
-          from { transform: translateX(calc(-1 * var(--reel-track, 0px))); }
-          to { transform: translateX(var(--reel-viewport, 0px)); }
-        }
-      `}</style>
-
       <PageHeading>{t.videoWork.heading}</PageHeading>
 
       <div className="mt-10 flex flex-col gap-10 sm:gap-14">
-        {rows.map((row, i) => (
+        {rows.map((row) => (
           <ReelRow
             key={row.key}
             label={row.label || (locale === "zh" ? "未命名" : "Untitled")}
             videos={row.videos}
-            direction={i % 2 === 0 ? "left" : "right"}
           />
         ))}
       </div>

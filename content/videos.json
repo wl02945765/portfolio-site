@@ -94,21 +94,5 @@
     },
     "year": "",
     "categoryId": null
-  },
-  {
-    "id": "0cd5abc9-8550-4fa1-afcc-6380bba0a47a",
-    "slug": "untitled-6",
-    "thumbnail": "/media/videos/thumbs/0cd5abc9-8550-4fa1-afcc-6380bba0a47a.jpg",
-    "videoSrc": "/media/videos/b8a0062e-d314-47d6-9671-9e325c617bad.mp4",
-    "title": {
-      "zh": "",
-      "en": ""
-    },
-    "services": {
-      "zh": "",
-      "en": ""
-    },
-    "year": "",
-    "categoryId": null
   }
 ]

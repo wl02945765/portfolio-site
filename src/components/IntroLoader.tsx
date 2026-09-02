@@ -1,16 +1,18 @@
 "use client";
 
-import { useLayoutEffect, useState } from "react";
+import { useLayoutEffect, useRef, useState } from "react";
 
 const SESSION_KEY = "cp-intro-shown";
-const DURATION_MS = 1800;
-const HOLD_MS = 250;
-const FADE_MS = 700;
+const STATIC_FRAMES = 26;
+const STATIC_CANVAS_WIDTH = 160;
 
 export function IntroLoader() {
   const [visible, setVisible] = useState(true);
-  const [percent, setPercent] = useState(0);
-  const [fading, setFading] = useState(false);
+  const [label, setLabel] = useState("NO SIGNAL");
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const barTopRef = useRef<HTMLDivElement>(null);
+  const barBottomRef = useRef<HTMLDivElement>(null);
+  const lineRef = useRef<HTMLDivElement>(null);
 
   useLayoutEffect(() => {
     if (sessionStorage.getItem(SESSION_KEY)) {
@@ -18,47 +20,130 @@ export function IntroLoader() {
       return;
     }
     sessionStorage.setItem(SESSION_KEY, "1");
-
     document.body.style.overflow = "hidden";
-    const start = performance.now();
-    let raf: number;
 
-    function tick(now: number) {
-      const t = Math.min((now - start) / DURATION_MS, 1);
-      const eased = 1 - Math.pow(1 - t, 3);
-      setPercent(Math.round(eased * 100));
-      if (t < 1) {
-        raf = requestAnimationFrame(tick);
+    const canvas = canvasRef.current;
+    const barTop = barTopRef.current;
+    const barBottom = barBottomRef.current;
+    const line = lineRef.current;
+    if (!canvas || !barTop || !barBottom || !line) return;
+
+    const ctx = canvas.getContext("2d");
+    const internalW = STATIC_CANVAS_WIDTH;
+    const internalH = Math.round(internalW * (window.innerHeight / window.innerWidth));
+    canvas.width = internalW;
+    canvas.height = internalH;
+
+    let raf = 0;
+    let frame = 0;
+    const timers: number[] = [];
+
+    function drawStatic() {
+      if (!ctx) return;
+      const img = ctx.createImageData(internalW, internalH);
+      const data = img.data;
+      for (let i = 0; i < data.length; i += 4) {
+        const v = Math.random() * 255;
+        data[i] = v;
+        data[i + 1] = v;
+        data[i + 2] = v;
+        data[i + 3] = 255;
+      }
+      ctx.putImageData(img, 0, 0);
+    }
+
+    function staticTick() {
+      drawStatic();
+      frame++;
+      if (frame < STATIC_FRAMES) {
+        raf = requestAnimationFrame(staticTick);
       } else {
-        window.setTimeout(() => setFading(true), HOLD_MS);
-        window.setTimeout(() => {
-          setVisible(false);
-          document.body.style.overflow = "";
-        }, HOLD_MS + FADE_MS);
+        settle();
       }
     }
 
-    raf = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(raf);
+    function settle() {
+      setLabel("SIGNAL LOCKED");
+      canvas!.style.transition = "opacity 220ms ease";
+      canvas!.style.opacity = "0";
+
+      timers.push(
+        window.setTimeout(() => {
+          line!.style.transition =
+            "transform 260ms cubic-bezier(.2,.9,.3,1), opacity 180ms ease";
+          line!.style.transform = "translate(-50%, -50%) scaleX(1)";
+          line!.style.opacity = "1";
+        }, 120),
+      );
+
+      timers.push(
+        window.setTimeout(() => {
+          barTop!.style.transition = "transform 480ms cubic-bezier(.5,0,.15,1)";
+          barBottom!.style.transition = "transform 480ms cubic-bezier(.5,0,.15,1)";
+          barTop!.style.transform = "scaleY(0)";
+          barBottom!.style.transform = "scaleY(0)";
+          line!.style.transition = "opacity 320ms ease 80ms";
+          line!.style.opacity = "0";
+        }, 480),
+      );
+
+      timers.push(
+        window.setTimeout(() => {
+          setVisible(false);
+          document.body.style.overflow = "";
+        }, 1050),
+      );
+    }
+
+    raf = requestAnimationFrame(staticTick);
+    return () => {
+      cancelAnimationFrame(raf);
+      timers.forEach((id) => window.clearTimeout(id));
+    };
   }, []);
 
   if (!visible) return null;
 
   return (
-    <div
-      className={`fixed inset-0 z-[100] flex flex-col items-center justify-center bg-black transition-opacity duration-700 ease-out ${
-        fading ? "pointer-events-none opacity-0" : "opacity-100"
-      }`}
-    >
-      <p className="heading-font mb-6 text-[11px] uppercase tracking-[0.3em] text-zinc-500">
-        Ching&apos;s Profile
+    <div className="fixed inset-0 z-[100] overflow-hidden bg-black">
+      <canvas
+        ref={canvasRef}
+        className="absolute inset-0 h-full w-full"
+        style={{ imageRendering: "pixelated" }}
+      />
+
+      {/* Vignette — sells the tube glass */}
+      <div
+        className="pointer-events-none absolute inset-0"
+        style={{
+          background: "radial-gradient(ellipse at center, transparent 55%, rgba(0,0,0,0.55) 100%)",
+        }}
+      />
+      {/* Faint persistent scanlines */}
+      <div
+        className="pointer-events-none absolute inset-0 opacity-[0.05]"
+        style={{
+          backgroundImage:
+            "repeating-linear-gradient(to bottom, #fff 0px, #fff 1px, transparent 1px, transparent 3px)",
+        }}
+      />
+
+      <div ref={barTopRef} className="absolute inset-x-0 top-0 h-1/2 origin-top bg-black" />
+      <div ref={barBottomRef} className="absolute inset-x-0 bottom-0 h-1/2 origin-bottom bg-black" />
+
+      <div
+        ref={lineRef}
+        className="absolute left-1/2 top-1/2 h-[2px] w-full opacity-0"
+        style={{
+          transform: "translate(-50%, -50%) scaleX(0)",
+          background: "#f5f4f0",
+          boxShadow: "0 0 10px 1px rgba(245,244,240,0.9), 0 0 34px 6px rgba(245,244,240,0.25)",
+        }}
+      />
+
+      <p className="heading-font absolute left-6 top-6 text-[10px] uppercase tracking-[0.32em] text-zinc-600 sm:left-10 sm:top-8">
+        {label}
       </p>
-      <p className="heading-font text-6xl font-medium tabular-nums text-zinc-100 sm:text-7xl">
-        {percent}
-      </p>
-      <div className="mt-8 h-px w-40 overflow-hidden bg-zinc-800 sm:w-56">
-        <div className="h-full bg-zinc-300" style={{ width: `${percent}%` }} />
-      </div>
     </div>
   );
 }

@@ -1,4 +1,4 @@
-import { VideoGrid } from "@/components/VideoGrid";
+import { VisionMixerWall } from "@/components/VisionMixerWall";
 import { getVideos, getVideoCategories } from "@/lib/content";
 
 export default function VideoWorkPage() {
@@ -7,7 +7,7 @@ export default function VideoWorkPage() {
 
   return (
     <div className="flex flex-1 flex-col">
-      <VideoGrid videos={videos} categories={categories} />
+      <VisionMixerWall videos={videos} categories={categories} />
     </div>
   );
 }

@@ -62,5 +62,21 @@
       "en": ""
     },
     "coverPhotoId": "4bf3b4d8-153b-4ac7-aaf6-7dcf1c8cdaaf"
+  },
+  {
+    "id": "9d4644fb-6018-4884-a716-f41520046f3a",
+    "name": {
+      "zh": "手作與細節",
+      "en": "Craft & Details"
+    },
+    "description": {
+      "zh": "裁縫手作特寫、餐桌美食、炊煮火光，以及雕塑、疊椅、五金紋理與花卉微距等近距離構圖。",
+      "en": "Close-up craft in motion — hands at a sewing machine, food and fire — alongside still-life details in sculpture, texture and macro florals."
+    },
+    "location": {
+      "zh": "",
+      "en": ""
+    },
+    "coverPhotoId": null
   }
 ]

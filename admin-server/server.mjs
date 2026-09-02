@@ -441,7 +441,7 @@ app.get("/api/photos", (_req, res) => {
   res.json(readJSON(PHOTOS_JSON));
 });
 
-app.post("/api/categories/:id/photos", photoUpload.array("files", 30), (req, res) => {
+app.post("/api/categories/:id/photos", photoUpload.array("files", 200), (req, res) => {
   if (!req.files || req.files.length === 0) {
     return res.status(400).json({ error: "missing files" });
   }

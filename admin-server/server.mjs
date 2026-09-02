@@ -120,10 +120,34 @@ const VIDEO_MAX_HEIGHT = 1080;
 // CRF 23 + a 4M maxrate cap was visibly blocky on high-motion footage (drone,
 // racing) — CRF 23 is already a fairly compressed target, and the low cap
 // throttled it further right when fast motion needed the most bits. CRF 18
-// is close to visually lossless for x264, "slow" trades encode time for
-// better quality-per-bit, and 12M only bounds worst-case runaway bitrate
-// rather than actively capping normal scenes.
+// is close to visually lossless for x264 but has no ceiling on output size:
+// a long or high-motion clip encoded at CRF 18 can land well past GitHub's
+// 100MB single-file limit (this happened twice — see admin.log), which
+// silently breaks auto-publish since the push is rejected and every edit
+// after it queues up behind the same failure. So instead of a fixed
+// quality target we solve for a video bitrate that hits a fixed *size*
+// budget for the clip's actual duration, and two-pass encode to that
+// bitrate — CRF is only used as a quality ceiling so short clips that
+// don't need the full budget aren't bloated to fill it.
 const VIDEO_CRF = 18;
+const VIDEO_SIZE_BUDGET_BYTES = 85 * 1000 * 1000; // 85MB target, leaves headroom under GitHub's 100MB cap
+const VIDEO_AUDIO_BITRATE_BPS = 192_000;
+const VIDEO_MIN_BITRATE_BPS = 1_000_000; // floor so very long clips don't get encoded into mush
+const VIDEO_MAX_BITRATE_BPS = 12_000_000; // ceiling so short clips aren't encoded far past CRF 18's needs
+
+function probeDurationSeconds(inputPath) {
+  const result = spawnSync("ffprobe", [
+    "-v",
+    "error",
+    "-show_entries",
+    "format=duration",
+    "-of",
+    "default=noprint_wrappers=1:nokey=1",
+    inputPath,
+  ]);
+  const seconds = parseFloat(result.stdout?.toString().trim());
+  return Number.isFinite(seconds) && seconds > 0 ? seconds : null;
+}
 
 function compressVideo(dir, filename) {
   const inputPath = path.join(dir, filename);
@@ -131,31 +155,99 @@ function compressVideo(dir, filename) {
   const base = filename.slice(0, -ext.length) || filename;
   const finalFilename = `${base}.mp4`;
   const tmpPath = path.join(dir, `${base}.compressing.mp4`);
+  const passLogPrefix = path.join(dir, `${base}.ffmpeg2pass`);
 
-  const result = spawnSync("ffmpeg", [
-    "-y",
-    "-i",
-    inputPath,
+  const durationSeconds = probeDurationSeconds(inputPath);
+  const scaleArgs = [
     "-vf",
     `scale=${VIDEO_MAX_WIDTH}:${VIDEO_MAX_HEIGHT}:force_original_aspect_ratio=decrease:force_divisible_by=2`,
-    "-c:v",
-    "libx264",
-    "-crf",
-    String(VIDEO_CRF),
-    "-preset",
-    "slow",
-    "-maxrate",
-    "12M",
-    "-bufsize",
-    "24M",
-    "-c:a",
-    "aac",
-    "-b:a",
-    "192k",
-    "-movflags",
-    "+faststart",
-    tmpPath,
-  ]);
+  ];
+  const audioArgs = ["-c:a", "aac", "-b:a", "192k"];
+
+  let targetBitrateBps = null;
+  if (durationSeconds) {
+    const audioBits = VIDEO_AUDIO_BITRATE_BPS * durationSeconds;
+    const videoBitrate = (VIDEO_SIZE_BUDGET_BYTES * 8 - audioBits) / durationSeconds;
+    targetBitrateBps = Math.round(Math.min(VIDEO_MAX_BITRATE_BPS, Math.max(VIDEO_MIN_BITRATE_BPS, videoBitrate)));
+  }
+
+  let result;
+  if (targetBitrateBps) {
+    // Two-pass ABR to a duration-derived bitrate: guarantees the size budget
+    // regardless of scene complexity, unlike CRF (quality-derived, size-unbounded).
+    const bitrateArg = `${targetBitrateBps}`;
+    const pass1 = spawnSync("ffmpeg", [
+      "-y",
+      "-i",
+      inputPath,
+      ...scaleArgs,
+      "-c:v",
+      "libx264",
+      "-b:v",
+      bitrateArg,
+      "-preset",
+      "slow",
+      "-pass",
+      "1",
+      "-passlogfile",
+      passLogPrefix,
+      "-an",
+      "-f",
+      "mp4",
+      process.platform === "win32" ? "NUL" : "/dev/null",
+    ]);
+    if (pass1.status === 0) {
+      result = spawnSync("ffmpeg", [
+        "-y",
+        "-i",
+        inputPath,
+        ...scaleArgs,
+        "-c:v",
+        "libx264",
+        "-b:v",
+        bitrateArg,
+        "-preset",
+        "slow",
+        "-pass",
+        "2",
+        "-passlogfile",
+        passLogPrefix,
+        ...audioArgs,
+        "-movflags",
+        "+faststart",
+        tmpPath,
+      ]);
+    } else {
+      result = pass1;
+    }
+    for (const suffix of ["-0.log", "-0.log.mbtree"]) {
+      const logPath = `${passLogPrefix}${suffix}`;
+      if (fs.existsSync(logPath)) fs.unlinkSync(logPath);
+    }
+  } else {
+    // Duration probe failed — fall back to the old CRF-only path rather than
+    // block the upload entirely; size isn't guaranteed in this case.
+    result = spawnSync("ffmpeg", [
+      "-y",
+      "-i",
+      inputPath,
+      ...scaleArgs,
+      "-c:v",
+      "libx264",
+      "-crf",
+      String(VIDEO_CRF),
+      "-preset",
+      "slow",
+      "-maxrate",
+      "12M",
+      "-bufsize",
+      "24M",
+      ...audioArgs,
+      "-movflags",
+      "+faststart",
+      tmpPath,
+    ]);
+  }
 
   if (result.status !== 0 || !fs.existsSync(tmpPath)) {
     if (fs.existsSync(tmpPath)) fs.unlinkSync(tmpPath);

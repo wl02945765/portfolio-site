@@ -5,6 +5,10 @@ import videoCategoriesData from "../../content/videoCategories.json";
 import soundData from "../../content/sound.json";
 import aboutGalleryData from "../../content/aboutGallery.json";
 import aboutSkillsData from "../../content/aboutSkills.json";
+import aboutHeroData from "../../content/aboutHero.json";
+import aboutTagsData from "../../content/aboutTags.json";
+import aboutPhilosophyData from "../../content/aboutPhilosophy.json";
+import aboutTimelineData from "../../content/aboutTimeline.json";
 
 export type LocalizedText = {
   zh: string;
@@ -71,6 +75,23 @@ export type AboutSkillGroup = {
   items: { zh: string[]; en: string[] };
 };
 
+export type AboutHero = {
+  portraitSrc: string;
+};
+
+export type AboutTag = {
+  id: string;
+  zh: string;
+  en: string;
+};
+
+export type AboutTimelineStep = {
+  id: string;
+  period: LocalizedText;
+  title: LocalizedText;
+  items: { zh: string[]; en: string[] };
+};
+
 export function getPhotos(): Photo[] {
   return photosData as Photo[];
 }
@@ -97,4 +118,20 @@ export function getAboutGallery(): AboutGalleryPhoto[] {
 
 export function getAboutSkills(): AboutSkillGroup[] {
   return aboutSkillsData as AboutSkillGroup[];
+}
+
+export function getAboutHero(): AboutHero {
+  return aboutHeroData as AboutHero;
+}
+
+export function getAboutTags(): AboutTag[] {
+  return aboutTagsData as AboutTag[];
+}
+
+export function getAboutPhilosophy(): AboutTag[] {
+  return aboutPhilosophyData as AboutTag[];
+}
+
+export function getAboutTimeline(): AboutTimelineStep[] {
+  return aboutTimelineData as AboutTimelineStep[];
 }

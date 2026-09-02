@@ -4,8 +4,14 @@ import { useRef } from "react";
 import Link from "next/link";
 import { motion, useScroll, useTransform, type Variants } from "framer-motion";
 import { useLanguage } from "@/i18n/LanguageProvider";
-import { heroTags, philosophyLines, timeline } from "@/components/aboutData";
-import { getAboutGallery, getAboutSkills } from "@/lib/content";
+import {
+  getAboutGallery,
+  getAboutSkills,
+  getAboutHero,
+  getAboutTags,
+  getAboutPhilosophy,
+  getAboutTimeline,
+} from "@/lib/content";
 import { withBasePath } from "@/lib/basePath";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
@@ -41,6 +47,10 @@ export function AboutContent() {
   const a = t.about;
   const galleryPhotos = getAboutGallery();
   const skillGroups = getAboutSkills();
+  const hero = getAboutHero();
+  const heroTags = getAboutTags();
+  const philosophyLines = getAboutPhilosophy();
+  const timeline = getAboutTimeline();
 
   const timelineRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
@@ -79,7 +89,7 @@ export function AboutContent() {
             <motion.div variants={fadeUp} className="flex flex-wrap gap-2">
               {heroTags.map((tag) => (
                 <span
-                  key={tag.en}
+                  key={tag.id}
                   className="rounded-full border border-zinc-700 px-4 py-1.5 text-[11px] uppercase tracking-[0.12em] text-zinc-400"
                 >
                   {tag[locale]}
@@ -93,7 +103,17 @@ export function AboutContent() {
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.9, ease: EASE }}
           >
-            <Placeholder label="Portrait" className="aspect-[3/4] w-full" />
+            {hero.portraitSrc ? (
+              <div className="relative aspect-[3/4] w-full overflow-hidden rounded-sm bg-black">
+                <img
+                  src={withBasePath(hero.portraitSrc)}
+                  alt=""
+                  className="absolute inset-0 h-full w-full object-cover"
+                />
+              </div>
+            ) : (
+              <Placeholder label="Portrait" className="aspect-[3/4] w-full" />
+            )}
           </motion.div>
         </div>
       </section>
@@ -148,9 +168,9 @@ export function AboutContent() {
             />
 
             <div className="flex flex-col gap-14">
-              {timeline.map((step, i) => (
+              {timeline.map((step) => (
                 <motion.div
-                  key={i}
+                  key={step.id}
                   initial="hidden"
                   whileInView="visible"
                   viewport={{ once: true, margin: "-80px" }}
@@ -166,11 +186,11 @@ export function AboutContent() {
                       {step.title[locale]}
                     </p>
                   )}
-                  {step.items && (
+                  {step.items[locale].length > 0 && (
                     <ul className="mt-3 flex flex-col gap-1.5">
-                      {step.items.map((item) => (
-                        <li key={item.en} className="text-sm text-zinc-400">
-                          {item[locale]}
+                      {step.items[locale].map((item, i) => (
+                        <li key={i} className="text-sm text-zinc-400">
+                          {item}
                         </li>
                       ))}
                     </ul>
@@ -209,7 +229,7 @@ export function AboutContent() {
             <div className="mt-10 flex flex-col gap-3">
               {philosophyLines.map((line) => (
                 <motion.p
-                  key={line.en}
+                  key={line.id}
                   variants={fadeUp}
                   className="heading-font text-xl text-zinc-200 sm:text-2xl"
                 >

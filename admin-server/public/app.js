@@ -974,3 +974,221 @@ document.getElementById("skill-group-form").addEventListener("submit", async (e)
 });
 
 loadSkillGroups();
+
+// --- About page: hero portrait ---
+wireDropzone(
+  document.getElementById("about-hero-drop"),
+  document.getElementById("about-hero-file"),
+  document.getElementById("about-hero-filename"),
+  (file) => uploadAboutHeroPortrait(file),
+);
+
+async function uploadAboutHeroPortrait(file) {
+  const fd = new FormData();
+  fd.append("file", file);
+  document.getElementById("about-hero-filename").textContent = "上傳中…";
+  const res = await fetch("/api/about-hero/portrait", { method: "POST", body: fd });
+  const data = await res.json();
+  document.getElementById("about-hero-filename").textContent = "已更新照片";
+  renderAboutHeroPreview(data);
+}
+
+function renderAboutHeroPreview(data) {
+  const preview = document.getElementById("about-hero-preview");
+  if (data?.portraitSrc) {
+    preview.src = data.portraitSrc;
+    preview.style.display = "block";
+  } else {
+    preview.style.display = "none";
+  }
+}
+
+fetch("/api/about-hero")
+  .then((r) => r.json())
+  .then(renderAboutHeroPreview);
+
+// --- About page: hero tags ---
+const aboutTagList = document.getElementById("about-tag-list");
+const aboutTagStatus = document.getElementById("about-tag-status");
+
+async function loadAboutTags() {
+  const tags = await fetch("/api/about-tags").then((r) => r.json());
+  aboutTagList.innerHTML = "";
+  tags.forEach((tag) => aboutTagList.appendChild(renderAboutTag(tag)));
+}
+
+function renderAboutTag(tag) {
+  const el = document.createElement("span");
+  el.className = "tag";
+  el.innerHTML = `
+    <input type="text" data-field="zh" value="${escapeHtml(tag.zh)}" style="width:80px" />
+    <input type="text" data-field="en" value="${escapeHtml(tag.en)}" style="width:100px" />
+    <button title="刪除">×</button>
+  `;
+  el.querySelectorAll("input").forEach((input) => {
+    input.addEventListener("blur", () =>
+      fetch(`/api/about-tags/${tag.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ [input.dataset.field]: input.value }),
+      }),
+    );
+  });
+  el.querySelector("button").addEventListener("click", async () => {
+    await fetch(`/api/about-tags/${tag.id}`, { method: "DELETE" });
+    loadAboutTags();
+  });
+  return el;
+}
+
+document.getElementById("about-tag-form").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const form = e.target;
+  aboutTagStatus.textContent = "建立中…";
+  try {
+    const res = await fetch("/api/about-tags", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ zh: form.zh.value, en: form.en.value }),
+    });
+    if (!res.ok) throw new Error(await res.text());
+    aboutTagStatus.textContent = "";
+    form.reset();
+    loadAboutTags();
+  } catch (err) {
+    aboutTagStatus.textContent = `建立失敗：${err.message}`;
+  }
+});
+
+loadAboutTags();
+
+// --- About page: philosophy lines ---
+const aboutPhilosophyList = document.getElementById("about-philosophy-list");
+const aboutPhilosophyStatus = document.getElementById("about-philosophy-status");
+
+async function loadAboutPhilosophy() {
+  const lines = await fetch("/api/about-philosophy").then((r) => r.json());
+  aboutPhilosophyList.innerHTML = "";
+  lines.forEach((line) => aboutPhilosophyList.appendChild(renderAboutPhilosophyLine(line)));
+}
+
+function renderAboutPhilosophyLine(line) {
+  const el = document.createElement("span");
+  el.className = "tag";
+  el.innerHTML = `
+    <input type="text" data-field="zh" value="${escapeHtml(line.zh)}" style="width:160px" />
+    <input type="text" data-field="en" value="${escapeHtml(line.en)}" style="width:200px" />
+    <button title="刪除">×</button>
+  `;
+  el.querySelectorAll("input").forEach((input) => {
+    input.addEventListener("blur", () =>
+      fetch(`/api/about-philosophy/${line.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ [input.dataset.field]: input.value }),
+      }),
+    );
+  });
+  el.querySelector("button").addEventListener("click", async () => {
+    await fetch(`/api/about-philosophy/${line.id}`, { method: "DELETE" });
+    loadAboutPhilosophy();
+  });
+  return el;
+}
+
+document.getElementById("about-philosophy-form").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const form = e.target;
+  aboutPhilosophyStatus.textContent = "建立中…";
+  try {
+    const res = await fetch("/api/about-philosophy", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ zh: form.zh.value, en: form.en.value }),
+    });
+    if (!res.ok) throw new Error(await res.text());
+    aboutPhilosophyStatus.textContent = "";
+    form.reset();
+    loadAboutPhilosophy();
+  } catch (err) {
+    aboutPhilosophyStatus.textContent = `建立失敗：${err.message}`;
+  }
+});
+
+loadAboutPhilosophy();
+
+// --- About page: timeline ---
+const aboutTimelineList = document.getElementById("about-timeline-list");
+const aboutTimelineStatus = document.getElementById("about-timeline-status");
+
+async function loadAboutTimeline() {
+  const steps = await fetch("/api/about-timeline").then((r) => r.json());
+  aboutTimelineList.innerHTML = "";
+  steps.forEach((step) => aboutTimelineList.appendChild(renderAboutTimelineStep(step)));
+}
+
+function renderAboutTimelineStep(step) {
+  const wrap = document.createElement("div");
+  wrap.className = "text-section card";
+  wrap.draggable = true;
+  wrap.dataset.id = step.id;
+  wrap.innerHTML = `
+    <div class="fields">
+      <label>時期（中文） <input type="text" data-field="period_zh" value="${escapeHtml(step.period.zh)}" /></label>
+      <label>Period (EN) <input type="text" data-field="period_en" value="${escapeHtml(step.period.en)}" /></label>
+    </div>
+    <div class="fields">
+      <label>標題（中文，可留空） <input type="text" data-field="title_zh" value="${escapeHtml(step.title.zh)}" /></label>
+      <label>Title (EN) <input type="text" data-field="title_en" value="${escapeHtml(step.title.en)}" /></label>
+    </div>
+    <div class="fields">
+      <label>項目清單（中文，一行一個，可留空） <textarea data-field="items_zh" rows="3">${escapeHtml(step.items.zh.join("\n"))}</textarea></label>
+      <label>Items (EN, one per line) <textarea data-field="items_en" rows="3">${escapeHtml(step.items.en.join("\n"))}</textarea></label>
+    </div>
+    <button class="delete-btn">刪除這個時期</button>
+  `;
+  wrap.querySelectorAll("input, textarea").forEach((el) => {
+    el.addEventListener("blur", () =>
+      fetch(`/api/about-timeline/${step.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ [el.dataset.field]: el.value }),
+      }),
+    );
+  });
+  wrap.querySelector(".delete-btn").addEventListener("click", async () => {
+    if (!confirm("確定要刪除這個時期嗎？")) return;
+    await fetch(`/api/about-timeline/${step.id}`, { method: "DELETE" });
+    loadAboutTimeline();
+  });
+  return wrap;
+}
+
+wireReorder(aboutTimelineList, (order) =>
+  fetch("/api/about-timeline/reorder", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ order }),
+  }),
+);
+
+document.getElementById("about-timeline-form").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const form = e.target;
+  aboutTimelineStatus.textContent = "建立中…";
+  try {
+    const res = await fetch("/api/about-timeline", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ period_zh: form.period_zh.value, period_en: form.period_en.value }),
+    });
+    if (!res.ok) throw new Error(await res.text());
+    aboutTimelineStatus.textContent = "";
+    form.reset();
+    loadAboutTimeline();
+  } catch (err) {
+    aboutTimelineStatus.textContent = `建立失敗：${err.message}`;
+  }
+});
+
+loadAboutTimeline();

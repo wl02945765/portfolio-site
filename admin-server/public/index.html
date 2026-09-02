@@ -149,6 +149,56 @@
 
       <section id="panel-about" class="panel">
         <div class="upload-form">
+          <h3>首屏大頭照</h3>
+          <p class="hint">About 頁最上面右側的人像照片。</p>
+          <div id="about-hero-drop" class="dropzone">
+            <p>拖拉照片到這裡，或點擊選擇檔案</p>
+            <input type="file" id="about-hero-file" accept="image/*" hidden />
+            <p id="about-hero-filename" class="filename"></p>
+          </div>
+          <img id="about-hero-preview" style="display: none; max-width: 200px; border-radius: 8px; margin-top: 16px" />
+          <p class="status" id="about-hero-status"></p>
+        </div>
+
+        <div class="upload-form">
+          <h3>首屏標籤</h3>
+          <p class="hint">大頭照旁邊那排小標籤（例如「視覺設計」）。改完點別的地方自動存檔。</p>
+          <form id="about-tag-form" class="fields" style="align-items: flex-end">
+            <label>新標籤（中文） <input type="text" name="zh" placeholder="例如：視覺設計" required /></label>
+            <label>New Tag (EN) <input type="text" name="en" placeholder="e.g. Visual Design" /></label>
+            <button type="submit" class="primary-btn">＋ 新增標籤</button>
+          </form>
+          <p class="status" id="about-tag-status"></p>
+        </div>
+        <div id="about-tag-list" class="tag-list"></div>
+
+        <div class="upload-form" style="margin-top: 40px">
+          <h3>時間軸</h3>
+          <p class="hint">
+            每一段一個時期＋標題，最後一段（例如「專業經歷」）可以不填標題、改填項目清單（一行一個）。可拖曳排序。
+          </p>
+          <form id="about-timeline-form" class="fields" style="align-items: flex-end">
+            <label>時期（中文） <input type="text" name="period_zh" placeholder="例如：大學" required /></label>
+            <label>Period (EN) <input type="text" name="period_en" placeholder="e.g. University" /></label>
+            <button type="submit" class="primary-btn">＋ 新增時期</button>
+          </form>
+          <p class="status" id="about-timeline-status"></p>
+        </div>
+        <div id="about-timeline-list"></div>
+
+        <div class="upload-form" style="margin-top: 40px">
+          <h3>創作觀短句</h3>
+          <p class="hint">「我的創作觀」段落中間那幾行大字短句。</p>
+          <form id="about-philosophy-form" class="fields" style="align-items: flex-end">
+            <label>新短句（中文） <input type="text" name="zh" placeholder="例如：設計，用視覺溝通。" required /></label>
+            <label>New Line (EN) <input type="text" name="en" /></label>
+            <button type="submit" class="primary-btn">＋ 新增短句</button>
+          </form>
+          <p class="status" id="about-philosophy-status"></p>
+        </div>
+        <div id="about-philosophy-list" class="tag-list"></div>
+
+        <div class="upload-form" style="margin-top: 40px">
           <h3>「工作之外」照片牆</h3>
           <p class="hint">About 頁最下面「工作之外」段落的 4 張照片，可以拖拉上傳、編輯中英文說明、拖曳排序。</p>
           <div id="about-gallery-drop" class="dropzone">

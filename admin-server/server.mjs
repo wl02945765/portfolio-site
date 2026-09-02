@@ -18,6 +18,10 @@ const SITE_TEXT_JSON = path.join(CONTENT_DIR, "site-text.json");
 const SOUND_JSON = path.join(CONTENT_DIR, "sound.json");
 const ABOUT_GALLERY_JSON = path.join(CONTENT_DIR, "aboutGallery.json");
 const ABOUT_SKILLS_JSON = path.join(CONTENT_DIR, "aboutSkills.json");
+const ABOUT_HERO_JSON = path.join(CONTENT_DIR, "aboutHero.json");
+const ABOUT_TAGS_JSON = path.join(CONTENT_DIR, "aboutTags.json");
+const ABOUT_PHILOSOPHY_JSON = path.join(CONTENT_DIR, "aboutPhilosophy.json");
+const ABOUT_TIMELINE_JSON = path.join(CONTENT_DIR, "aboutTimeline.json");
 const PHOTOS_DIR = path.join(MEDIA_DIR, "photos");
 const VIDEOS_DIR = path.join(MEDIA_DIR, "videos");
 const THUMBS_DIR = path.join(VIDEOS_DIR, "thumbs");
@@ -199,7 +203,7 @@ function runPublish() {
   publishState.lastError = null;
   try {
     execSync(
-      "git add content/photos.json content/categories.json content/videos.json content/videoCategories.json content/site-text.json content/sound.json content/aboutGallery.json content/aboutSkills.json public/media",
+      "git add content/photos.json content/categories.json content/videos.json content/videoCategories.json content/site-text.json content/sound.json content/aboutGallery.json content/aboutSkills.json content/aboutHero.json content/aboutTags.json content/aboutPhilosophy.json content/aboutTimeline.json public/media",
       { cwd: ROOT },
     );
     const diff = spawnSync("git", ["diff", "--cached", "--quiet"], { cwd: ROOT });
@@ -267,6 +271,15 @@ const aboutGalleryUpload = multer({
     destination: ABOUT_DIR,
     filename: (_req, file, cb) =>
       cb(null, `${randomUUID()}${path.extname(file.originalname)}`),
+  }),
+  limits: { fileSize: 50 * 1024 * 1024 },
+});
+
+const aboutHeroUpload = multer({
+  storage: multer.diskStorage({
+    destination: ABOUT_DIR,
+    filename: (_req, file, cb) =>
+      cb(null, `portrait-${randomUUID()}${path.extname(file.originalname)}`),
   }),
   limits: { fileSize: 50 * 1024 * 1024 },
 });
@@ -755,6 +768,175 @@ app.delete("/api/about-skills/:id", (req, res) => {
   );
   schedulePublish();
   res.json({ ok: true });
+});
+
+// ---------- About page: hero portrait ----------
+
+app.get("/api/about-hero", (_req, res) => {
+  res.json(fs.existsSync(ABOUT_HERO_JSON) ? JSON.parse(fs.readFileSync(ABOUT_HERO_JSON, "utf-8")) : { portraitSrc: "" });
+});
+
+app.post("/api/about-hero/portrait", aboutHeroUpload.single("file"), (req, res) => {
+  if (!req.file) return res.status(400).json({ error: "missing file" });
+  const data = fs.existsSync(ABOUT_HERO_JSON)
+    ? JSON.parse(fs.readFileSync(ABOUT_HERO_JSON, "utf-8"))
+    : { portraitSrc: "" };
+  if (data.portraitSrc) {
+    const oldPath = path.join(ROOT, "public", data.portraitSrc);
+    if (fs.existsSync(oldPath)) fs.unlinkSync(oldPath);
+  }
+  const filename = optimizePhoto(ABOUT_DIR, req.file.filename);
+  data.portraitSrc = `/media/about/${filename}`;
+  writeJSON(ABOUT_HERO_JSON, data);
+  schedulePublish();
+  res.json(data);
+});
+
+// ---------- About page: hero tags ----------
+
+app.get("/api/about-tags", (_req, res) => {
+  res.json(readJSON(ABOUT_TAGS_JSON));
+});
+
+app.post("/api/about-tags", (req, res) => {
+  const tags = readJSON(ABOUT_TAGS_JSON);
+  const entry = { id: randomUUID(), zh: req.body.zh || "", en: req.body.en || "" };
+  tags.push(entry);
+  writeJSON(ABOUT_TAGS_JSON, tags);
+  schedulePublish();
+  res.json(entry);
+});
+
+app.patch("/api/about-tags/:id", (req, res) => {
+  const tags = readJSON(ABOUT_TAGS_JSON);
+  const item = tags.find((t) => t.id === req.params.id);
+  if (!item) return res.status(404).json({ error: "not found" });
+  if (req.body.zh !== undefined) item.zh = req.body.zh;
+  if (req.body.en !== undefined) item.en = req.body.en;
+  writeJSON(ABOUT_TAGS_JSON, tags);
+  schedulePublish();
+  res.json(item);
+});
+
+app.delete("/api/about-tags/:id", (req, res) => {
+  const tags = readJSON(ABOUT_TAGS_JSON);
+  writeJSON(
+    ABOUT_TAGS_JSON,
+    tags.filter((t) => t.id !== req.params.id),
+  );
+  schedulePublish();
+  res.json({ ok: true });
+});
+
+app.post("/api/about-tags/reorder", (req, res) => {
+  const { order } = req.body;
+  const tags = readJSON(ABOUT_TAGS_JSON);
+  const byId = new Map(tags.map((t) => [t.id, t]));
+  const reordered = order.map((id) => byId.get(id)).filter(Boolean);
+  writeJSON(ABOUT_TAGS_JSON, reordered);
+  schedulePublish();
+  res.json(reordered);
+});
+
+// ---------- About page: philosophy lines ----------
+
+app.get("/api/about-philosophy", (_req, res) => {
+  res.json(readJSON(ABOUT_PHILOSOPHY_JSON));
+});
+
+app.post("/api/about-philosophy", (req, res) => {
+  const lines = readJSON(ABOUT_PHILOSOPHY_JSON);
+  const entry = { id: randomUUID(), zh: req.body.zh || "", en: req.body.en || "" };
+  lines.push(entry);
+  writeJSON(ABOUT_PHILOSOPHY_JSON, lines);
+  schedulePublish();
+  res.json(entry);
+});
+
+app.patch("/api/about-philosophy/:id", (req, res) => {
+  const lines = readJSON(ABOUT_PHILOSOPHY_JSON);
+  const item = lines.find((l) => l.id === req.params.id);
+  if (!item) return res.status(404).json({ error: "not found" });
+  if (req.body.zh !== undefined) item.zh = req.body.zh;
+  if (req.body.en !== undefined) item.en = req.body.en;
+  writeJSON(ABOUT_PHILOSOPHY_JSON, lines);
+  schedulePublish();
+  res.json(item);
+});
+
+app.delete("/api/about-philosophy/:id", (req, res) => {
+  const lines = readJSON(ABOUT_PHILOSOPHY_JSON);
+  writeJSON(
+    ABOUT_PHILOSOPHY_JSON,
+    lines.filter((l) => l.id !== req.params.id),
+  );
+  schedulePublish();
+  res.json({ ok: true });
+});
+
+app.post("/api/about-philosophy/reorder", (req, res) => {
+  const { order } = req.body;
+  const lines = readJSON(ABOUT_PHILOSOPHY_JSON);
+  const byId = new Map(lines.map((l) => [l.id, l]));
+  const reordered = order.map((id) => byId.get(id)).filter(Boolean);
+  writeJSON(ABOUT_PHILOSOPHY_JSON, reordered);
+  schedulePublish();
+  res.json(reordered);
+});
+
+// ---------- About page: timeline ----------
+
+app.get("/api/about-timeline", (_req, res) => {
+  res.json(readJSON(ABOUT_TIMELINE_JSON));
+});
+
+app.post("/api/about-timeline", (req, res) => {
+  const steps = readJSON(ABOUT_TIMELINE_JSON);
+  const entry = {
+    id: randomUUID(),
+    period: { zh: req.body.period_zh || "", en: req.body.period_en || "" },
+    title: { zh: req.body.title_zh || "", en: req.body.title_en || "" },
+    items: { zh: [], en: [] },
+  };
+  steps.push(entry);
+  writeJSON(ABOUT_TIMELINE_JSON, steps);
+  schedulePublish();
+  res.json(entry);
+});
+
+app.patch("/api/about-timeline/:id", (req, res) => {
+  const steps = readJSON(ABOUT_TIMELINE_JSON);
+  const item = steps.find((s) => s.id === req.params.id);
+  if (!item) return res.status(404).json({ error: "not found" });
+  if (req.body.period_zh !== undefined) item.period.zh = req.body.period_zh;
+  if (req.body.period_en !== undefined) item.period.en = req.body.period_en;
+  if (req.body.title_zh !== undefined) item.title.zh = req.body.title_zh;
+  if (req.body.title_en !== undefined) item.title.en = req.body.title_en;
+  if (req.body.items_zh !== undefined) item.items.zh = splitLines(req.body.items_zh);
+  if (req.body.items_en !== undefined) item.items.en = splitLines(req.body.items_en);
+  writeJSON(ABOUT_TIMELINE_JSON, steps);
+  schedulePublish();
+  res.json(item);
+});
+
+app.delete("/api/about-timeline/:id", (req, res) => {
+  const steps = readJSON(ABOUT_TIMELINE_JSON);
+  writeJSON(
+    ABOUT_TIMELINE_JSON,
+    steps.filter((s) => s.id !== req.params.id),
+  );
+  schedulePublish();
+  res.json({ ok: true });
+});
+
+app.post("/api/about-timeline/reorder", (req, res) => {
+  const { order } = req.body;
+  const steps = readJSON(ABOUT_TIMELINE_JSON);
+  const byId = new Map(steps.map((s) => [s.id, s]));
+  const reordered = order.map((id) => byId.get(id)).filter(Boolean);
+  writeJSON(ABOUT_TIMELINE_JSON, reordered);
+  schedulePublish();
+  res.json(reordered);
 });
 
 // Without this, multer/busboy errors (e.g. file over the size cap) bubble up

@@ -1,0 +1,35 @@
+[
+  {
+    "id": "tl-1",
+    "period": { "zh": "童年", "en": "Childhood" },
+    "title": { "zh": "攝影與藝術啟蒙", "en": "Photography & Art Inspiration" },
+    "items": { "zh": [], "en": [] }
+  },
+  {
+    "id": "tl-2",
+    "period": { "zh": "高中", "en": "High School" },
+    "title": { "zh": "多媒體設計", "en": "Multimedia Design" },
+    "items": { "zh": [], "en": [] }
+  },
+  {
+    "id": "tl-3",
+    "period": { "zh": "大學", "en": "University" },
+    "title": { "zh": "影視設計", "en": "Film Design" },
+    "items": { "zh": [], "en": [] }
+  },
+  {
+    "id": "tl-4",
+    "period": { "zh": "畢業製作", "en": "Graduation Project" },
+    "title": { "zh": "音訊製作與聲音設計", "en": "Audio Production & Sound Design" },
+    "items": { "zh": [], "en": [] }
+  },
+  {
+    "id": "tl-5",
+    "period": { "zh": "專業經歷", "en": "Professional Experience" },
+    "title": { "zh": "", "en": "" },
+    "items": {
+      "zh": ["平面設計", "商品攝影", "修圖", "影片製作", "Podcast 音訊製作"],
+      "en": ["Graphic Design", "Product Photography", "Photo Retouching", "Video Production", "Podcast Audio Production"]
+    }
+  }
+]

@@ -1,0 +1,22 @@
+[
+  {
+    "id": "tag-1",
+    "zh": "視覺設計",
+    "en": "Visual Design"
+  },
+  {
+    "id": "tag-2",
+    "zh": "攝影",
+    "en": "Photography"
+  },
+  {
+    "id": "tag-3",
+    "zh": "影像製作",
+    "en": "Video"
+  },
+  {
+    "id": "tag-4",
+    "zh": "音訊製作",
+    "en": "Audio Production"
+  }
+]

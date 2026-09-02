@@ -3,7 +3,7 @@
 import { useLayoutEffect, useRef, useState } from "react";
 
 const SESSION_KEY = "cp-intro-shown";
-const STATIC_DURATION_MS = 900;
+const STATIC_DURATION_MS = 8700;
 const STATIC_CANVAS_WIDTH = 56;
 
 export function IntroLoader() {
@@ -118,7 +118,7 @@ export function IntroLoader() {
       <div
         className="pointer-events-none absolute inset-0"
         style={{
-          background: "radial-gradient(ellipse at center, transparent 55%, rgba(0,0,0,0.55) 100%)",
+          background: "radial-gradient(ellipse at center, transparent 65%, rgba(0,0,0,0.3) 100%)",
         }}
       />
       {/* Faint persistent scanlines */}

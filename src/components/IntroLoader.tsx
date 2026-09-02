@@ -108,6 +108,13 @@ export function IntroLoader() {
 
   return (
     <div className="fixed inset-0 z-[100] overflow-hidden bg-black">
+      {/* Shutter bars sit UNDER the static canvas — they're what's left
+          showing (solid black) once the static fades, and later retract
+          to reveal the page. If these paint above the canvas, the static
+          never shows at all. */}
+      <div ref={barTopRef} className="absolute inset-x-0 top-0 h-1/2 origin-top bg-black" />
+      <div ref={barBottomRef} className="absolute inset-x-0 bottom-0 h-1/2 origin-bottom bg-black" />
+
       <canvas
         ref={canvasRef}
         className="absolute inset-0 h-full w-full"
@@ -129,9 +136,6 @@ export function IntroLoader() {
             "repeating-linear-gradient(to bottom, #fff 0px, #fff 1px, transparent 1px, transparent 3px)",
         }}
       />
-
-      <div ref={barTopRef} className="absolute inset-x-0 top-0 h-1/2 origin-top bg-black" />
-      <div ref={barBottomRef} className="absolute inset-x-0 bottom-0 h-1/2 origin-bottom bg-black" />
 
       <div
         ref={lineRef}

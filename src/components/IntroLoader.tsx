@@ -3,8 +3,8 @@
 import { useLayoutEffect, useRef, useState } from "react";
 
 const SESSION_KEY = "cp-intro-shown";
-const STATIC_FRAMES = 26;
-const STATIC_CANVAS_WIDTH = 160;
+const STATIC_DURATION_MS = 900;
+const STATIC_CANVAS_WIDTH = 56;
 
 export function IntroLoader() {
   const [visible, setVisible] = useState(true);
@@ -35,8 +35,8 @@ export function IntroLoader() {
     canvas.height = internalH;
 
     let raf = 0;
-    let frame = 0;
     const timers: number[] = [];
+    const staticStart = performance.now();
 
     function drawStatic() {
       if (!ctx) return;
@@ -52,10 +52,12 @@ export function IntroLoader() {
       ctx.putImageData(img, 0, 0);
     }
 
-    function staticTick() {
+    // Time-based, not frame-count-based: a fixed frame count finishes twice
+    // as fast on a 120Hz display as on 60Hz, which is why this used to blow
+    // past unnoticed on newer phones.
+    function staticTick(now: number) {
       drawStatic();
-      frame++;
-      if (frame < STATIC_FRAMES) {
+      if (now - staticStart < STATIC_DURATION_MS) {
         raf = requestAnimationFrame(staticTick);
       } else {
         settle();
@@ -84,14 +86,14 @@ export function IntroLoader() {
           barBottom!.style.transform = "scaleY(0)";
           line!.style.transition = "opacity 320ms ease 80ms";
           line!.style.opacity = "0";
-        }, 480),
+        }, 750),
       );
 
       timers.push(
         window.setTimeout(() => {
           setVisible(false);
           document.body.style.overflow = "";
-        }, 1050),
+        }, 1320),
       );
     }
 

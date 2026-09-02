@@ -1,26 +1,59 @@
 [
   {
     "id": "skill-design",
-    "category": { "zh": "設計", "en": "Design" },
+    "category": {
+      "zh": "設計",
+      "en": "Design"
+    },
     "items": {
-      "zh": ["平面設計", "商品攝影", "修圖"],
-      "en": ["Graphic Design", "Product Photography", "Photo Retouching"]
+      "zh": [
+        "平面設計",
+        "商品攝影",
+        "修圖"
+      ],
+      "en": [
+        "Graphic Design",
+        "Product Photography",
+        "Photo Retouching"
+      ]
     }
   },
   {
     "id": "skill-visual",
-    "category": { "zh": "影像", "en": "Visual" },
+    "category": {
+      "zh": "影像",
+      "en": "Visual"
+    },
     "items": {
-      "zh": ["影片剪輯", "調色", "內容創作"],
-      "en": ["Video Editing", "Color Grading", "Content Creation"]
+      "zh": [
+        "動態攝影",
+        "影片剪輯",
+        "內容創作"
+      ],
+      "en": [
+        "Video Editing",
+        "Color Grading",
+        "Content Creation"
+      ]
     }
   },
   {
     "id": "skill-audio",
-    "category": { "zh": "聲音", "en": "Audio" },
+    "category": {
+      "zh": "聲音",
+      "en": "Audio"
+    },
     "items": {
-      "zh": ["Podcast 製作", "混音", "聲音剪輯"],
-      "en": ["Podcast Production", "Mixing", "Sound Editing"]
+      "zh": [
+        "Podcast 製作",
+        "混音",
+        "聲音剪輯"
+      ],
+      "en": [
+        "Podcast Production",
+        "Mixing",
+        "Sound Editing"
+      ]
     }
   }
 ]

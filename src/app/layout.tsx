@@ -4,6 +4,7 @@ import "./globals.css";
 import { LanguageProvider } from "@/i18n/LanguageProvider";
 import { NavBar } from "@/components/NavBar";
 import { NoiseOverlay } from "@/components/NoiseOverlay";
+import { IntroLoader } from "@/components/IntroLoader";
 import { dictionaries } from "@/i18n/dictionaries";
 import siteText from "../../content/site-text.json";
 
@@ -58,6 +59,7 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col bg-black text-zinc-300">
         <LanguageProvider>
+          <IntroLoader />
           <NoiseOverlay className="fixed inset-0 -z-10 opacity-50" />
           <NavBar />
           <main className="flex flex-1 flex-col pt-[57px]">{children}</main>

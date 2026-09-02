@@ -42,8 +42,12 @@ export function IntroLoader() {
       if (!ctx) return;
       const img = ctx.createImageData(internalW, internalH);
       const data = img.data;
+      // Sparse "snow" rather than dense 50%-grey noise — it sits at roughly
+      // the same brightness as the rest of the (dark, quiet) site, so the
+      // reveal at the end still reads as the moment things get bright.
       for (let i = 0; i < data.length; i += 4) {
-        const v = Math.random() * 255;
+        const isSpeck = Math.random() > 0.86;
+        const v = isSpeck ? 140 + Math.random() * 115 : 8;
         data[i] = v;
         data[i + 1] = v;
         data[i + 2] = v;
@@ -147,7 +151,7 @@ export function IntroLoader() {
         }}
       />
 
-      <p className="heading-font absolute left-1/2 top-[38%] -translate-x-1/2 -translate-y-1/2 text-xs uppercase tracking-[0.32em] text-zinc-600">
+      <p className="heading-font absolute left-1/2 top-[38%] -translate-x-1/2 -translate-y-1/2 bg-black/70 px-3 py-1.5 text-xs uppercase tracking-[0.32em] text-zinc-400">
         {label}
       </p>
     </div>

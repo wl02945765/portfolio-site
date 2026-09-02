@@ -78,5 +78,21 @@
       "en": ""
     },
     "coverPhotoId": "7c4eeb8f-0a44-49f8-a588-dbaaf1442408"
+  },
+  {
+    "id": "a05768f7-7958-4f34-8103-732a7122007b",
+    "name": {
+      "zh": "光影人像",
+      "en": "Portraits in Light"
+    },
+    "description": {
+      "zh": "城市夜色中的人像創作，霓虹與街燈交織出的氛圍感肖像。",
+      "en": "Portraiture set against the city at night, where neon and streetlight build mood around the subject."
+    },
+    "location": {
+      "zh": "",
+      "en": ""
+    },
+    "coverPhotoId": null
   }
 ]

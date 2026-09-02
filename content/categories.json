@@ -46,5 +46,21 @@
       "en": ""
     },
     "coverPhotoId": "c687bb57-11b0-4bd7-ac3a-e5c53e6568b5"
+  },
+  {
+    "id": "4feb1b24-b23a-4b9d-b696-4b557c3e3ee5",
+    "name": {
+      "zh": "城市光影",
+      "en": "Urban & Night Lights"
+    },
+    "description": {
+      "zh": "街道、巷弄、樓梯與路標構成的城市線條，加上夜間車拍、煙火與遊樂園燈光的光跡瞬間。",
+      "en": " City lines found in streets, alleys, stairwells and signage, paired with night-time light trails from cars, fireworks and carnival rides."
+    },
+    "location": {
+      "zh": "",
+      "en": ""
+    },
+    "coverPhotoId": null
   }
 ]

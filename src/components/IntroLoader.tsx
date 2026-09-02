@@ -3,8 +3,8 @@
 import { useLayoutEffect, useRef, useState } from "react";
 
 const SESSION_KEY = "cp-intro-shown";
-const STATIC_DURATION_MS = 8700;
-const STATIC_CANVAS_WIDTH = 56;
+const STATIC_DURATION_MS = 3700;
+const STATIC_CANVAS_WIDTH = 120;
 
 export function IntroLoader() {
   const [visible, setVisible] = useState(true);

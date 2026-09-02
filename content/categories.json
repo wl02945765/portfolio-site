@@ -94,5 +94,21 @@
       "en": ""
     },
     "coverPhotoId": "36e9ff41-2985-4e8a-a1a3-7da6f13b97bc"
+  },
+  {
+    "id": "c2b548a9-7beb-4b44-b7ff-bdfcfe0139be",
+    "name": {
+      "zh": "野生萌趣",
+      "en": "Wild & Whimsical"
+    },
+    "description": {
+      "zh": "牛、貓、蜥蜴與倉鼠等動物與昆蟲的日常瞬間，帶點童趣與生命力。",
+      "en": "Everyday moments with cows, cats, lizards, hamsters and insects — candid, playful and full of life."
+    },
+    "location": {
+      "zh": "",
+      "en": ""
+    },
+    "coverPhotoId": null
   }
 ]

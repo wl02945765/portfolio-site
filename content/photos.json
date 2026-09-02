@@ -6,7 +6,9 @@
     "caption": {
       "zh": "中國",
       "en": "CHINA"
-    }
+    },
+    "width": 1350,
+    "height": 2400
   },
   {
     "id": "14983dad-903a-4bfd-aacd-06a751860780",
@@ -15,7 +17,9 @@
     "caption": {
       "zh": "中國",
       "en": "CHINA"
-    }
+    },
+    "width": 1350,
+    "height": 2400
   },
   {
     "id": "6d19d566-cb08-4da8-ac07-fae450215bf6",
@@ -24,7 +28,9 @@
     "caption": {
       "zh": "中國",
       "en": "CHINA"
-    }
+    },
+    "width": 1350,
+    "height": 2400
   },
   {
     "id": "a9bb026f-fe63-40fe-8a77-9c4ad4307999",
@@ -33,7 +39,9 @@
     "caption": {
       "zh": "中國",
       "en": "CHINA"
-    }
+    },
+    "width": 1350,
+    "height": 2400
   },
   {
     "id": "b0fec5fd-b038-4063-a81a-bbe3104138d8",
@@ -42,7 +50,9 @@
     "caption": {
       "zh": "米蘭",
       "en": "Milan"
-    }
+    },
+    "width": 1152,
+    "height": 1502
   },
   {
     "id": "eb5acf24-dbdd-4206-beaa-8297ad5d8545",
@@ -51,7 +61,9 @@
     "caption": {
       "zh": "威尼斯",
       "en": "Venice"
-    }
+    },
+    "width": 907,
+    "height": 1612
   },
   {
     "id": "b08a3894-55ec-46f4-bdfe-97fa1ce5e411",
@@ -60,7 +72,9 @@
     "caption": {
       "zh": "威尼斯",
       "en": "Venice"
-    }
+    },
+    "width": 2048,
+    "height": 1152
   },
   {
     "id": "380a6d65-250a-45c2-9df2-561d4eed3704",
@@ -69,7 +83,9 @@
     "caption": {
       "zh": "台灣",
       "en": "Taiwan"
-    }
+    },
+    "width": 1184,
+    "height": 1776
   },
   {
     "id": "c7ba21b1-b9b0-4d4c-a85a-bf2e8f4dc051",
@@ -78,7 +94,9 @@
     "caption": {
       "zh": "台灣",
       "en": "Taiwan"
-    }
+    },
+    "width": 4240,
+    "height": 2384
   },
   {
     "id": "2a5ee030-20cf-4cdf-a3af-d7224d387e92",
@@ -87,7 +105,9 @@
     "caption": {
       "zh": "台灣",
       "en": "Taiwan"
-    }
+    },
+    "width": 2400,
+    "height": 1800
   },
   {
     "id": "23ddfe9e-7a41-4c75-b0ae-126c91e7d5ac",
@@ -96,7 +116,9 @@
     "caption": {
       "zh": "台灣",
       "en": "Taiwan"
-    }
+    },
+    "width": 2400,
+    "height": 1800
   },
   {
     "id": "814160a6-1a5f-4ba6-9c5e-f936fc82243f",
@@ -105,7 +127,9 @@
     "caption": {
       "zh": "台灣",
       "en": "Taiwan"
-    }
+    },
+    "width": 2400,
+    "height": 1800
   },
   {
     "id": "9a9aac4e-b03a-48e1-9e5a-a68c516c36a4",
@@ -114,7 +138,9 @@
     "caption": {
       "zh": "台灣",
       "en": "Taiwan"
-    }
+    },
+    "width": 2400,
+    "height": 1536
   },
   {
     "id": "d156e888-1c6c-47be-9eb0-cb5090964a48",
@@ -123,7 +149,9 @@
     "caption": {
       "zh": "台灣",
       "en": "Taiwan"
-    }
+    },
+    "width": 2400,
+    "height": 1800
   },
   {
     "id": "cc639b4b-9fd2-44c9-8b66-1c634cfcf1a6",
@@ -132,7 +160,9 @@
     "caption": {
       "zh": "台灣",
       "en": "Taiwan"
-    }
+    },
+    "width": 2400,
+    "height": 1513
   },
   {
     "id": "96c4c9a7-dd13-473f-b2e0-13991f161818",
@@ -141,7 +171,9 @@
     "caption": {
       "zh": "台灣",
       "en": "Taiwan"
-    }
+    },
+    "width": 2003,
+    "height": 2400
   },
   {
     "id": "bb1921ab-18b0-4679-af0b-1889b36a4afd",
@@ -150,7 +182,9 @@
     "caption": {
       "zh": "台灣",
       "en": "Taiwan"
-    }
+    },
+    "width": 2400,
+    "height": 1350
   },
   {
     "id": "3768bb3a-ad6c-4ced-bb89-c86afc814ae1",
@@ -159,7 +193,9 @@
     "caption": {
       "zh": "台灣",
       "en": "Taiwan"
-    }
+    },
+    "width": 2400,
+    "height": 1350
   },
   {
     "id": "196a8cf7-2f02-4d48-9232-3bd0f90952e7",
@@ -168,7 +204,9 @@
     "caption": {
       "zh": "台灣",
       "en": "Taiwan"
-    }
+    },
+    "width": 2400,
+    "height": 1349
   },
   {
     "id": "052ef656-5328-4799-a483-cfdaa7995ac5",
@@ -177,7 +215,9 @@
     "caption": {
       "zh": "台灣",
       "en": "Taiwan"
-    }
+    },
+    "width": 2400,
+    "height": 1350
   },
   {
     "id": "74e30097-ed70-4417-9d21-1fdbeb209f65",
@@ -186,7 +226,9 @@
     "caption": {
       "zh": "台灣",
       "en": "Taiwan"
-    }
+    },
+    "width": 1800,
+    "height": 2400
   },
   {
     "id": "2a9cbbf7-1e92-4b4f-9369-f971344a59f3",
@@ -195,7 +237,9 @@
     "caption": {
       "zh": "台灣",
       "en": "Taiwan"
-    }
+    },
+    "width": 3024,
+    "height": 3708
   },
   {
     "id": "a8762561-bbeb-4713-aafc-99dad777166c",
@@ -204,7 +248,9 @@
     "caption": {
       "zh": "台灣",
       "en": "Taiwan"
-    }
+    },
+    "width": 3938,
+    "height": 2215
   },
   {
     "id": "2ee9c4a2-7b55-41b1-b3c3-ad857973cf84",
@@ -213,7 +259,9 @@
     "caption": {
       "zh": "中國",
       "en": "China"
-    }
+    },
+    "width": 2400,
+    "height": 1350
   },
   {
     "id": "64c198ac-bb95-44fc-8854-8cce4fa54bc3",
@@ -222,7 +270,9 @@
     "caption": {
       "zh": "中國",
       "en": ""
-    }
+    },
+    "width": 1350,
+    "height": 2400
   },
   {
     "id": "0c013f5b-2a6a-4298-84b5-a846731ffbc8",
@@ -231,7 +281,9 @@
     "caption": {
       "zh": "中國",
       "en": ""
-    }
+    },
+    "width": 1350,
+    "height": 2400
   },
   {
     "id": "0eca06ea-354d-4471-bc84-7cdfcce09fa3",
@@ -240,7 +292,9 @@
     "caption": {
       "zh": "中國",
       "en": ""
-    }
+    },
+    "width": 2400,
+    "height": 1350
   },
   {
     "id": "42b0f0ad-251c-4d98-a4cf-1d82c2bd8824",
@@ -249,7 +303,9 @@
     "caption": {
       "zh": "中國",
       "en": ""
-    }
+    },
+    "width": 2400,
+    "height": 1350
   },
   {
     "id": "0326b2a7-790d-4ca8-b525-85246172ba07",
@@ -258,7 +314,9 @@
     "caption": {
       "zh": "中國",
       "en": ""
-    }
+    },
+    "width": 1350,
+    "height": 2400
   },
   {
     "id": "186f88e5-755c-4e85-9262-6be35d2bb399",
@@ -267,7 +325,9 @@
     "caption": {
       "zh": "中國",
       "en": ""
-    }
+    },
+    "width": 2400,
+    "height": 1350
   },
   {
     "id": "b2f896c7-f7da-4a9e-84a6-b1a9886b7f9b",
@@ -276,7 +336,9 @@
     "caption": {
       "zh": "中國",
       "en": ""
-    }
+    },
+    "width": 1350,
+    "height": 2400
   },
   {
     "id": "e45994b9-3d75-4731-b242-10d9b465b126",
@@ -285,7 +347,9 @@
     "caption": {
       "zh": "中國",
       "en": ""
-    }
+    },
+    "width": 1350,
+    "height": 2400
   },
   {
     "id": "0a16228a-dcc8-47ad-8cc8-884f628f011b",
@@ -294,7 +358,9 @@
     "caption": {
       "zh": "中國",
       "en": ""
-    }
+    },
+    "width": 2400,
+    "height": 1350
   },
   {
     "id": "7aeea6b5-a17e-4f73-befd-d728f8f1c8ea",
@@ -303,7 +369,9 @@
     "caption": {
       "zh": "中國",
       "en": ""
-    }
+    },
+    "width": 1350,
+    "height": 2400
   },
   {
     "id": "7bc1c01e-4f67-4efa-bef6-a5521873efbd",
@@ -312,7 +380,9 @@
     "caption": {
       "zh": "中國",
       "en": ""
-    }
+    },
+    "width": 1350,
+    "height": 2400
   },
   {
     "id": "7783b3e0-b899-45a2-afd4-4ac4bc9dc59b",
@@ -321,7 +391,9 @@
     "caption": {
       "zh": "",
       "en": ""
-    }
+    },
+    "width": 1350,
+    "height": 2400
   },
   {
     "id": "1d41770d-8b49-412b-88c2-31c87c40010d",
@@ -330,7 +402,9 @@
     "caption": {
       "zh": "",
       "en": ""
-    }
+    },
+    "width": 2400,
+    "height": 1350
   },
   {
     "id": "2003bf3f-60f6-437c-904b-e6847f390108",
@@ -339,7 +413,9 @@
     "caption": {
       "zh": "",
       "en": ""
-    }
+    },
+    "width": 1350,
+    "height": 2400
   },
   {
     "id": "ad1f391a-0203-463e-aa0d-9f5f7ea158cd",
@@ -348,7 +424,9 @@
     "caption": {
       "zh": "",
       "en": ""
-    }
+    },
+    "width": 1350,
+    "height": 2400
   },
   {
     "id": "fb5a10e1-b9d8-4f0c-b689-e36f186b33c5",
@@ -357,7 +435,9 @@
     "caption": {
       "zh": "",
       "en": ""
-    }
+    },
+    "width": 1350,
+    "height": 2400
   },
   {
     "id": "430f2b0f-1f7b-4d45-a56f-5b1eac98478a",
@@ -366,7 +446,9 @@
     "caption": {
       "zh": "",
       "en": ""
-    }
+    },
+    "width": 1350,
+    "height": 2400
   },
   {
     "id": "cd702c07-6f65-4604-a0dd-9d1f7f99ab69",
@@ -375,7 +457,9 @@
     "caption": {
       "zh": "",
       "en": ""
-    }
+    },
+    "width": 1350,
+    "height": 2400
   },
   {
     "id": "bcc7d11e-bdd4-4fec-9f60-d02837ce6974",
@@ -384,7 +468,9 @@
     "caption": {
       "zh": "",
       "en": ""
-    }
+    },
+    "width": 1350,
+    "height": 2400
   },
   {
     "id": "0e04c0d7-9135-496b-9399-058f38614744",
@@ -393,7 +479,9 @@
     "caption": {
       "zh": "",
       "en": ""
-    }
+    },
+    "width": 2400,
+    "height": 1350
   },
   {
     "id": "ffee5f06-efc5-46c5-8166-945b5e0ceccb",
@@ -402,7 +490,9 @@
     "caption": {
       "zh": "",
       "en": ""
-    }
+    },
+    "width": 1350,
+    "height": 2400
   },
   {
     "id": "f64ef46c-c3fd-4d3d-ac7a-d607649f240b",
@@ -411,7 +501,9 @@
     "caption": {
       "zh": "",
       "en": ""
-    }
+    },
+    "width": 1350,
+    "height": 2400
   },
   {
     "id": "c2be65e5-f565-4942-b59c-39c5c5a029fc",
@@ -420,7 +512,9 @@
     "caption": {
       "zh": "",
       "en": ""
-    }
+    },
+    "width": 4240,
+    "height": 2384
   },
   {
     "id": "26730905-6ba5-403d-94ce-c85b848995ab",
@@ -429,7 +523,9 @@
     "caption": {
       "zh": "",
       "en": ""
-    }
+    },
+    "width": 4240,
+    "height": 2384
   },
   {
     "id": "00557bbc-c105-4b15-b585-19685360e27e",
@@ -438,7 +534,9 @@
     "caption": {
       "zh": "",
       "en": ""
-    }
+    },
+    "width": 6000,
+    "height": 4000
   },
   {
     "id": "a0aff5fa-b46d-4234-9ef8-2d4f2e17687c",
@@ -447,7 +545,9 @@
     "caption": {
       "zh": "",
       "en": ""
-    }
+    },
+    "width": 6000,
+    "height": 4000
   },
   {
     "id": "7abcbe0d-d81b-4212-ab11-2d285ab1fe42",
@@ -456,7 +556,9 @@
     "caption": {
       "zh": "",
       "en": ""
-    }
+    },
+    "width": 6000,
+    "height": 4000
   },
   {
     "id": "9e19eeb1-fa7c-45e0-ad4f-5450b56f5ec3",
@@ -465,7 +567,9 @@
     "caption": {
       "zh": "",
       "en": ""
-    }
+    },
+    "width": 768,
+    "height": 2400
   },
   {
     "id": "18402f26-1a92-46da-8e47-085f9f0dee03",
@@ -474,7 +578,9 @@
     "caption": {
       "zh": "",
       "en": ""
-    }
+    },
+    "width": 795,
+    "height": 1198
   },
   {
     "id": "d99b7c8f-c8c7-4248-9c14-5d53ce73dff4",
@@ -483,7 +589,9 @@
     "caption": {
       "zh": "",
       "en": ""
-    }
+    },
+    "width": 1443,
+    "height": 2102
   },
   {
     "id": "8dbec788-baca-4758-a732-c328f8f0093c",
@@ -492,7 +600,9 @@
     "caption": {
       "zh": "",
       "en": ""
-    }
+    },
+    "width": 1534,
+    "height": 2400
   },
   {
     "id": "9f755c99-c53f-485d-b63c-51ff133d55c5",
@@ -501,6 +611,8 @@
     "caption": {
       "zh": "",
       "en": ""
-    }
+    },
+    "width": 1149,
+    "height": 1461
   }
 ]

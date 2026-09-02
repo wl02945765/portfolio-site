@@ -23,6 +23,8 @@ export type Photo = {
   categoryId: string;
   caption: LocalizedText;
   beforeSrc?: string;
+  width?: number;
+  height?: number;
 };
 
 export type VideoCategory = {

@@ -427,11 +427,14 @@ app.post("/api/categories/:id/photos", photoUpload.array("files", 30), (req, res
   const photos = readJSON(PHOTOS_JSON);
   const created = req.files.map((file) => {
     const filename = optimizePhoto(PHOTOS_DIR, file.filename);
+    const { width, height } = getImageDimensions(path.join(PHOTOS_DIR, filename));
     return {
       id: randomUUID(),
       src: `/media/photos/${filename}`,
       categoryId: category.id,
       caption: { zh: "", en: "" },
+      width: width || undefined,
+      height: height || undefined,
     };
   });
   photos.push(...created);

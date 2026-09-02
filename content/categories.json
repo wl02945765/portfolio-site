@@ -30,5 +30,21 @@
       "en": ""
     },
     "coverPhotoId": "f0100443-e500-4b20-a827-eea73fb4087b"
+  },
+  {
+    "id": "2e001a7a-9e1a-4079-ad81-f023f1a8ec90",
+    "name": {
+      "zh": "山海之間",
+      "en": "Mountains & Sea"
+    },
+    "description": {
+      "zh": "高山雲海、日落海岸、瀑布溪流與剪影天色，捕捉自然光線在遠方地景上的變化。",
+      "en": " Sea-of-clouds summits, coastal sunsets, waterfalls and silhouetted skies — chasing natural light across distant landscapes."
+    },
+    "location": {
+      "zh": "",
+      "en": ""
+    },
+    "coverPhotoId": null
   }
 ]

@@ -8,7 +8,7 @@ export function Hero() {
 
   return (
     <section className="relative flex h-[calc(100svh-57px)] w-full flex-col items-center justify-center px-6 text-center">
-      <h1 className="heading-font text-4xl font-medium tracking-[0.08em] text-zinc-300 sm:text-6xl md:text-7xl">
+      <h1 className="heading-font text-[45px] font-medium tracking-[0.08em] text-zinc-300">
         {t.heroTitle}
       </h1>
       <p className="mt-6 max-w-xl text-sm tracking-[0.05em] text-zinc-400 sm:text-base">

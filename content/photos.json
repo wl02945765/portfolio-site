@@ -1,27 +1,5 @@
 [
   {
-    "id": "09b00203-d279-4357-af4a-86ad03c2a222",
-    "src": "/media/photos/be5a30ba-e0d8-4fa4-bf2a-fcfea1ddd632.jpg",
-    "categoryId": "76afb2cf-dabe-4b8e-828f-5e0bf7f21e83",
-    "caption": {
-      "zh": "中國",
-      "en": "CHINA"
-    },
-    "width": 1350,
-    "height": 2400
-  },
-  {
-    "id": "14983dad-903a-4bfd-aacd-06a751860780",
-    "src": "/media/photos/c7b41a90-4013-4e17-9c56-22fdcb55d434.jpg",
-    "categoryId": "76afb2cf-dabe-4b8e-828f-5e0bf7f21e83",
-    "caption": {
-      "zh": "中國",
-      "en": "CHINA"
-    },
-    "width": 1350,
-    "height": 2400
-  },
-  {
     "id": "6d19d566-cb08-4da8-ac07-fae450215bf6",
     "src": "/media/photos/b202c121-92b1-451b-8eb0-023a1335972f.jpg",
     "categoryId": "76afb2cf-dabe-4b8e-828f-5e0bf7f21e83",

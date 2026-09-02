@@ -1,21 +1,5 @@
 [
   {
-    "id": "76afb2cf-dabe-4b8e-828f-5e0bf7f21e83",
-    "name": {
-      "zh": "人像",
-      "en": "Portrait"
-    },
-    "description": {
-      "zh": "",
-      "en": ""
-    },
-    "location": {
-      "zh": "",
-      "en": ""
-    },
-    "coverPhotoId": "c7ba21b1-b9b0-4d4c-a85a-bf2e8f4dc051"
-  },
-  {
     "id": "1a6fcc83-3e20-4c5e-9995-f772504bcb3a",
     "name": {
       "zh": "景",

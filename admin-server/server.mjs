@@ -16,12 +16,15 @@ const VIDEOS_JSON = path.join(CONTENT_DIR, "videos.json");
 const VIDEO_CATEGORIES_JSON = path.join(CONTENT_DIR, "videoCategories.json");
 const SITE_TEXT_JSON = path.join(CONTENT_DIR, "site-text.json");
 const SOUND_JSON = path.join(CONTENT_DIR, "sound.json");
+const ABOUT_GALLERY_JSON = path.join(CONTENT_DIR, "aboutGallery.json");
+const ABOUT_SKILLS_JSON = path.join(CONTENT_DIR, "aboutSkills.json");
 const PHOTOS_DIR = path.join(MEDIA_DIR, "photos");
 const VIDEOS_DIR = path.join(MEDIA_DIR, "videos");
 const THUMBS_DIR = path.join(VIDEOS_DIR, "thumbs");
 const SOUND_DIR = path.join(MEDIA_DIR, "sound");
+const ABOUT_DIR = path.join(MEDIA_DIR, "about");
 
-for (const dir of [PHOTOS_DIR, VIDEOS_DIR, THUMBS_DIR, SOUND_DIR]) {
+for (const dir of [PHOTOS_DIR, VIDEOS_DIR, THUMBS_DIR, SOUND_DIR, ABOUT_DIR]) {
   fs.mkdirSync(dir, { recursive: true });
 }
 
@@ -196,7 +199,7 @@ function runPublish() {
   publishState.lastError = null;
   try {
     execSync(
-      "git add content/photos.json content/categories.json content/videos.json content/videoCategories.json content/site-text.json content/sound.json public/media",
+      "git add content/photos.json content/categories.json content/videos.json content/videoCategories.json content/site-text.json content/sound.json content/aboutGallery.json content/aboutSkills.json public/media",
       { cwd: ROOT },
     );
     const diff = spawnSync("git", ["diff", "--cached", "--quiet"], { cwd: ROOT });
@@ -255,6 +258,15 @@ const soundCoverUpload = multer({
     destination: SOUND_DIR,
     filename: (_req, file, cb) =>
       cb(null, `cover-${randomUUID()}${path.extname(file.originalname)}`),
+  }),
+  limits: { fileSize: 50 * 1024 * 1024 },
+});
+
+const aboutGalleryUpload = multer({
+  storage: multer.diskStorage({
+    destination: ABOUT_DIR,
+    filename: (_req, file, cb) =>
+      cb(null, `${randomUUID()}${path.extname(file.originalname)}`),
   }),
   limits: { fileSize: 50 * 1024 * 1024 },
 });
@@ -632,6 +644,117 @@ app.post("/api/videos/reorder", (req, res) => {
   writeJSON(VIDEOS_JSON, reordered);
   schedulePublish();
   res.json(reordered);
+});
+
+// ---------- About page: "beyond work" photo gallery ----------
+
+app.get("/api/about-gallery", (_req, res) => {
+  res.json(readJSON(ABOUT_GALLERY_JSON));
+});
+
+app.post("/api/about-gallery", aboutGalleryUpload.array("files", 20), (req, res) => {
+  if (!req.files || req.files.length === 0) {
+    return res.status(400).json({ error: "missing files" });
+  }
+  const gallery = readJSON(ABOUT_GALLERY_JSON);
+  const created = req.files.map((file) => {
+    const filename = optimizePhoto(ABOUT_DIR, file.filename);
+    return {
+      id: randomUUID(),
+      src: `/media/about/${filename}`,
+      caption: { zh: "", en: "" },
+    };
+  });
+  gallery.push(...created);
+  writeJSON(ABOUT_GALLERY_JSON, gallery);
+  schedulePublish();
+  res.json(created);
+});
+
+app.patch("/api/about-gallery/:id", (req, res) => {
+  const gallery = readJSON(ABOUT_GALLERY_JSON);
+  const item = gallery.find((p) => p.id === req.params.id);
+  if (!item) return res.status(404).json({ error: "not found" });
+  if (req.body.caption_zh !== undefined) item.caption.zh = req.body.caption_zh;
+  if (req.body.caption_en !== undefined) item.caption.en = req.body.caption_en;
+  writeJSON(ABOUT_GALLERY_JSON, gallery);
+  schedulePublish();
+  res.json(item);
+});
+
+app.delete("/api/about-gallery/:id", (req, res) => {
+  const gallery = readJSON(ABOUT_GALLERY_JSON);
+  const item = gallery.find((p) => p.id === req.params.id);
+  if (!item) return res.status(404).json({ error: "not found" });
+  if (item.src) {
+    const filePath = path.join(ROOT, "public", item.src);
+    if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
+  }
+  writeJSON(
+    ABOUT_GALLERY_JSON,
+    gallery.filter((p) => p.id !== req.params.id),
+  );
+  schedulePublish();
+  res.json({ ok: true });
+});
+
+app.post("/api/about-gallery/reorder", (req, res) => {
+  const { order } = req.body;
+  const gallery = readJSON(ABOUT_GALLERY_JSON);
+  const byId = new Map(gallery.map((p) => [p.id, p]));
+  const reordered = order.map((id) => byId.get(id)).filter(Boolean);
+  writeJSON(ABOUT_GALLERY_JSON, reordered);
+  schedulePublish();
+  res.json(reordered);
+});
+
+// ---------- About page: skills ----------
+
+function splitLines(text) {
+  return String(text ?? "")
+    .split("\n")
+    .map((line) => line.trim())
+    .filter(Boolean);
+}
+
+app.get("/api/about-skills", (_req, res) => {
+  res.json(readJSON(ABOUT_SKILLS_JSON));
+});
+
+app.post("/api/about-skills", (req, res) => {
+  const groups = readJSON(ABOUT_SKILLS_JSON);
+  const entry = {
+    id: randomUUID(),
+    category: { zh: req.body.category_zh || "", en: req.body.category_en || "" },
+    items: { zh: [], en: [] },
+  };
+  groups.push(entry);
+  writeJSON(ABOUT_SKILLS_JSON, groups);
+  schedulePublish();
+  res.json(entry);
+});
+
+app.patch("/api/about-skills/:id", (req, res) => {
+  const groups = readJSON(ABOUT_SKILLS_JSON);
+  const item = groups.find((g) => g.id === req.params.id);
+  if (!item) return res.status(404).json({ error: "not found" });
+  if (req.body.category_zh !== undefined) item.category.zh = req.body.category_zh;
+  if (req.body.category_en !== undefined) item.category.en = req.body.category_en;
+  if (req.body.items_zh !== undefined) item.items.zh = splitLines(req.body.items_zh);
+  if (req.body.items_en !== undefined) item.items.en = splitLines(req.body.items_en);
+  writeJSON(ABOUT_SKILLS_JSON, groups);
+  schedulePublish();
+  res.json(item);
+});
+
+app.delete("/api/about-skills/:id", (req, res) => {
+  const groups = readJSON(ABOUT_SKILLS_JSON);
+  writeJSON(
+    ABOUT_SKILLS_JSON,
+    groups.filter((g) => g.id !== req.params.id),
+  );
+  schedulePublish();
+  res.json({ ok: true });
 });
 
 // Without this, multer/busboy errors (e.g. file over the size cap) bubble up

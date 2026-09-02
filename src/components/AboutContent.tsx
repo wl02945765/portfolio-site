@@ -4,13 +4,9 @@ import { useRef } from "react";
 import Link from "next/link";
 import { motion, useScroll, useTransform, type Variants } from "framer-motion";
 import { useLanguage } from "@/i18n/LanguageProvider";
-import {
-  heroTags,
-  philosophyLines,
-  timeline,
-  skills,
-  galleryPlaceholders,
-} from "@/components/aboutData";
+import { heroTags, philosophyLines, timeline } from "@/components/aboutData";
+import { getAboutGallery, getAboutSkills } from "@/lib/content";
+import { withBasePath } from "@/lib/basePath";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
@@ -43,6 +39,8 @@ function Placeholder({ label, className = "" }: { label: string; className?: str
 export function AboutContent() {
   const { t, locale } = useLanguage();
   const a = t.about;
+  const galleryPhotos = getAboutGallery();
+  const skillGroups = getAboutSkills();
 
   const timelineRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
@@ -259,11 +257,30 @@ export function AboutContent() {
           </div>
 
           <div className="mt-14 grid grid-cols-2 gap-4 sm:grid-cols-4">
-            {galleryPlaceholders.map((g) => (
-              <motion.div key={g.en} variants={fadeUp}>
-                <Placeholder label={g[locale]} className="aspect-[4/5] w-full" />
-              </motion.div>
-            ))}
+            {galleryPhotos.map((photo) =>
+              photo.src ? (
+                <motion.div
+                  key={photo.id}
+                  variants={fadeUp}
+                  className="group relative aspect-[4/5] w-full overflow-hidden rounded-sm bg-black"
+                >
+                  <img
+                    src={withBasePath(photo.src)}
+                    alt={photo.caption[locale]}
+                    className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]"
+                  />
+                  {photo.caption[locale] && (
+                    <span className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 to-transparent p-3 text-xs tracking-wide text-zinc-200">
+                      {photo.caption[locale]}
+                    </span>
+                  )}
+                </motion.div>
+              ) : (
+                <motion.div key={photo.id} variants={fadeUp}>
+                  <Placeholder label={photo.caption[locale]} className="aspect-[4/5] w-full" />
+                </motion.div>
+              ),
+            )}
           </div>
         </div>
       </motion.section>
@@ -285,15 +302,15 @@ export function AboutContent() {
           </motion.h2>
 
           <div className="mt-14 grid gap-12 sm:grid-cols-3">
-            {skills.map((group) => (
-              <motion.div key={group.category.en} variants={fadeUp}>
+            {skillGroups.map((group) => (
+              <motion.div key={group.id} variants={fadeUp}>
                 <p className="border-b border-zinc-800 pb-3 text-xs uppercase tracking-[0.2em] text-zinc-500">
                   {group.category[locale]}
                 </p>
                 <ul className="mt-4 flex flex-col gap-2.5">
-                  {group.items.map((item) => (
-                    <li key={item.en} className="text-sm text-zinc-300">
-                      {item[locale]}
+                  {group.items[locale].map((item, i) => (
+                    <li key={i} className="text-sm text-zinc-300">
+                      {item}
                     </li>
                   ))}
                 </ul>
@@ -313,7 +330,7 @@ export function AboutContent() {
       >
         <motion.p
           variants={fadeUp}
-          className="heading-font max-w-2xl text-3xl font-medium leading-tight text-zinc-100 sm:text-5xl"
+          className="heading-font max-w-2xl text-xl font-medium leading-tight text-zinc-100 sm:text-3xl"
         >
           {a.ctaText}
         </motion.p>

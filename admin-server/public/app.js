@@ -836,3 +836,141 @@ function escapeHtml(str) {
 
 loadCategories();
 loadVideoCategories().then(loadVideos);
+
+// --- About page: "beyond work" gallery ---
+const aboutGalleryGrid = document.getElementById("about-gallery-grid");
+const aboutGalleryStatus = document.getElementById("about-gallery-status");
+
+wireMultiDropzone(
+  document.getElementById("about-gallery-drop"),
+  document.getElementById("about-gallery-file"),
+  document.getElementById("about-gallery-filename"),
+  uploadAboutGallery,
+);
+
+async function loadAboutGallery() {
+  const photos = await fetch("/api/about-gallery").then((r) => r.json());
+  aboutGalleryGrid.innerHTML = "";
+  photos.forEach((photo) => aboutGalleryGrid.appendChild(renderAboutGalleryCard(photo)));
+}
+
+function renderAboutGalleryCard(photo) {
+  const card = document.createElement("div");
+  card.className = "card";
+  card.draggable = true;
+  card.dataset.id = photo.id;
+  card.innerHTML = `
+    <div class="thumb-wrap">
+      ${photo.src ? `<img class="card-thumb" src="${photo.src}" alt="" />` : '<div class="card-thumb" style="display:flex;align-items:center;justify-content:center;color:#666;font-size:12px;">尚未上傳照片</div>'}
+    </div>
+    <div class="card-body">
+      <input type="text" data-field="caption_zh" value="${escapeHtml(photo.caption.zh)}" placeholder="中文說明" />
+      <input type="text" data-field="caption_en" value="${escapeHtml(photo.caption.en)}" placeholder="English caption" />
+    </div>
+    <div class="card-footer">
+      <button class="delete-btn">刪除</button>
+    </div>
+  `;
+  card.querySelectorAll("input").forEach((input) => {
+    input.addEventListener("blur", () =>
+      fetch(`/api/about-gallery/${photo.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ [input.dataset.field]: input.value }),
+      }),
+    );
+  });
+  card.querySelector(".delete-btn").addEventListener("click", async () => {
+    if (!confirm("確定要刪除這張照片嗎？")) return;
+    await fetch(`/api/about-gallery/${photo.id}`, { method: "DELETE" });
+    loadAboutGallery();
+  });
+  return card;
+}
+
+wireReorder(aboutGalleryGrid, (order) =>
+  fetch("/api/about-gallery/reorder", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ order }),
+  }),
+);
+
+async function uploadAboutGallery(files) {
+  const fd = new FormData();
+  files.forEach((f) => fd.append("files", f));
+  aboutGalleryStatus.textContent = `上傳 ${files.length} 張中…`;
+  try {
+    const res = await fetch("/api/about-gallery", { method: "POST", body: fd });
+    if (!res.ok) throw new Error(await res.text());
+    aboutGalleryStatus.textContent = "上傳完成！";
+    document.getElementById("about-gallery-filename").textContent = "";
+    loadAboutGallery();
+  } catch (err) {
+    aboutGalleryStatus.textContent = `上傳失敗：${err.message}`;
+  }
+}
+
+loadAboutGallery();
+
+// --- About page: skills ---
+const skillGroupList = document.getElementById("skill-group-list");
+const skillGroupStatus = document.getElementById("skill-group-status");
+
+async function loadSkillGroups() {
+  const groups = await fetch("/api/about-skills").then((r) => r.json());
+  skillGroupList.innerHTML = "";
+  groups.forEach((group) => skillGroupList.appendChild(renderSkillGroup(group)));
+}
+
+function renderSkillGroup(group) {
+  const wrap = document.createElement("div");
+  wrap.className = "text-section";
+  wrap.innerHTML = `
+    <div class="fields">
+      <label>分類（中文） <input type="text" data-field="category_zh" value="${escapeHtml(group.category.zh)}" /></label>
+      <label>Category (EN) <input type="text" data-field="category_en" value="${escapeHtml(group.category.en)}" /></label>
+    </div>
+    <div class="fields">
+      <label>項目（中文，一行一個） <textarea data-field="items_zh" rows="4">${escapeHtml(group.items.zh.join("\n"))}</textarea></label>
+      <label>Items (EN, one per line) <textarea data-field="items_en" rows="4">${escapeHtml(group.items.en.join("\n"))}</textarea></label>
+    </div>
+    <button class="delete-btn">刪除這個分類</button>
+  `;
+  wrap.querySelectorAll("input, textarea").forEach((el) => {
+    el.addEventListener("blur", () =>
+      fetch(`/api/about-skills/${group.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ [el.dataset.field]: el.value }),
+      }),
+    );
+  });
+  wrap.querySelector(".delete-btn").addEventListener("click", async () => {
+    if (!confirm("確定要刪除這個技能分類嗎？")) return;
+    await fetch(`/api/about-skills/${group.id}`, { method: "DELETE" });
+    loadSkillGroups();
+  });
+  return wrap;
+}
+
+document.getElementById("skill-group-form").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const form = e.target;
+  skillGroupStatus.textContent = "建立中…";
+  try {
+    const res = await fetch("/api/about-skills", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ category_zh: form.category_zh.value, category_en: form.category_en.value }),
+    });
+    if (!res.ok) throw new Error(await res.text());
+    skillGroupStatus.textContent = "";
+    form.reset();
+    loadSkillGroups();
+  } catch (err) {
+    skillGroupStatus.textContent = `建立失敗：${err.message}`;
+  }
+});
+
+loadSkillGroups();

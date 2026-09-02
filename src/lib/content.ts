@@ -3,6 +3,8 @@ import categoriesData from "../../content/categories.json";
 import videosData from "../../content/videos.json";
 import videoCategoriesData from "../../content/videoCategories.json";
 import soundData from "../../content/sound.json";
+import aboutGalleryData from "../../content/aboutGallery.json";
+import aboutSkillsData from "../../content/aboutSkills.json";
 
 export type LocalizedText = {
   zh: string;
@@ -57,6 +59,18 @@ export type Sound = {
   links: SoundLink[];
 };
 
+export type AboutGalleryPhoto = {
+  id: string;
+  src: string;
+  caption: LocalizedText;
+};
+
+export type AboutSkillGroup = {
+  id: string;
+  category: LocalizedText;
+  items: { zh: string[]; en: string[] };
+};
+
 export function getPhotos(): Photo[] {
   return photosData as Photo[];
 }
@@ -75,4 +89,12 @@ export function getVideoCategories(): VideoCategory[] {
 
 export function getSound(): Sound {
   return soundData as Sound;
+}
+
+export function getAboutGallery(): AboutGalleryPhoto[] {
+  return aboutGalleryData as AboutGalleryPhoto[];
+}
+
+export function getAboutSkills(): AboutSkillGroup[] {
+  return aboutSkillsData as AboutSkillGroup[];
 }

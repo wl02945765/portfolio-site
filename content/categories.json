@@ -46,5 +46,21 @@
       "en": ""
     },
     "coverPhotoId": "18402f26-1a92-46da-8e47-085f9f0dee03"
+  },
+  {
+    "id": "93f7b708-edb2-47a9-b457-11388aebdbd8",
+    "name": {
+      "zh": "腕錶",
+      "en": "Watches"
+    },
+    "description": {
+      "zh": "",
+      "en": ""
+    },
+    "location": {
+      "zh": "",
+      "en": ""
+    },
+    "coverPhotoId": null
   }
 ]

@@ -19,6 +19,11 @@ export function PhotoCategoryGrid({ photos }: { photos: Photo[] }) {
   useEffect(() => {
     const el = containerRef.current;
     if (!el) return;
+    // ResizeObserver's first callback isn't guaranteed to fire promptly on
+    // initial mount (observed hanging indefinitely on the production
+    // build), so read the width synchronously up front as a fallback and
+    // let the observer handle it from then on.
+    setContainerWidth(el.offsetWidth);
     const observer = new ResizeObserver((entries) => {
       setContainerWidth(entries[0].contentRect.width);
     });

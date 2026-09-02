@@ -20,7 +20,7 @@ export function CategoryDetail({
     <div className="flex flex-1 flex-col px-6 pb-24 pt-16 sm:px-10 sm:pt-20">
       <Link
         href="/photography"
-        className="mb-8 inline-block w-fit text-[11px] uppercase tracking-[0.15em] text-zinc-500 hover:text-zinc-300"
+        className="sticky top-[57px] z-30 mb-8 inline-block w-fit rounded-full bg-black/80 px-4 py-2 text-[11px] uppercase tracking-[0.15em] text-zinc-400 backdrop-blur-sm hover:text-zinc-200"
       >
         ← {t.photography.backToPhotography}
       </Link>

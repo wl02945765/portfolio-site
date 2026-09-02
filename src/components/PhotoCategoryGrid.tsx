@@ -1,14 +1,43 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
+import justifiedLayout from "justified-layout";
 import { useLanguage } from "@/i18n/LanguageProvider";
 import { withBasePath } from "@/lib/basePath";
 import type { Photo } from "@/lib/content";
 
+const TARGET_ROW_HEIGHT = 260;
+const BOX_SPACING = 12;
+
 export function PhotoCategoryGrid({ photos }: { photos: Photo[] }) {
   const { locale } = useLanguage();
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [containerWidth, setContainerWidth] = useState(0);
+
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const observer = new ResizeObserver((entries) => {
+      setContainerWidth(entries[0].contentRect.width);
+    });
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
+  const layout = useMemo(() => {
+    if (containerWidth === 0 || photos.length === 0) return null;
+    return justifiedLayout(
+      photos.map((p) => ({ width: p.width || 800, height: p.height || 1000 })),
+      {
+        containerWidth,
+        targetRowHeight: TARGET_ROW_HEIGHT,
+        boxSpacing: BOX_SPACING,
+        containerPadding: 0,
+      },
+    );
+  }, [photos, containerWidth]);
 
   const closeLightbox = () => setLightboxIndex(null);
   const showPrev = () =>
@@ -29,26 +58,35 @@ export function PhotoCategoryGrid({ photos }: { photos: Photo[] }) {
 
   return (
     <>
-      <div className="columns-1 gap-3 sm:columns-2 lg:columns-3 xl:columns-4">
-        {photos.map((photo, i) => (
-          <button
-            key={photo.id}
-            onClick={() => setLightboxIndex(i)}
-            className="group relative mb-3 block w-full break-inside-avoid overflow-hidden bg-black"
-          >
-            <Image
-              src={withBasePath(photo.src)}
-              alt={photo.caption[locale]}
-              width={photo.width || 800}
-              height={photo.height || 1000}
-              unoptimized
-              className="h-auto w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]"
-            />
-            <span className="absolute inset-x-0 bottom-0 translate-y-full bg-gradient-to-t from-black/70 to-transparent p-3 text-left text-xs text-zinc-200 opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100">
-              {photo.caption[locale]}
-            </span>
-          </button>
-        ))}
+      <div
+        ref={containerRef}
+        className="relative"
+        style={{ height: layout ? layout.containerHeight : undefined }}
+      >
+        {layout &&
+          photos.map((photo, i) => {
+            const box = layout.boxes[i];
+            return (
+              <button
+                key={photo.id}
+                onClick={() => setLightboxIndex(i)}
+                className="group absolute overflow-hidden bg-black"
+                style={{ left: box.left, top: box.top, width: box.width, height: box.height }}
+              >
+                <Image
+                  src={withBasePath(photo.src)}
+                  alt={photo.caption[locale]}
+                  width={photo.width || 800}
+                  height={photo.height || 1000}
+                  unoptimized
+                  className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]"
+                />
+                <span className="absolute inset-x-0 bottom-0 translate-y-full bg-gradient-to-t from-black/70 to-transparent p-3 text-left text-xs text-zinc-200 opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100">
+                  {photo.caption[locale]}
+                </span>
+              </button>
+            );
+          })}
       </div>
 
       {lightboxIndex !== null && photos[lightboxIndex] && (

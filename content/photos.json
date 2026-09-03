@@ -2419,5 +2419,16 @@
     "width": 795,
     "height": 1198,
     "beforeSrc": "/media/photos/before-3384ba31-47b3-4834-8505-1cc6218faa83.JPG"
+  },
+  {
+    "id": "fffa97a5-9993-4d09-8400-4155814fd6f8",
+    "src": "/media/photos/3af36bbb-8043-4542-b953-c0e095476201.jpg",
+    "categoryId": "d8a87ae3-9400-4cef-85fb-b12d6aa66abb",
+    "caption": {
+      "zh": "",
+      "en": ""
+    },
+    "width": 1443,
+    "height": 2102
   }
 ]

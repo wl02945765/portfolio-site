@@ -37,7 +37,15 @@ export function PhotoCategoryGrid({ photos }: { photos: Photo[] }) {
           // same handler: touch only ever sends pointermove while in contact,
           // which is exactly the "drag to scrub" behavior mobile needs.
           const onWipeDown = (e: React.PointerEvent<HTMLButtonElement>) => {
-            e.currentTarget.setPointerCapture(e.pointerId);
+            // Some mobile browsers have incomplete/buggy Pointer Events
+            // support — never let capturing the pointer be a way to crash
+            // the tile's whole click handler if it throws.
+            try {
+              e.currentTarget.setPointerCapture(e.pointerId);
+            } catch {
+              // ignore — the wipe still works without capture, just less
+              // robust right at the tile's edges
+            }
           };
           const onWipeMove = (e: React.PointerEvent<HTMLButtonElement>) => {
             const afterLayer = e.currentTarget.querySelector<HTMLElement>('[data-role="after-layer"]');

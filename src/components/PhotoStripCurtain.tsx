@@ -104,10 +104,7 @@ export function PhotoStripCurtain({ photos }: { photos: StripPhoto[] }) {
       >
         <div className="rounded-full border border-white/30 bg-black/70 px-5 py-4 text-center backdrop-blur-sm">
           <p className="text-[10px] font-medium uppercase tracking-[0.2em] text-zinc-200">
-            Ching&apos;s
-          </p>
-          <p className="text-[10px] font-medium uppercase tracking-[0.2em] text-zinc-200">
-            Profile
+            Touch me
           </p>
         </div>
       </div>

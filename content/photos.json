@@ -1,16 +1,5 @@
 [
   {
-    "id": "9e19eeb1-fa7c-45e0-ad4f-5450b56f5ec3",
-    "src": "/media/photos/80809e1d-7e6b-4126-bdc6-59f50a4dd0a8.jpg",
-    "categoryId": "48e16848-fbbb-4f25-8724-4dbf33529fc8",
-    "caption": {
-      "zh": "",
-      "en": ""
-    },
-    "width": 768,
-    "height": 2400
-  },
-  {
     "id": "37fdb62a-ea4a-4392-9c40-ef2afde24c27",
     "src": "/media/photos/658e2c25-9578-4508-91eb-5c7de27adb76.jpg",
     "categoryId": "93f7b708-edb2-47a9-b457-11388aebdbd8",

@@ -20,5 +20,27 @@
     },
     "width": 1696,
     "height": 2400
+  },
+  {
+    "id": "19bd85d5-7fde-4b06-835c-969de8f10b7d",
+    "src": "/media/design/01e03338-d733-4653-93dd-2a178af117ea.tif",
+    "categoryId": "bab6b8b3-e150-4f96-b74c-22067c027edf",
+    "caption": {
+      "zh": "",
+      "en": ""
+    },
+    "width": 1080,
+    "height": 656
+  },
+  {
+    "id": "5a61aeb3-be34-4092-a5c5-40683b9d7cfe",
+    "src": "/media/design/21df4ee9-b9fc-46f6-bf98-c53d576e0260.tif",
+    "categoryId": "bab6b8b3-e150-4f96-b74c-22067c027edf",
+    "caption": {
+      "zh": "",
+      "en": ""
+    },
+    "width": 1080,
+    "height": 656
   }
 ]

@@ -2169,5 +2169,16 @@
     },
     "width": 1365,
     "height": 2048
+  },
+  {
+    "id": "3197fdf4-aa7c-4568-a455-e9bf18c73f83",
+    "src": "/media/photos/2da8c13b-d6f3-4b82-bde2-d7de20b57b6a.jpg",
+    "categoryId": "93f7b708-edb2-47a9-b457-11388aebdbd8",
+    "caption": {
+      "zh": "",
+      "en": ""
+    },
+    "width": 1120,
+    "height": 2400
   }
 ]

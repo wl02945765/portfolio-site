@@ -1,1 +1,18 @@
-[]
+[
+  {
+    "id": "389cc25c-d1bb-4a64-9b43-4f39d9a09ace",
+    "name": {
+      "zh": "Logo設計",
+      "en": "Logo Design"
+    },
+    "description": {
+      "zh": "",
+      "en": ""
+    },
+    "location": {
+      "zh": "",
+      "en": ""
+    },
+    "coverPhotoId": null
+  }
+]

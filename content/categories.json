@@ -110,5 +110,21 @@
       "en": ""
     },
     "coverPhotoId": "5f288e01-753c-4bbb-891e-249a97425b02"
+  },
+  {
+    "id": "d8a87ae3-9400-4cef-85fb-b12d6aa66abb",
+    "name": {
+      "zh": "Before and After",
+      "en": "Before and After"
+    },
+    "description": {
+      "zh": "",
+      "en": ""
+    },
+    "location": {
+      "zh": "",
+      "en": ""
+    },
+    "coverPhotoId": null
   }
 ]

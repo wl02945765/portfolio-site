@@ -7,8 +7,9 @@
     "nav": {
       "aboutLabel": "About Me",
       "photographyLabel": "Visuals",
+      "designLabel": "Design",
       "videoWorkLabel": "Motion",
-      "soundLabel": "Auido",
+      "soundLabel": "Audio",
       "contactLabel": "Contact"
     },
     "heroTitle": "STORIES, SEEN. HEARD. FELT.",
@@ -20,6 +21,12 @@
       "empty": "作品準備中，敬請期待。",
       "folderEmpty": "還沒有分類好的照片，請到後台幫照片加上分類。",
       "backToPhotography": "返回 Visuals"
+    },
+    "design": {
+      "heading": "Design",
+      "empty": "作品準備中，敬請期待。",
+      "folderEmpty": "還沒有分類好的設計作品，請到後台幫作品加上分類。",
+      "backToDesign": "返回 Design"
     },
     "videoWork": {
       "heading": "Motion",
@@ -58,8 +65,9 @@
     "nav": {
       "aboutLabel": "About Me",
       "photographyLabel": "Visuals",
+      "designLabel": "Design",
       "videoWorkLabel": "Motion",
-      "soundLabel": "Auido",
+      "soundLabel": "Audio",
       "contactLabel": "Contact"
     },
     "heroTitle": "STORIES, SEEN. HEARD. FELT.",
@@ -71,6 +79,12 @@
       "empty": "Work in progress — check back soon.",
       "folderEmpty": "No categorized photos yet — add a category to a photo in the admin panel.",
       "backToPhotography": "Back to Visuals"
+    },
+    "design": {
+      "heading": "Design",
+      "empty": "Work in progress — check back soon.",
+      "folderEmpty": "No categorized design work yet — add a category in the admin panel.",
+      "backToDesign": "Back to Design"
     },
     "videoWork": {
       "heading": "Motion",

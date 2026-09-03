@@ -110,5 +110,22 @@
     },
     "year": "",
     "categoryId": null
+  },
+  {
+    "id": "9b4acad7-6cd8-4bba-9403-6e69aaf555b0",
+    "slug": "測試外部影片",
+    "thumbnail": "https://img.youtube.com/vi/dQw4w9WgXcQ/hqdefault.jpg",
+    "videoSrc": "",
+    "youtubeId": "dQw4w9WgXcQ",
+    "title": {
+      "zh": "測試外部影片",
+      "en": ""
+    },
+    "services": {
+      "zh": "測試",
+      "en": ""
+    },
+    "year": "",
+    "categoryId": null
   }
 ]

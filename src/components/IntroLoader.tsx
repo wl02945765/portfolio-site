@@ -4,29 +4,19 @@ import { useLayoutEffect, useRef, useState } from "react";
 
 const SESSION_KEY = "cp-intro-shown";
 const STATIC_DURATION_MS = 1680;
-// If the page's images/fonts genuinely aren't ready yet, hold the static a
-// little longer rather than reveal a page that's still popping in — but
-// never past this, so a slow network doesn't strand people on the intro.
-const MAX_EXTRA_WAIT_MS = 4000;
 const STATIC_CANVAS_WIDTH = 120;
 
-// Only the images actually on the page right now — not the browser's global
-// "load" event, which would also wait on things like an autoplaying video's
-// buffering and has nothing to do with why the reveal felt like it was
-// stuttering.
-function waitForImages(): Promise<void> {
-  const pending = Array.from(document.images).filter((img) => !img.complete);
-  if (pending.length === 0) return Promise.resolve();
-  return Promise.all(
-    pending.map(
-      (img) =>
-        new Promise<void>((resolve) => {
-          img.addEventListener("load", () => resolve(), { once: true });
-          img.addEventListener("error", () => resolve(), { once: true });
-        }),
-    ),
-  ).then(() => undefined);
-}
+// A previous version of this component tried to hold the intro open until
+// every <img> on the page had loaded, to avoid revealing a page that was
+// still popping in. That backfired badly: document.images includes images
+// with loading="lazy" (everything past the first few in any grid), and a
+// lazy image structurally never fires load/error until it scrolls into
+// view — which can't happen while this component has body scroll locked.
+// So on any page with more than a handful of photos, that wait condition
+// could never be satisfied, and the intro sat at its worst-case duration
+// every single time — the opposite of the intended fix. Fixed duration,
+// always. The real fix for "photos load slowly" is serving smaller images
+// in the first place (see the grid-thumbnail work in PhotoCategoryGrid).
 
 export function IntroLoader() {
   const [visible, setVisible] = useState(true);
@@ -60,7 +50,10 @@ export function IntroLoader() {
     const barTop = barTopRef.current;
     const barBottom = barBottomRef.current;
     const line = lineRef.current;
-    if (!canvas || !barTop || !barBottom || !line) return;
+    if (!canvas || !barTop || !barBottom || !line) {
+      document.body.style.overflow = "";
+      return;
+    }
 
     const ctx = canvas.getContext("2d");
     const internalW = STATIC_CANVAS_WIDTH;
@@ -70,19 +63,6 @@ export function IntroLoader() {
 
     let raf = 0;
     const timers: number[] = [];
-    const staticStart = performance.now();
-
-    let contentReady = false;
-    Promise.all([waitForImages(), document.fonts.ready])
-      .then(() => {
-        contentReady = true;
-      })
-      // Some in-app browsers (the same ones that restrict sessionStorage)
-      // reject or misbehave on document.fonts — never let readiness
-      // detection itself become the reason nothing ever reveals.
-      .catch(() => {
-        contentReady = true;
-      });
 
     function drawStatic() {
       if (!ctx) return;
@@ -102,33 +82,23 @@ export function IntroLoader() {
       ctx.putImageData(img, 0, 0);
     }
 
-    // Time-based, not frame-count-based: a fixed frame count finishes twice
-    // as fast on a 120Hz display as on 60Hz, which is why this used to blow
-    // past unnoticed on newer phones.
-    function staticTick(now: number) {
+    // The animation itself just keeps redrawing for as long as it's asked
+    // to — the decision about WHEN to stop lives entirely in the plain
+    // setTimeout below, not here.
+    function animate() {
       drawStatic();
-      const elapsed = now - staticStart;
-      if (elapsed >= STATIC_DURATION_MS && contentReady) {
-        safeSettle();
-      } else {
-        raf = requestAnimationFrame(staticTick);
-      }
+      raf = requestAnimationFrame(animate);
     }
 
-    // A plain setTimeout, deliberately NOT inside the rAF loop — some in-app
-    // browsers (Instagram's embedded webview, notably) throttle or fully
-    // pause requestAnimationFrame, which silently stopped staticTick from
-    // ever running again and left people stuck on "NO SIGNAL" forever. This
-    // fires independently of rAF, so there's always a way out.
-    let settled = false;
-    function safeSettle() {
-      if (settled) return;
-      settled = true;
-      settle();
-    }
-    timers.push(window.setTimeout(safeSettle, STATIC_DURATION_MS + MAX_EXTRA_WAIT_MS));
+    // A plain setTimeout, deliberately not driven by requestAnimationFrame —
+    // some in-app browsers (Instagram's embedded webview, notably) throttle
+    // or fully pause rAF, which would silently stop this from ever firing
+    // and leave people stuck on "NO SIGNAL" forever. A fixed duration, timed
+    // independently of rAF, always reveals on schedule.
+    timers.push(window.setTimeout(settle, STATIC_DURATION_MS));
 
     function settle() {
+      cancelAnimationFrame(raf);
       setLabel("SIGNAL LOCKED");
       canvas!.style.transition = "opacity 220ms ease";
       canvas!.style.opacity = "0";
@@ -161,10 +131,15 @@ export function IntroLoader() {
       );
     }
 
-    raf = requestAnimationFrame(staticTick);
+    raf = requestAnimationFrame(animate);
     return () => {
       cancelAnimationFrame(raf);
       timers.forEach((id) => window.clearTimeout(id));
+      // Whatever point the sequence was at, unmounting must never leave the
+      // page permanently unscrollable — this used to only get reset by the
+      // last timer inside settle(), so navigating away before that timer
+      // fired left body scroll locked forever.
+      document.body.style.overflow = "";
     };
   }, []);
 

@@ -48,6 +48,9 @@ export type Video = {
   services: LocalizedText;
   year?: string;
   categoryId?: string | null;
+  // Present only for videos that live on YouTube instead of as an uploaded
+  // file — videoSrc is "" in that case and playback goes through an embed.
+  youtubeId?: string;
 };
 
 export type SoundLink = {

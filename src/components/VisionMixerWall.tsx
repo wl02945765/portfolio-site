@@ -79,14 +79,18 @@ function CameraTile({
           isOnAir ? "brightness-100" : "brightness-75 saturate-[.85] group-hover:brightness-95 group-hover:saturate-100"
         }`}
       />
-      <video
-        src={withBasePath(video.videoSrc)}
-        muted
-        loop
-        playsInline
-        preload="none"
-        className="absolute inset-0 h-full w-full object-cover opacity-0 transition-opacity duration-200 group-hover:opacity-100"
-      />
+      {/* Hover-scrub preview only exists for uploaded files — a YouTube-backed
+          video has no raw file to loop, so it just stays on the thumbnail. */}
+      {video.videoSrc && (
+        <video
+          src={withBasePath(video.videoSrc)}
+          muted
+          loop
+          playsInline
+          preload="none"
+          className="absolute inset-0 h-full w-full object-cover opacity-0 transition-opacity duration-200 group-hover:opacity-100"
+        />
+      )}
       <span className="absolute left-1.5 top-1.5 bg-black/55 px-1.5 py-0.5 font-mono text-[9px] tracking-[0.05em] text-zinc-200">
         CAM {camNumber}
       </span>
@@ -140,17 +144,31 @@ export function VisionMixerWall({ videos, categories }: { videos: Video[]; categ
 
       <div className="mt-8 px-6 sm:px-10">
         <div className="relative aspect-video w-full overflow-hidden bg-black">
-          <video
-            key={active.id}
-            ref={pgmVideoRef}
-            src={withBasePath(active.videoSrc)}
-            autoPlay
-            muted
-            loop
-            playsInline
-            poster={withBasePath(active.thumbnail)}
-            className="absolute inset-0 h-full w-full object-cover"
-          />
+          {active.youtubeId ? (
+            // The PGM monitor's chrome (ON AIR badge, CAM label, title, watch
+            // button) stays identical either way — YouTube is just this
+            // shot's signal source, not a different kind of page section.
+            <iframe
+              key={active.id}
+              src={`https://www.youtube-nocookie.com/embed/${active.youtubeId}?autoplay=1&mute=1&loop=1&playlist=${active.youtubeId}&controls=0&modestbranding=1&rel=0`}
+              title={active.title[locale]}
+              allow="autoplay; encrypted-media"
+              className="absolute inset-0 h-full w-full"
+              style={{ border: 0 }}
+            />
+          ) : (
+            <video
+              key={active.id}
+              ref={pgmVideoRef}
+              src={withBasePath(active.videoSrc)}
+              autoPlay
+              muted
+              loop
+              playsInline
+              poster={withBasePath(active.thumbnail)}
+              className="absolute inset-0 h-full w-full object-cover"
+            />
+          )}
           <div className="absolute inset-x-0 top-0 flex items-center justify-between bg-gradient-to-b from-black/75 to-transparent p-3 sm:p-4">
             <span className="flex items-center gap-2 bg-red-600 px-2.5 py-1 font-mono text-[10px] tracking-[0.14em] text-white">
               <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-white" />

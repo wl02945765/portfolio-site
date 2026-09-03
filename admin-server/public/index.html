@@ -124,6 +124,25 @@
           <p class="status" id="video-status"></p>
         </form>
 
+        <form id="video-external-form" class="upload-form">
+          <h3>沒有原始檔？貼 YouTube 連結</h3>
+          <p class="hint">
+            適合客戶案、外稿這類手上只有 YouTube 連結的作品。會混進下面同一批清單裡，網站上跟自己上傳的影片長得一模一樣，
+            只有點開播放時改用 YouTube 內嵌播放。
+          </p>
+          <div class="fields">
+            <label>YouTube 網址 <input type="url" name="youtube_url" placeholder="https://www.youtube.com/watch?v=..." required /></label>
+            <label>中文標題 <input type="text" name="title_zh" placeholder="例如：客戶案：日式料理店宣傳片" /></label>
+            <label>English Title <input type="text" name="title_en" /></label>
+            <label>服務內容（中） <input type="text" name="services_zh" placeholder="企劃・攝影・剪輯" /></label>
+            <label>Services (EN) <input type="text" name="services_en" /></label>
+            <label>年份 Year <input type="text" name="year" placeholder="2026" /></label>
+            <label>分類 <select name="category_id" id="video-external-category-select"><option value="">（未分類）</option></select></label>
+          </div>
+          <button type="submit" class="primary-btn">＋ 新增外部連結影片</button>
+          <p class="status" id="video-external-status"></p>
+        </form>
+
         <div id="video-grid" class="grid"></div>
       </section>
 

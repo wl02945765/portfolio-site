@@ -8,5 +8,8 @@ const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH || "";
  */
 export function withBasePath(path: string): string {
   if (!path) return path;
+  // External URLs (e.g. YouTube thumbnails for linked-in external videos)
+  // are absolute already and must never get the GitHub Pages sub-path prefixed.
+  if (/^https?:\/\//.test(path)) return path;
   return `${BASE_PATH}${path}`;
 }

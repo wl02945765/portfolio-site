@@ -386,6 +386,8 @@ document.getElementById("photo-form").addEventListener("submit", async (e) => {
 const videoGrid = document.getElementById("video-grid");
 const videoStatus = document.getElementById("video-status");
 const videoCategorySelect = document.getElementById("video-category-select");
+const videoExternalCategorySelect = document.getElementById("video-external-category-select");
+const videoExternalStatus = document.getElementById("video-external-status");
 const videoCategoryList = document.getElementById("video-category-list");
 const videoCategoryStatus = document.getElementById("video-category-status");
 
@@ -398,13 +400,16 @@ async function loadVideoCategories() {
 }
 
 function renderVideoCategoryOptions() {
-  const current = videoCategorySelect.value;
-  videoCategorySelect.innerHTML =
+  const options =
     `<option value="">（未分類）</option>` +
     allVideoCategories
       .map((c) => `<option value="${c.id}">${escapeHtml(c.name.zh || c.name.en)}</option>`)
       .join("");
-  videoCategorySelect.value = current;
+  for (const select of [videoCategorySelect, videoExternalCategorySelect]) {
+    const current = select.value;
+    select.innerHTML = options;
+    select.value = current;
+  }
 }
 
 function renderVideoCategoryList() {
@@ -472,7 +477,10 @@ function renderVideoCard(video) {
   card.draggable = true;
   card.dataset.id = video.id;
   card.innerHTML = `
-    <img class="card-thumb" src="${video.thumbnail || ""}" alt="" />
+    <div class="thumb-wrap">
+      <img class="card-thumb" src="${video.thumbnail || ""}" alt="" />
+      ${video.youtubeId ? `<span class="chip mono" style="position:absolute;left:6px;top:6px;background:rgba(0,0,0,.6);padding:2px 6px;font-size:10px;">▶ YouTube</span>` : ""}
+    </div>
     <div class="card-body">
       <input type="text" data-field="title_zh" value="${escapeHtml(video.title.zh)}" placeholder="中文標題" />
       <input type="text" data-field="title_en" value="${escapeHtml(video.title.en)}" placeholder="English title" />
@@ -541,6 +549,37 @@ document.getElementById("video-form").addEventListener("submit", async (e) => {
     loadVideos();
   } catch (err) {
     videoStatus.textContent = `上傳失敗：${err.message}`;
+  } finally {
+    submitBtn.disabled = false;
+  }
+});
+
+document.getElementById("video-external-form").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const form = e.target;
+  videoExternalStatus.textContent = "新增中…";
+  const submitBtn = form.querySelector("button[type=submit]");
+  submitBtn.disabled = true;
+  try {
+    const res = await fetch("/api/videos/external", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        youtube_url: form.youtube_url.value,
+        title_zh: form.title_zh.value,
+        title_en: form.title_en.value,
+        services_zh: form.services_zh.value,
+        services_en: form.services_en.value,
+        year: form.year.value,
+        category_id: form.category_id.value,
+      }),
+    });
+    if (!res.ok) throw new Error((await res.json().catch(() => ({}))).error || "新增失敗");
+    videoExternalStatus.textContent = "新增完成！";
+    form.reset();
+    loadVideos();
+  } catch (err) {
+    videoExternalStatus.textContent = `新增失敗：${err.message}`;
   } finally {
     submitBtn.disabled = false;
   }

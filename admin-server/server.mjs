@@ -784,6 +784,45 @@ app.post("/api/videos", videoUpload.single("file"), (req, res) => {
   res.json(entry);
 });
 
+// Accepts youtube.com/watch?v=, youtu.be/, and /embed/ links (with or
+// without extra query params) and pulls out the 11-char video id.
+function extractYoutubeId(url) {
+  const match = String(url || "").match(
+    /(?:youtube(?:-nocookie)?\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([\w-]{11})/,
+  );
+  return match ? match[1] : null;
+}
+
+app.post("/api/videos/external", (req, res) => {
+  const youtubeId = extractYoutubeId(req.body.youtube_url);
+  if (!youtubeId) {
+    return res.status(400).json({ error: "看不出這是 YouTube 影片連結，確認網址有沒有貼對" });
+  }
+  const videos = readJSON(VIDEOS_JSON);
+  const id = randomUUID();
+  const titleEn = req.body.title_en || req.body.title_zh || "untitled";
+  const slug = uniqueSlug(slugify(titleEn), videos);
+
+  const entry = {
+    id,
+    slug,
+    thumbnail: `https://img.youtube.com/vi/${youtubeId}/hqdefault.jpg`,
+    videoSrc: "",
+    youtubeId,
+    title: { zh: req.body.title_zh || "", en: req.body.title_en || "" },
+    services: {
+      zh: req.body.services_zh || "",
+      en: req.body.services_en || "",
+    },
+    year: req.body.year || "",
+    categoryId: req.body.category_id || null,
+  };
+  videos.push(entry);
+  writeJSON(VIDEOS_JSON, videos);
+  schedulePublish();
+  res.json(entry);
+});
+
 app.patch("/api/videos/:id", (req, res) => {
   const videos = readJSON(VIDEOS_JSON);
   const item = videos.find((v) => v.id === req.params.id);
@@ -803,9 +842,13 @@ app.delete("/api/videos/:id", (req, res) => {
   const videos = readJSON(VIDEOS_JSON);
   const item = videos.find((v) => v.id === req.params.id);
   if (!item) return res.status(404).json({ error: "not found" });
-  const videoPath = path.join(ROOT, "public", item.videoSrc);
-  if (fs.existsSync(videoPath)) fs.unlinkSync(videoPath);
-  if (item.thumbnail) {
+  // External (YouTube) videos have no local file — videoSrc is "" and
+  // thumbnail is a remote img.youtube.com URL, neither backed by a real path.
+  if (item.videoSrc) {
+    const videoPath = path.join(ROOT, "public", item.videoSrc);
+    if (fs.existsSync(videoPath)) fs.unlinkSync(videoPath);
+  }
+  if (item.thumbnail && item.thumbnail.startsWith("/")) {
     const thumbPath = path.join(ROOT, "public", item.thumbnail);
     if (fs.existsSync(thumbPath)) fs.unlinkSync(thumbPath);
   }

@@ -66,6 +66,8 @@ export function VideoDetail({ video }: { video: Video }) {
     else el.requestFullscreen().catch(() => {});
   }
 
+  const isExternal = Boolean(video.youtubeId);
+
   return (
     <div className="flex flex-1 flex-col px-6 pb-24 pt-16 sm:px-10 sm:pt-20">
       <Link
@@ -81,84 +83,99 @@ export function VideoDetail({ video }: { video: Video }) {
           variants={videoReveal}
           className="group relative w-full select-none overflow-hidden bg-black"
         >
-          <video
-            ref={videoRef}
-            src={withBasePath(video.videoSrc)}
-            poster={withBasePath(video.thumbnail)}
-            playsInline
-            onClick={togglePlay}
-            onPlay={() => setIsPlaying(true)}
-            onPause={() => setIsPlaying(false)}
-            onTimeUpdate={(e) => {
-              const el = e.currentTarget;
-              if (el.duration) setProgress(el.currentTime / el.duration);
-            }}
-            className="aspect-video w-full cursor-pointer bg-black"
-          />
-
-          {/* Centered play button, fades out once playing — click anywhere to toggle */}
-          <button
-            onClick={togglePlay}
-            aria-label={isPlaying ? "Pause" : "Play"}
-            className={`absolute inset-0 flex items-center justify-center transition-opacity duration-300 ${
-              isPlaying ? "pointer-events-none opacity-0" : "opacity-100"
-            }`}
-          >
-            <div className="flex h-16 w-16 items-center justify-center rounded-full border border-white/40 bg-black/40 transition-transform duration-200 hover:scale-110">
-              <div className="ml-1 h-0 w-0 border-y-[10px] border-l-[16px] border-y-transparent border-l-white" />
-            </div>
-          </button>
-
-          {/* Bottom control bar: progress + play/pause + speed + text buttons */}
-          <div className="absolute inset-x-0 bottom-0 z-10 bg-gradient-to-t from-black/70 to-transparent px-4 pb-3 pt-8">
-            <div
-              onClick={handleProgressClick}
-              className="mb-3 h-[2px] w-full cursor-pointer bg-white/25"
-            >
-              <div
-                className="h-full bg-white"
-                style={{ width: `${progress * 100}%` }}
+          {isExternal ? (
+            // YouTube's own iframe already ships scrub/speed/fullscreen
+            // controls, so the custom bottom bar below is native-app-only.
+            <iframe
+              src={`https://www.youtube-nocookie.com/embed/${video.youtubeId}?modestbranding=1&rel=0`}
+              title={video.title[locale]}
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              allowFullScreen
+              className="aspect-video w-full bg-black"
+              style={{ border: 0 }}
+            />
+          ) : (
+            <>
+              <video
+                ref={videoRef}
+                src={withBasePath(video.videoSrc)}
+                poster={withBasePath(video.thumbnail)}
+                playsInline
+                onClick={togglePlay}
+                onPlay={() => setIsPlaying(true)}
+                onPause={() => setIsPlaying(false)}
+                onTimeUpdate={(e) => {
+                  const el = e.currentTarget;
+                  if (el.duration) setProgress(el.currentTime / el.duration);
+                }}
+                className="aspect-video w-full cursor-pointer bg-black"
               />
-            </div>
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-4">
-                <button
-                  onClick={togglePlay}
-                  aria-label={isPlaying ? "Pause" : "Play"}
-                  className="flex h-4 w-4 items-center justify-center text-zinc-300 hover:text-white"
+
+              {/* Centered play button, fades out once playing — click anywhere to toggle */}
+              <button
+                onClick={togglePlay}
+                aria-label={isPlaying ? "Pause" : "Play"}
+                className={`absolute inset-0 flex items-center justify-center transition-opacity duration-300 ${
+                  isPlaying ? "pointer-events-none opacity-0" : "opacity-100"
+                }`}
+              >
+                <div className="flex h-16 w-16 items-center justify-center rounded-full border border-white/40 bg-black/40 transition-transform duration-200 hover:scale-110">
+                  <div className="ml-1 h-0 w-0 border-y-[10px] border-l-[16px] border-y-transparent border-l-white" />
+                </div>
+              </button>
+
+              {/* Bottom control bar: progress + play/pause + speed + text buttons */}
+              <div className="absolute inset-x-0 bottom-0 z-10 bg-gradient-to-t from-black/70 to-transparent px-4 pb-3 pt-8">
+                <div
+                  onClick={handleProgressClick}
+                  className="mb-3 h-[2px] w-full cursor-pointer bg-white/25"
                 >
-                  {isPlaying ? (
-                    <div className="flex gap-[3px]">
-                      <div className="h-3.5 w-[3px] bg-current" />
-                      <div className="h-3.5 w-[3px] bg-current" />
-                    </div>
-                  ) : (
-                    <div className="h-0 w-0 border-y-[6px] border-l-[10px] border-y-transparent border-l-current" />
-                  )}
-                </button>
-                <button
-                  onClick={cycleSpeed}
-                  className="text-[11px] uppercase tracking-[0.15em] text-zinc-300 hover:text-white"
-                >
-                  {speed}x
-                </button>
+                  <div
+                    className="h-full bg-white"
+                    style={{ width: `${progress * 100}%` }}
+                  />
+                </div>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-4">
+                    <button
+                      onClick={togglePlay}
+                      aria-label={isPlaying ? "Pause" : "Play"}
+                      className="flex h-4 w-4 items-center justify-center text-zinc-300 hover:text-white"
+                    >
+                      {isPlaying ? (
+                        <div className="flex gap-[3px]">
+                          <div className="h-3.5 w-[3px] bg-current" />
+                          <div className="h-3.5 w-[3px] bg-current" />
+                        </div>
+                      ) : (
+                        <div className="h-0 w-0 border-y-[6px] border-l-[10px] border-y-transparent border-l-current" />
+                      )}
+                    </button>
+                    <button
+                      onClick={cycleSpeed}
+                      className="text-[11px] uppercase tracking-[0.15em] text-zinc-300 hover:text-white"
+                    >
+                      {speed}x
+                    </button>
+                  </div>
+                  <div className="flex items-center gap-4">
+                    <button
+                      onClick={handleFullscreen}
+                      className="text-[11px] uppercase tracking-[0.15em] text-zinc-300 hover:text-white"
+                    >
+                      Fullscreen
+                    </button>
+                    <button
+                      onClick={() => setInfosOpen(true)}
+                      className="text-[11px] uppercase tracking-[0.15em] text-zinc-300 hover:text-white"
+                    >
+                      Infos
+                    </button>
+                  </div>
+                </div>
               </div>
-              <div className="flex items-center gap-4">
-                <button
-                  onClick={handleFullscreen}
-                  className="text-[11px] uppercase tracking-[0.15em] text-zinc-300 hover:text-white"
-                >
-                  Fullscreen
-                </button>
-                <button
-                  onClick={() => setInfosOpen(true)}
-                  className="text-[11px] uppercase tracking-[0.15em] text-zinc-300 hover:text-white"
-                >
-                  Infos
-                </button>
-              </div>
-            </div>
-          </div>
+            </>
+          )}
         </motion.div>
 
         <motion.div
@@ -175,6 +192,17 @@ export function VideoDetail({ video }: { video: Video }) {
         <motion.p variants={fadeUp} className="mt-2 text-sm tracking-wide text-zinc-400">
           {video.services[locale]}
         </motion.p>
+        {isExternal && (
+          <motion.a
+            variants={fadeUp}
+            href={`https://www.youtube.com/watch?v=${video.youtubeId}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-4 inline-block w-fit border border-white/30 px-4 py-2 text-center text-[11px] uppercase tracking-[0.1em] text-zinc-100 transition-colors hover:border-white hover:bg-white/10"
+          >
+            {locale === "zh" ? "在 YouTube 上觀看 ↗" : "Watch on YouTube ↗"}
+          </motion.a>
+        )}
       </motion.div>
 
       {/* Infos popin */}

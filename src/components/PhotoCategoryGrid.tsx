@@ -31,10 +31,15 @@ export function PhotoCategoryGrid({ photos }: { photos: Photo[] }) {
     <>
       <div className="columns-1 gap-3 sm:columns-2 lg:columns-3 xl:columns-4">
         {photos.map((photo, i) => {
-          // The cursor position IS the reveal edge — same "hover discovers it"
-          // feel as the featured strip at the top of this page. Resting state
-          // sits at 50% so the comparison is visible without any interaction.
-          const onWipeMove = (e: React.MouseEvent<HTMLButtonElement>) => {
+          // Pointer Events, not mouse events — mobile has no hover concept,
+          // so onMouseMove never fired there at all. pointermove covers mouse
+          // hover AND a finger actively dragging across the tile with the
+          // same handler: touch only ever sends pointermove while in contact,
+          // which is exactly the "drag to scrub" behavior mobile needs.
+          const onWipeDown = (e: React.PointerEvent<HTMLButtonElement>) => {
+            e.currentTarget.setPointerCapture(e.pointerId);
+          };
+          const onWipeMove = (e: React.PointerEvent<HTMLButtonElement>) => {
             const afterLayer = e.currentTarget.querySelector<HTMLElement>('[data-role="after-layer"]');
             const wipeLine = e.currentTarget.querySelector<HTMLElement>('[data-role="wipe-line"]');
             if (!afterLayer) return;
@@ -43,7 +48,7 @@ export function PhotoCategoryGrid({ photos }: { photos: Photo[] }) {
             afterLayer.style.clipPath = `inset(0 0 0 ${pct}%)`;
             if (wipeLine) wipeLine.style.left = `${pct}%`;
           };
-          const onWipeLeave = (e: React.MouseEvent<HTMLButtonElement>) => {
+          const onWipeLeave = (e: React.PointerEvent<HTMLButtonElement>) => {
             const afterLayer = e.currentTarget.querySelector<HTMLElement>('[data-role="after-layer"]');
             const wipeLine = e.currentTarget.querySelector<HTMLElement>('[data-role="wipe-line"]');
             if (!afterLayer) return;
@@ -55,9 +60,12 @@ export function PhotoCategoryGrid({ photos }: { photos: Photo[] }) {
             <button
               key={photo.id}
               onClick={() => setLightboxIndex(i)}
-              onMouseMove={photo.beforeSrc ? onWipeMove : undefined}
-              onMouseLeave={photo.beforeSrc ? onWipeLeave : undefined}
-              className="group relative mb-3 block w-full break-inside-avoid overflow-hidden bg-black"
+              onPointerDown={photo.beforeSrc ? onWipeDown : undefined}
+              onPointerMove={photo.beforeSrc ? onWipeMove : undefined}
+              onPointerLeave={photo.beforeSrc ? onWipeLeave : undefined}
+              className={`group relative mb-3 block w-full break-inside-avoid overflow-hidden bg-black ${
+                photo.beforeSrc ? "touch-pan-y" : ""
+              }`}
             >
               {photo.beforeSrc ? (
                 <div className="relative">

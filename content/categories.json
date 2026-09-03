@@ -16,22 +16,6 @@
     "coverPhotoId": "48523fef-1a62-46bf-b040-a4ced54058e7"
   },
   {
-    "id": "48e16848-fbbb-4f25-8724-4dbf33529fc8",
-    "name": {
-      "zh": "腕錶-軍隊",
-      "en": "ARMY's Watches"
-    },
-    "description": {
-      "zh": "一些我拍攝過的商品",
-      "en": "Some products I've photographed before"
-    },
-    "location": {
-      "zh": "",
-      "en": ""
-    },
-    "coverPhotoId": "9e19eeb1-fa7c-45e0-ad4f-5450b56f5ec3"
-  },
-  {
     "id": "93f7b708-edb2-47a9-b457-11388aebdbd8",
     "name": {
       "zh": "Cafe Racer Watches",
@@ -46,6 +30,38 @@
       "en": ""
     },
     "coverPhotoId": "37fdb62a-ea4a-4392-9c40-ef2afde24c27"
+  },
+  {
+    "id": "c2a1286e-0253-4447-8ca0-ba2f60ca8fe7",
+    "name": {
+      "zh": "41mm Watches",
+      "en": "41mm Watches"
+    },
+    "description": {
+      "zh": "",
+      "en": ""
+    },
+    "location": {
+      "zh": "",
+      "en": ""
+    },
+    "coverPhotoId": "00630d33-39bd-4d1b-898e-2a951ece73ed"
+  },
+  {
+    "id": "48e16848-fbbb-4f25-8724-4dbf33529fc8",
+    "name": {
+      "zh": "腕錶-軍隊",
+      "en": "ARMY's Watches"
+    },
+    "description": {
+      "zh": "一些我拍攝過的商品",
+      "en": "Some products I've photographed before"
+    },
+    "location": {
+      "zh": "",
+      "en": ""
+    },
+    "coverPhotoId": "9e19eeb1-fa7c-45e0-ad4f-5450b56f5ec3"
   },
   {
     "id": "2e001a7a-9e1a-4079-ad81-f023f1a8ec90",
@@ -126,21 +142,5 @@
       "en": ""
     },
     "coverPhotoId": "5f288e01-753c-4bbb-891e-249a97425b02"
-  },
-  {
-    "id": "c2a1286e-0253-4447-8ca0-ba2f60ca8fe7",
-    "name": {
-      "zh": "41mm Watches",
-      "en": "41mm Watches"
-    },
-    "description": {
-      "zh": "",
-      "en": ""
-    },
-    "location": {
-      "zh": "",
-      "en": ""
-    },
-    "coverPhotoId": "00630d33-39bd-4d1b-898e-2a951ece73ed"
   }
 ]

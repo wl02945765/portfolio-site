@@ -24,7 +24,7 @@ export function CategoryDetail({
     <div className="flex flex-1 flex-col px-6 pb-24 pt-16 sm:px-10 sm:pt-20">
       <Link
         href={basePath}
-        className="fixed left-3 top-1/2 z-30 -translate-y-1/2 rounded-full bg-black/35 px-4 py-2 text-[11px] uppercase tracking-[0.15em] text-zinc-500 backdrop-blur-[2px] transition-all duration-200 hover:bg-black/85 hover:text-zinc-200 hover:backdrop-blur-sm active:bg-black/85 active:text-zinc-200 active:backdrop-blur-sm sm:left-6"
+        className="mb-8 inline-block w-fit rounded-full bg-black/80 px-4 py-2 text-[11px] uppercase tracking-[0.15em] text-zinc-400 backdrop-blur-sm hover:text-zinc-200"
       >
         ← {backLabel}
       </Link>

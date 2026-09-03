@@ -186,7 +186,7 @@ export function IntroLoader() {
         }}
       />
 
-      <p className="heading-font absolute left-1/2 top-[38%] -translate-x-1/2 -translate-y-1/2 bg-black/70 px-3 py-1.5 text-xs uppercase tracking-[0.32em] text-zinc-400">
+      <p className="heading-font absolute left-1/2 top-[38%] -translate-x-1/2 -translate-y-1/2 border border-zinc-600 bg-black px-3 py-1.5 text-xs font-bold uppercase tracking-[0.32em] text-zinc-200">
         {label}
       </p>
     </div>

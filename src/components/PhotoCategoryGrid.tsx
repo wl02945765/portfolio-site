@@ -158,14 +158,24 @@ export function PhotoCategoryGrid({ photos }: { photos: Photo[] }) {
             className="relative flex max-h-[85vh] max-w-5xl flex-col items-center"
             onClick={(e) => e.stopPropagation()}
           >
-            <Image
-              src={withBasePath(photos[lightboxIndex].src)}
-              alt={photos[lightboxIndex].caption[locale]}
-              width={1600}
-              height={1200}
-              unoptimized
-              className="max-h-[80vh] w-auto object-contain"
-            />
+            <div
+              className="cursor-pointer"
+              onClick={(e) => {
+                const rect = e.currentTarget.getBoundingClientRect();
+                const pct = (e.clientX - rect.left) / rect.width;
+                if (pct < 0.5) showPrev();
+                else showNext();
+              }}
+            >
+              <Image
+                src={withBasePath(photos[lightboxIndex].src)}
+                alt={photos[lightboxIndex].caption[locale]}
+                width={1600}
+                height={1200}
+                unoptimized
+                className="max-h-[80vh] w-auto object-contain"
+              />
+            </div>
             <p className="mt-4 text-xs tracking-wide text-zinc-400">
               {photos[lightboxIndex].caption[locale]}
             </p>

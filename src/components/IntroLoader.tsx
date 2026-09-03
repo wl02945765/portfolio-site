@@ -15,11 +15,23 @@ export function IntroLoader() {
   const lineRef = useRef<HTMLDivElement>(null);
 
   useLayoutEffect(() => {
-    if (sessionStorage.getItem(SESSION_KEY)) {
+    // Some mobile in-app browsers (LINE, Instagram, FB Messenger) restrict
+    // sessionStorage and throw on access instead of just no-op'ing. This ran
+    // unguarded — an uncaught exception here crashed the whole page before
+    // any content rendered, every single time the link was opened from one
+    // of those apps. Fail safe: skip the intro rather than break the site.
+    let alreadyShown = false;
+    try {
+      alreadyShown = Boolean(sessionStorage.getItem(SESSION_KEY));
+      sessionStorage.setItem(SESSION_KEY, "1");
+    } catch {
       setVisible(false);
       return;
     }
-    sessionStorage.setItem(SESSION_KEY, "1");
+    if (alreadyShown) {
+      setVisible(false);
+      return;
+    }
     document.body.style.overflow = "hidden";
 
     const canvas = canvasRef.current;

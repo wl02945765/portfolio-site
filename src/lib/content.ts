@@ -32,6 +32,10 @@ export type Photo = {
   categoryId: string;
   caption: LocalizedText;
   beforeSrc?: string;
+  // A ~1200px copy of src, matched in size to beforeSrc — used on the
+  // "after" side of the wipe tile so it doesn't pair a full-res before
+  // with a tiny after (or vice versa).
+  compareSrc?: string;
   // A ~800px copy for masonry-grid browsing — src is full resolution
   // (up to 2400px) and is reserved for the lightbox.
   thumbSrc?: string;

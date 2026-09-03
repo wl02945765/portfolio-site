@@ -169,6 +169,37 @@ function makeStripThumbnail(dir, filename) {
   return fs.existsSync(thumbPath) ? thumbFilename : null;
 }
 
+// The Photography grid's before/after wipe tile shows both images at the
+// same on-screen size, so shipping the "before" at its full MAX_PHOTO_DIMENSION
+// while the "after" was the ~530px grid thumbnail made the after side look
+// visibly soft next to it. Both sides of that tile now use a matched,
+// mid-sized thumbnail instead — sharp enough for the tile (never shown
+// larger than the masonry column), without the full-size file's weight.
+const COMPARE_THUMB_MAX_DIMENSION = 1200;
+const COMPARE_THUMB_QUALITY = 78;
+
+function makeCompareThumbnail(dir, filename) {
+  const ext = path.extname(filename);
+  const base = filename.slice(0, -ext.length);
+  const thumbFilename = `${base}-compare.jpg`;
+  const srcPath = path.join(dir, filename);
+  const thumbPath = path.join(dir, thumbFilename);
+  spawnSync("sips", [
+    "-s",
+    "format",
+    "jpeg",
+    "-Z",
+    String(COMPARE_THUMB_MAX_DIMENSION),
+    "--setProperty",
+    "formatOptions",
+    String(COMPARE_THUMB_QUALITY),
+    srcPath,
+    "--out",
+    thumbPath,
+  ]);
+  return fs.existsSync(thumbPath) ? thumbFilename : null;
+}
+
 // Camera-original videos (raw H.264/ProRes, hundreds of MB to 1GB+) were
 // committed straight into git by auto-publish — pushing that much binary
 // data to GitHub over normal home upload bandwidth just hangs, and any
@@ -722,8 +753,22 @@ app.post("/api/photos/:id/before", photoBeforeUpload.single("file"), (req, res) 
     const oldPath = path.join(ROOT, "public", item.beforeSrc);
     if (fs.existsSync(oldPath)) fs.unlinkSync(oldPath);
   }
-  const filename = optimizePhoto(PHOTOS_DIR, req.file.filename);
-  item.beforeSrc = `/media/photos/${filename}`;
+  // Normalize format/orientation (handles HEIC) via optimizePhoto, then
+  // shrink to the matched compare-tile size — the intermediate full-size
+  // file is only ever a stepping stone, beforeSrc never needs it.
+  const normalized = optimizePhoto(PHOTOS_DIR, req.file.filename);
+  const thumbFilename = makeCompareThumbnail(PHOTOS_DIR, normalized);
+  if (normalized !== thumbFilename) fs.unlinkSync(path.join(PHOTOS_DIR, normalized));
+  item.beforeSrc = thumbFilename ? `/media/photos/${thumbFilename}` : undefined;
+
+  // The "after" side is the main photo — give it a matching compare-sized
+  // thumbnail so the wipe tile doesn't pair a small before with a huge after.
+  if (!item.compareSrc && item.src) {
+    const srcFilename = path.basename(item.src);
+    const compareFilename = makeCompareThumbnail(PHOTOS_DIR, srcFilename);
+    if (compareFilename) item.compareSrc = `/media/photos/${compareFilename}`;
+  }
+
   writeJSON(PHOTOS_JSON, photos);
   schedulePublish();
   res.json(item);
@@ -737,7 +782,12 @@ app.delete("/api/photos/:id/before", (req, res) => {
     const oldPath = path.join(ROOT, "public", item.beforeSrc);
     if (fs.existsSync(oldPath)) fs.unlinkSync(oldPath);
   }
+  if (item.compareSrc) {
+    const oldComparePath = path.join(ROOT, "public", item.compareSrc);
+    if (fs.existsSync(oldComparePath)) fs.unlinkSync(oldComparePath);
+  }
   delete item.beforeSrc;
+  delete item.compareSrc;
   writeJSON(PHOTOS_JSON, photos);
   schedulePublish();
   res.json(item);

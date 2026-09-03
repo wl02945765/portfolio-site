@@ -87,7 +87,7 @@ export function PhotoCategoryGrid({ photos }: { photos: Photo[] }) {
                     className="h-auto w-full object-cover"
                   />
                   <img
-                    src={withBasePath(photo.src)}
+                    src={withBasePath(photo.compareSrc || photo.src)}
                     alt=""
                     data-role="after-layer"
                     className="absolute inset-0 h-full w-full object-cover"

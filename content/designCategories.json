@@ -14,5 +14,21 @@
       "en": ""
     },
     "coverPhotoId": "2259403f-ca89-4269-99f3-42aa3822fd04"
+  },
+  {
+    "id": "bab6b8b3-e150-4f96-b74c-22067c027edf",
+    "name": {
+      "zh": "名片、海報、卡片",
+      "en": "Business Card、Poster、Card"
+    },
+    "description": {
+      "zh": "",
+      "en": ""
+    },
+    "location": {
+      "zh": "",
+      "en": ""
+    },
+    "coverPhotoId": null
   }
 ]

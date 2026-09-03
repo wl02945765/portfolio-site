@@ -8,8 +8,20 @@ import type { LocalizedText } from "@/lib/content";
 type StripPhoto = {
   id: string;
   src: string;
+  thumbSrc?: string;
   caption: LocalizedText;
 };
+
+// Every strip is visible the moment the page loads — this is one full-width
+// row, not a scrolling grid, so there's no "below the fold" to lazy-load
+// against. fetchPriority="high" on every tile was fine for the handful of
+// photos this was designed around, but once the set grew into the hundreds,
+// marking all of them "highest priority" at once (each still a fairly large
+// file) was enough simultaneous network+memory pressure to crash the tab
+// outright on mobile Safari. Only the first few — the ones a visitor's eye
+// actually lands on first — get the aggressive hint; the rest still load
+// eagerly, just without fighting each other for priority.
+const HIGH_PRIORITY_COUNT = 8;
 
 function pseudoRandom(seed: number) {
   const x = Math.sin(seed * 12.9898) * 43758.5453;
@@ -52,13 +64,12 @@ export function PhotoStripCurtain({ photos }: { photos: StripPhoto[] }) {
                   scanner only discovers <img src> while parsing the raw HTML;
                   background-image is discovered later, after CSS/layout, which
                   is what made this strip visibly pop in after the page had
-                  already loaded. fetchPriority="high" additionally tells the
-                  browser to fetch these ahead of everything else. */}
+                  already loaded. */}
               <img
-                src={withBasePath(strip.photo.src)}
+                src={withBasePath(strip.photo.thumbSrc || strip.photo.src)}
                 alt=""
                 loading="eager"
-                fetchPriority="high"
+                fetchPriority={i < HIGH_PRIORITY_COUNT ? "high" : "auto"}
                 decoding="async"
                 className="absolute inset-0 h-full w-full object-cover"
                 style={{
@@ -72,7 +83,7 @@ export function PhotoStripCurtain({ photos }: { photos: StripPhoto[] }) {
                 style={{ opacity: isHovered ? 1 : 0, transition: "opacity 300ms ease 150ms" }}
               >
                 <img
-                  src={withBasePath(strip.photo.src)}
+                  src={withBasePath(strip.photo.thumbSrc || strip.photo.src)}
                   alt=""
                   loading="eager"
                   decoding="async"

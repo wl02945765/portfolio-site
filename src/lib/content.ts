@@ -104,6 +104,11 @@ export type AboutTimelineStep = {
 export type FeaturedPhoto = {
   id: string;
   src: string;
+  // A downsized copy for the filmstrip — src is full resolution (up to
+  // 2400px). Every strip loads eagerly at fetchPriority="high", so a
+  // large curated set of full-res files was blowing past mobile Safari's
+  // per-tab memory budget and crashing the tab outright.
+  thumbSrc?: string;
   caption: LocalizedText;
 };
 

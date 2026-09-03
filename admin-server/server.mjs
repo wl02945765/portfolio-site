@@ -142,6 +142,33 @@ function makeGridThumbnail(dir, filename) {
   return fs.existsSync(thumbPath) ? thumbFilename : null;
 }
 
+// Same idea as the grid thumbnail, sized a bit larger since a strip tile
+// expands up to ~640px on hover and still needs to look sharp there.
+const STRIP_THUMB_MAX_DIMENSION = 1400;
+const STRIP_THUMB_QUALITY = 78;
+
+function makeStripThumbnail(dir, filename) {
+  const ext = path.extname(filename);
+  const base = filename.slice(0, -ext.length);
+  const thumbFilename = `${base}-strip.jpg`;
+  const srcPath = path.join(dir, filename);
+  const thumbPath = path.join(dir, thumbFilename);
+  spawnSync("sips", [
+    "-s",
+    "format",
+    "jpeg",
+    "-Z",
+    String(STRIP_THUMB_MAX_DIMENSION),
+    "--setProperty",
+    "formatOptions",
+    String(STRIP_THUMB_QUALITY),
+    srcPath,
+    "--out",
+    thumbPath,
+  ]);
+  return fs.existsSync(thumbPath) ? thumbFilename : null;
+}
+
 // Camera-original videos (raw H.264/ProRes, hundreds of MB to 1GB+) were
 // committed straight into git by auto-publish — pushing that much binary
 // data to GitHub over normal home upload bandwidth just hangs, and any
@@ -926,9 +953,11 @@ app.post("/api/featured-photos", featuredPhotoUpload.array("files", 50), (req, r
   const featured = readJSON(FEATURED_PHOTOS_JSON);
   const created = req.files.map((file) => {
     const filename = optimizePhoto(FEATURED_DIR, file.filename);
+    const thumbFilename = makeStripThumbnail(FEATURED_DIR, filename);
     return {
       id: randomUUID(),
       src: `/media/featured/${filename}`,
+      thumbSrc: thumbFilename ? `/media/featured/${thumbFilename}` : undefined,
       caption: { zh: "", en: "" },
     };
   });
@@ -956,6 +985,10 @@ app.delete("/api/featured-photos/:id", (req, res) => {
   if (item.src) {
     const filePath = path.join(ROOT, "public", item.src);
     if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
+  }
+  if (item.thumbSrc) {
+    const thumbPath = path.join(ROOT, "public", item.thumbSrc);
+    if (fs.existsSync(thumbPath)) fs.unlinkSync(thumbPath);
   }
   writeJSON(
     FEATURED_PHOTOS_JSON,

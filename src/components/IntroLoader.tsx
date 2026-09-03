@@ -4,7 +4,29 @@ import { useLayoutEffect, useRef, useState } from "react";
 
 const SESSION_KEY = "cp-intro-shown";
 const STATIC_DURATION_MS = 1680;
+// If the page's images/fonts genuinely aren't ready yet, hold the static a
+// little longer rather than reveal a page that's still popping in — but
+// never past this, so a slow network doesn't strand people on the intro.
+const MAX_EXTRA_WAIT_MS = 4000;
 const STATIC_CANVAS_WIDTH = 120;
+
+// Only the images actually on the page right now — not the browser's global
+// "load" event, which would also wait on things like an autoplaying video's
+// buffering and has nothing to do with why the reveal felt like it was
+// stuttering.
+function waitForImages(): Promise<void> {
+  const pending = Array.from(document.images).filter((img) => !img.complete);
+  if (pending.length === 0) return Promise.resolve();
+  return Promise.all(
+    pending.map(
+      (img) =>
+        new Promise<void>((resolve) => {
+          img.addEventListener("load", () => resolve(), { once: true });
+          img.addEventListener("error", () => resolve(), { once: true });
+        }),
+    ),
+  ).then(() => undefined);
+}
 
 export function IntroLoader() {
   const [visible, setVisible] = useState(true);
@@ -50,6 +72,11 @@ export function IntroLoader() {
     const timers: number[] = [];
     const staticStart = performance.now();
 
+    let contentReady = false;
+    Promise.all([waitForImages(), document.fonts.ready]).then(() => {
+      contentReady = true;
+    });
+
     function drawStatic() {
       if (!ctx) return;
       const img = ctx.createImageData(internalW, internalH);
@@ -73,10 +100,13 @@ export function IntroLoader() {
     // past unnoticed on newer phones.
     function staticTick(now: number) {
       drawStatic();
-      if (now - staticStart < STATIC_DURATION_MS) {
-        raf = requestAnimationFrame(staticTick);
-      } else {
+      const elapsed = now - staticStart;
+      const pastMinimum = elapsed >= STATIC_DURATION_MS;
+      const timedOut = elapsed >= STATIC_DURATION_MS + MAX_EXTRA_WAIT_MS;
+      if ((pastMinimum && contentReady) || timedOut) {
         settle();
+      } else {
+        raf = requestAnimationFrame(staticTick);
       }
     }
 

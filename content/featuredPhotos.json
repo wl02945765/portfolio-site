@@ -1,12 +1,12 @@
 [
   {
-    "id": "2be8c17b-7e3d-49b3-9ba9-c8691e43c478",
-    "src": "/media/featured/54546e34-83c3-4679-bdb2-786100d8648d.jpg",
+    "id": "8230f2b9-c241-4226-88fb-22e3850ca181",
+    "src": "/media/featured/1e295eb4-eda6-4bdb-9a02-32085f4c2c49.jpg",
     "caption": {
       "zh": "",
       "en": ""
     },
-    "thumbSrc": "/media/featured/54546e34-83c3-4679-bdb2-786100d8648d-strip.jpg"
+    "thumbSrc": "/media/featured/1e295eb4-eda6-4bdb-9a02-32085f4c2c49-strip.jpg"
   },
   {
     "id": "f61c8a23-2b33-4f50-935d-768de54c0069",
@@ -79,15 +79,6 @@
       "en": ""
     },
     "thumbSrc": "/media/featured/646a6eb9-7fb5-44ae-a8a6-9cf50a57f930-strip.jpg"
-  },
-  {
-    "id": "8230f2b9-c241-4226-88fb-22e3850ca181",
-    "src": "/media/featured/1e295eb4-eda6-4bdb-9a02-32085f4c2c49.jpg",
-    "caption": {
-      "zh": "",
-      "en": ""
-    },
-    "thumbSrc": "/media/featured/1e295eb4-eda6-4bdb-9a02-32085f4c2c49-strip.jpg"
   },
   {
     "id": "6184026b-058e-4694-8dfb-fcb76c10696e",

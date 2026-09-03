@@ -128,5 +128,22 @@
     },
     "year": "2025",
     "categoryId": "18b7cd7c-b5c2-48bf-9920-070605da559a"
+  },
+  {
+    "id": "408325c2-6f5d-4817-b117-294756a23a82",
+    "slug": "elegantsis愛樂時-海龍蛙兵50週年紀念腕錶",
+    "thumbnail": "https://img.youtube.com/vi/y2I1wP969jo/hqdefault.jpg",
+    "videoSrc": "",
+    "youtubeId": "y2I1wP969jo",
+    "title": {
+      "zh": "elegantsis愛樂時 - 海龍蛙兵50週年紀念腕錶",
+      "en": ""
+    },
+    "services": {
+      "zh": "音效、參與分鏡討論",
+      "en": "Sound Effects、Contribute to storyboard development"
+    },
+    "year": "2023",
+    "categoryId": "df4fffe0-daa8-45c3-a817-8c4d818f8cc7"
   }
 ]

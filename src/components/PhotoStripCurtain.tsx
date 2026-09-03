@@ -26,7 +26,8 @@ export function PhotoStripCurtain({ photos }: { photos: StripPhoto[] }) {
   // more photos get uploaded, not by cycling the same ones multiple times.
   const strips = photos.map((photo, i) => ({
     photo,
-    positionX: `${Math.round(pseudoRandom(i + 1) * 100)}%`,
+    // object-position, not backgroundPositionX — see the <img> note below.
+    objectPositionX: `${Math.round(pseudoRandom(i + 1) * 100)}%`,
   }));
 
   const hoveredPhoto = hoveredStrip !== null ? strips[hoveredStrip].photo : null;
@@ -47,14 +48,21 @@ export function PhotoStripCurtain({ photos }: { photos: StripPhoto[] }) {
               onMouseEnter={() => setHoveredStrip(i)}
               onMouseLeave={() => setHoveredStrip(null)}
             >
-              <div
-                className="absolute inset-0"
+              {/* Real <img>, not a CSS background-image — the browser's preload
+                  scanner only discovers <img src> while parsing the raw HTML;
+                  background-image is discovered later, after CSS/layout, which
+                  is what made this strip visibly pop in after the page had
+                  already loaded. fetchPriority="high" additionally tells the
+                  browser to fetch these ahead of everything else. */}
+              <img
+                src={withBasePath(strip.photo.src)}
+                alt=""
+                loading="eager"
+                fetchPriority="high"
+                decoding="async"
+                className="absolute inset-0 h-full w-full object-cover"
                 style={{
-                  backgroundImage: `url(${withBasePath(strip.photo.src)})`,
-                  backgroundSize: "auto 100%",
-                  backgroundPositionX: strip.positionX,
-                  backgroundPositionY: "center",
-                  backgroundRepeat: "no-repeat",
+                  objectPosition: `${strip.objectPositionX} center`,
                   opacity: isHovered ? 0 : 1,
                   transition: "opacity 300ms ease",
                 }}
@@ -63,14 +71,12 @@ export function PhotoStripCurtain({ photos }: { photos: StripPhoto[] }) {
                 className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center p-6 sm:p-10"
                 style={{ opacity: isHovered ? 1 : 0, transition: "opacity 300ms ease 150ms" }}
               >
-                <div
-                  className="h-full w-full max-w-none"
-                  style={{
-                    backgroundImage: `url(${withBasePath(strip.photo.src)})`,
-                    backgroundSize: "contain",
-                    backgroundPosition: "center",
-                    backgroundRepeat: "no-repeat",
-                  }}
+                <img
+                  src={withBasePath(strip.photo.src)}
+                  alt=""
+                  loading="eager"
+                  decoding="async"
+                  className="h-full w-full max-w-none object-contain"
                 />
                 <p className="mt-4 shrink-0 text-xs tracking-wide text-zinc-300">
                   {strip.photo.caption[locale]}

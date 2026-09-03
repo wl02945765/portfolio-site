@@ -390,6 +390,15 @@ const designPhotoUpload = multer({
   limits: { fileSize: 50 * 1024 * 1024 },
 });
 
+const photoBeforeUpload = multer({
+  storage: multer.diskStorage({
+    destination: PHOTOS_DIR,
+    filename: (_req, file, cb) =>
+      cb(null, `before-${randomUUID()}${path.extname(file.originalname)}`),
+  }),
+  limits: { fileSize: 50 * 1024 * 1024 },
+});
+
 const aboutHeroUpload = multer({
   storage: multer.diskStorage({
     destination: ABOUT_DIR,
@@ -606,6 +615,10 @@ app.delete("/api/photos/:id", (req, res) => {
   if (!item) return res.status(404).json({ error: "not found" });
   const filePath = path.join(ROOT, "public", item.src);
   if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
+  if (item.beforeSrc) {
+    const beforePath = path.join(ROOT, "public", item.beforeSrc);
+    if (fs.existsSync(beforePath)) fs.unlinkSync(beforePath);
+  }
   writeJSON(
     PHOTOS_JSON,
     photos.filter((p) => p.id !== req.params.id),
@@ -623,6 +636,39 @@ app.delete("/api/photos/:id", (req, res) => {
 
   schedulePublish();
   res.json({ ok: true });
+});
+
+// The "before" image for the Photography grid's hover-wipe comparison —
+// a photo with beforeSrc set renders as a before/after tile instead of a
+// plain one; deleting it just clears the field back to a normal photo.
+app.post("/api/photos/:id/before", photoBeforeUpload.single("file"), (req, res) => {
+  if (!req.file) return res.status(400).json({ error: "missing file" });
+  const photos = readJSON(PHOTOS_JSON);
+  const item = photos.find((p) => p.id === req.params.id);
+  if (!item) return res.status(404).json({ error: "not found" });
+  if (item.beforeSrc) {
+    const oldPath = path.join(ROOT, "public", item.beforeSrc);
+    if (fs.existsSync(oldPath)) fs.unlinkSync(oldPath);
+  }
+  const filename = optimizePhoto(PHOTOS_DIR, req.file.filename);
+  item.beforeSrc = `/media/photos/${filename}`;
+  writeJSON(PHOTOS_JSON, photos);
+  schedulePublish();
+  res.json(item);
+});
+
+app.delete("/api/photos/:id/before", (req, res) => {
+  const photos = readJSON(PHOTOS_JSON);
+  const item = photos.find((p) => p.id === req.params.id);
+  if (!item) return res.status(404).json({ error: "not found" });
+  if (item.beforeSrc) {
+    const oldPath = path.join(ROOT, "public", item.beforeSrc);
+    if (fs.existsSync(oldPath)) fs.unlinkSync(oldPath);
+  }
+  delete item.beforeSrc;
+  writeJSON(PHOTOS_JSON, photos);
+  schedulePublish();
+  res.json(item);
 });
 
 app.post("/api/photos/reorder", (req, res) => {

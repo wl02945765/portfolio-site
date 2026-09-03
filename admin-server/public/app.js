@@ -316,17 +316,25 @@ function renderPhotoCard(photo, category) {
     <div class="thumb-wrap">
       <img class="card-thumb" src="${photo.src}" alt="" />
       ${isCover ? '<span class="cover-badge">★ 分類封面</span>' : ""}
+      ${photo.beforeSrc ? '<span class="cover-badge before-after-badge">B/A</span>' : ""}
     </div>
     <div class="card-body">
       <input type="text" data-field="caption_zh" value="${escapeHtml(photo.caption.zh)}" placeholder="中文說明" />
       <input type="text" data-field="caption_en" value="${escapeHtml(photo.caption.en)}" placeholder="English caption" />
+      <div class="before-row">
+        <label class="before-upload-btn">
+          ${photo.beforeSrc ? "更換 Before 版本" : "＋ 上傳 Before 版本"}
+          <input type="file" accept="image/*" class="before-file-input" hidden />
+        </label>
+        ${photo.beforeSrc ? '<button type="button" class="delete-btn remove-before-btn">移除 Before</button>' : ""}
+      </div>
     </div>
     <div class="card-footer">
       <button class="cover-btn">${isCover ? "★ 已是封面" : "設為封面"}</button>
       <button class="delete-btn">刪除</button>
     </div>
   `;
-  card.querySelectorAll("input").forEach((input) => {
+  card.querySelectorAll("input[data-field]").forEach((input) => {
     input.addEventListener("blur", () =>
       fetch(`/api/photos/${photo.id}`, {
         method: "PATCH",
@@ -343,11 +351,27 @@ function renderPhotoCard(photo, category) {
     });
     loadCategories();
   });
-  card.querySelector(".delete-btn").addEventListener("click", async () => {
+  card.querySelector(".card-footer .delete-btn").addEventListener("click", async () => {
     if (!confirm("確定要刪除這張照片嗎？")) return;
     await fetch(`/api/photos/${photo.id}`, { method: "DELETE" });
     loadCategories();
   });
+  card.querySelector(".before-file-input").addEventListener("change", async function () {
+    const file = this.files[0];
+    if (!file) return;
+    const fd = new FormData();
+    fd.append("file", file);
+    await fetch(`/api/photos/${photo.id}/before`, { method: "POST", body: fd });
+    loadCategories();
+  });
+  const removeBeforeBtn = card.querySelector(".remove-before-btn");
+  if (removeBeforeBtn) {
+    removeBeforeBtn.addEventListener("click", async () => {
+      if (!confirm("確定要移除這張照片的 Before 版本嗎？")) return;
+      await fetch(`/api/photos/${photo.id}/before`, { method: "DELETE" });
+      loadCategories();
+    });
+  }
   return card;
 }
 

@@ -30,25 +30,77 @@ export function PhotoCategoryGrid({ photos }: { photos: Photo[] }) {
   return (
     <>
       <div className="columns-1 gap-3 sm:columns-2 lg:columns-3 xl:columns-4">
-        {photos.map((photo, i) => (
-          <button
-            key={photo.id}
-            onClick={() => setLightboxIndex(i)}
-            className="group relative mb-3 block w-full break-inside-avoid overflow-hidden bg-black"
-          >
-            <Image
-              src={withBasePath(photo.src)}
-              alt={photo.caption[locale]}
-              width={photo.width || 800}
-              height={photo.height || 1000}
-              unoptimized
-              className="h-auto w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]"
-            />
-            <span className="absolute inset-x-0 bottom-0 translate-y-full bg-gradient-to-t from-black/70 to-transparent p-3 text-left text-xs text-zinc-200 opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100">
-              {photo.caption[locale]}
-            </span>
-          </button>
-        ))}
+        {photos.map((photo, i) => {
+          // The cursor position IS the reveal edge — same "hover discovers it"
+          // feel as the featured strip at the top of this page. Resting state
+          // sits at 50% so the comparison is visible without any interaction.
+          const onWipeMove = (e: React.MouseEvent<HTMLButtonElement>) => {
+            const afterLayer = e.currentTarget.querySelector<HTMLElement>('[data-role="after-layer"]');
+            const wipeLine = e.currentTarget.querySelector<HTMLElement>('[data-role="wipe-line"]');
+            if (!afterLayer) return;
+            const rect = e.currentTarget.getBoundingClientRect();
+            const pct = Math.max(0, Math.min(100, ((e.clientX - rect.left) / rect.width) * 100));
+            afterLayer.style.clipPath = `inset(0 0 0 ${pct}%)`;
+            if (wipeLine) wipeLine.style.left = `${pct}%`;
+          };
+          const onWipeLeave = (e: React.MouseEvent<HTMLButtonElement>) => {
+            const afterLayer = e.currentTarget.querySelector<HTMLElement>('[data-role="after-layer"]');
+            const wipeLine = e.currentTarget.querySelector<HTMLElement>('[data-role="wipe-line"]');
+            if (!afterLayer) return;
+            afterLayer.style.clipPath = "inset(0 0 0 50%)";
+            if (wipeLine) wipeLine.style.left = "50%";
+          };
+
+          return (
+            <button
+              key={photo.id}
+              onClick={() => setLightboxIndex(i)}
+              onMouseMove={photo.beforeSrc ? onWipeMove : undefined}
+              onMouseLeave={photo.beforeSrc ? onWipeLeave : undefined}
+              className="group relative mb-3 block w-full break-inside-avoid overflow-hidden bg-black"
+            >
+              {photo.beforeSrc ? (
+                <div className="relative">
+                  <Image
+                    src={withBasePath(photo.beforeSrc)}
+                    alt={photo.caption[locale]}
+                    width={photo.width || 800}
+                    height={photo.height || 1000}
+                    unoptimized
+                    className="h-auto w-full object-cover"
+                  />
+                  <img
+                    src={withBasePath(photo.src)}
+                    alt=""
+                    data-role="after-layer"
+                    className="absolute inset-0 h-full w-full object-cover"
+                    style={{ clipPath: "inset(0 0 0 50%)" }}
+                  />
+                  <div
+                    data-role="wipe-line"
+                    className="pointer-events-none absolute inset-y-0 w-px bg-white/70"
+                    style={{ left: "50%" }}
+                  />
+                  <span className="pointer-events-none absolute left-2 top-2 bg-black/60 px-1.5 py-0.5 text-[9px] uppercase tracking-[0.1em] text-zinc-300">
+                    Before / After
+                  </span>
+                </div>
+              ) : (
+                <Image
+                  src={withBasePath(photo.src)}
+                  alt={photo.caption[locale]}
+                  width={photo.width || 800}
+                  height={photo.height || 1000}
+                  unoptimized
+                  className="h-auto w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]"
+                />
+              )}
+              <span className="absolute inset-x-0 bottom-0 translate-y-full bg-gradient-to-t from-black/70 to-transparent p-3 text-left text-xs text-zinc-200 opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100">
+                {photo.caption[locale]}
+              </span>
+            </button>
+          );
+        })}
       </div>
 
       {lightboxIndex !== null && photos[lightboxIndex] && (

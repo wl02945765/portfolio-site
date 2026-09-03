@@ -375,6 +375,36 @@ main {
   cursor: default;
 }
 
+.before-after-badge {
+  left: auto;
+  right: 8px;
+  background: #3a3a3a;
+}
+
+.before-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.before-upload-btn {
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 5px 11px;
+  font-size: 10px;
+  letter-spacing: 0.05em;
+  color: var(--ink-soft);
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s;
+}
+
+.before-upload-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
 .card-body {
   padding: 11px 13px;
   display: flex;

@@ -814,5 +814,21 @@
       "zh": "",
       "en": ""
     }
+  },
+  {
+    "id": "3b5941d5-9a1c-494d-abd5-4e764912b659",
+    "src": "/media/featured/a5ef41c2-5e5b-49d8-bd69-4be64d289bf4.jpg",
+    "caption": {
+      "zh": "",
+      "en": ""
+    }
+  },
+  {
+    "id": "bb7ec85a-f080-4ae9-957a-c2bfa525b474",
+    "src": "/media/featured/82fd04f0-d7f5-4843-9899-e48b5ff48aa6.jpg",
+    "caption": {
+      "zh": "",
+      "en": ""
+    }
   }
 ]

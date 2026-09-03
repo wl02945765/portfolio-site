@@ -2378,5 +2378,38 @@
     },
     "width": 1983,
     "height": 2400
+  },
+  {
+    "id": "a991ab25-3286-4cfd-b1f6-626d40d7bb5c",
+    "src": "/media/photos/2cfe280e-20e3-46b6-ad3a-17e829737e1f.jpg",
+    "categoryId": "42bc0c3e-bb83-407b-83c5-7b483d71ad84",
+    "caption": {
+      "zh": "",
+      "en": ""
+    },
+    "width": 2400,
+    "height": 2350
+  },
+  {
+    "id": "4ddf3c4e-91b3-4d79-abc0-b53a92817ee3",
+    "src": "/media/photos/60bd89d5-b151-4f31-9430-d213695ff5d9.jpg",
+    "categoryId": "42bc0c3e-bb83-407b-83c5-7b483d71ad84",
+    "caption": {
+      "zh": "",
+      "en": ""
+    },
+    "width": 2400,
+    "height": 1633
+  },
+  {
+    "id": "ae589527-6785-44fd-91c1-014c32a6fad8",
+    "src": "/media/photos/cd69de89-e970-4915-9ba6-0a6305d819fe.jpg",
+    "categoryId": "42bc0c3e-bb83-407b-83c5-7b483d71ad84",
+    "caption": {
+      "zh": "",
+      "en": ""
+    },
+    "width": 1349,
+    "height": 2400
   }
 ]

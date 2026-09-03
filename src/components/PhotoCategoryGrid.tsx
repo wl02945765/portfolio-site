@@ -75,10 +75,11 @@ export function PhotoCategoryGrid({ photos }: { photos: Photo[] }) {
                     width={photo.width || 800}
                     height={photo.height || 1000}
                     unoptimized
+                    priority={i < 4}
                     className="h-auto w-full object-cover"
                   />
                   <img
-                    src={withBasePath(photo.src)}
+                    src={withBasePath(photo.thumbSrc || photo.src)}
                     alt=""
                     data-role="after-layer"
                     className="absolute inset-0 h-full w-full object-cover"
@@ -95,11 +96,12 @@ export function PhotoCategoryGrid({ photos }: { photos: Photo[] }) {
                 </div>
               ) : (
                 <Image
-                  src={withBasePath(photo.src)}
+                  src={withBasePath(photo.thumbSrc || photo.src)}
                   alt={photo.caption[locale]}
                   width={photo.width || 800}
                   height={photo.height || 1000}
                   unoptimized
+                  priority={i < 4}
                   className="h-auto w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]"
                 />
               )}

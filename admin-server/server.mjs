@@ -113,6 +113,35 @@ function optimizePhoto(dir, filename) {
   return outFilename;
 }
 
+// A second, much smaller copy for masonry-grid browsing. The full
+// (MAX_PHOTO_DIMENSION, ~1-3MB) file exists for the lightbox, but every grid
+// tile was downloading that same full file just to display it at ~300-400px
+// wide — the main reason photos felt slow to load, especially over mobile.
+const GRID_THUMB_MAX_DIMENSION = 800;
+const GRID_THUMB_QUALITY = 75;
+
+function makeGridThumbnail(dir, filename) {
+  const ext = path.extname(filename);
+  const base = filename.slice(0, -ext.length);
+  const thumbFilename = `${base}-grid.jpg`;
+  const srcPath = path.join(dir, filename);
+  const thumbPath = path.join(dir, thumbFilename);
+  spawnSync("sips", [
+    "-s",
+    "format",
+    "jpeg",
+    "-Z",
+    String(GRID_THUMB_MAX_DIMENSION),
+    "--setProperty",
+    "formatOptions",
+    String(GRID_THUMB_QUALITY),
+    srcPath,
+    "--out",
+    thumbPath,
+  ]);
+  return fs.existsSync(thumbPath) ? thumbFilename : null;
+}
+
 // Camera-original videos (raw H.264/ProRes, hundreds of MB to 1GB+) were
 // committed straight into git by auto-publish — pushing that much binary
 // data to GitHub over normal home upload bandwidth just hangs, and any
@@ -587,9 +616,11 @@ app.post("/api/categories/:id/photos", photoUpload.array("files", 200), (req, re
   const created = req.files.map((file) => {
     const filename = optimizePhoto(PHOTOS_DIR, file.filename);
     const { width, height } = getImageDimensions(path.join(PHOTOS_DIR, filename));
+    const thumbFilename = makeGridThumbnail(PHOTOS_DIR, filename);
     return {
       id: randomUUID(),
       src: `/media/photos/${filename}`,
+      thumbSrc: thumbFilename ? `/media/photos/${thumbFilename}` : undefined,
       categoryId: category.id,
       caption: { zh: "", en: "" },
       width: width || undefined,
@@ -625,6 +656,10 @@ app.delete("/api/photos/:id", (req, res) => {
   if (!item) return res.status(404).json({ error: "not found" });
   const filePath = path.join(ROOT, "public", item.src);
   if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
+  if (item.thumbSrc) {
+    const thumbPath = path.join(ROOT, "public", item.thumbSrc);
+    if (fs.existsSync(thumbPath)) fs.unlinkSync(thumbPath);
+  }
   if (item.beforeSrc) {
     const beforePath = path.join(ROOT, "public", item.beforeSrc);
     if (fs.existsSync(beforePath)) fs.unlinkSync(beforePath);
@@ -797,9 +832,11 @@ app.post("/api/design-categories/:id/designs", designPhotoUpload.array("files", 
   const created = req.files.map((file) => {
     const filename = optimizePhoto(DESIGN_DIR, file.filename);
     const { width, height } = getImageDimensions(path.join(DESIGN_DIR, filename));
+    const thumbFilename = makeGridThumbnail(DESIGN_DIR, filename);
     return {
       id: randomUUID(),
       src: `/media/design/${filename}`,
+      thumbSrc: thumbFilename ? `/media/design/${thumbFilename}` : undefined,
       categoryId: category.id,
       caption: { zh: "", en: "" },
       width: width || undefined,
@@ -835,6 +872,10 @@ app.delete("/api/designs/:id", (req, res) => {
   if (!item) return res.status(404).json({ error: "not found" });
   const filePath = path.join(ROOT, "public", item.src);
   if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
+  if (item.thumbSrc) {
+    const thumbPath = path.join(ROOT, "public", item.thumbSrc);
+    if (fs.existsSync(thumbPath)) fs.unlinkSync(thumbPath);
+  }
   writeJSON(
     DESIGNS_JSON,
     designs.filter((p) => p.id !== req.params.id),

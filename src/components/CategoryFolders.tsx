@@ -50,7 +50,7 @@ export function CategoryFolders({
               className="group relative block aspect-square w-full overflow-hidden bg-black"
             >
               <img
-                src={withBasePath(cover.src)}
+                src={withBasePath(cover.thumbSrc || cover.src)}
                 alt={category.name[locale]}
                 className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
               />

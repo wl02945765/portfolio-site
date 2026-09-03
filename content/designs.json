@@ -8,7 +8,8 @@
       "en": ""
     },
     "width": 2400,
-    "height": 2400
+    "height": 2400,
+    "thumbSrc": "/media/design/7562acb7-5959-4e69-bca9-c515bb9c22b2-grid.jpg"
   },
   {
     "id": "4a752520-d742-4f2a-be8a-d264cc6eb96c",
@@ -19,7 +20,8 @@
       "en": ""
     },
     "width": 2400,
-    "height": 1625
+    "height": 1625,
+    "thumbSrc": "/media/design/ef908cb3-1bef-4406-97e4-11074bae19c9-grid.jpg"
   },
   {
     "id": "55550a3d-d485-4d43-b78f-2bd65f85b4a8",
@@ -30,7 +32,8 @@
       "en": ""
     },
     "width": 1624,
-    "height": 2400
+    "height": 2400,
+    "thumbSrc": "/media/design/03b81ba8-273a-45d8-ada9-b67fef050bc0-grid.jpg"
   },
   {
     "id": "c461383f-bbb2-4908-9d4f-8fc5f84a3913",
@@ -41,7 +44,8 @@
       "en": ""
     },
     "width": 2384,
-    "height": 1914
+    "height": 1914,
+    "thumbSrc": "/media/design/1eaf2448-dd2b-4cfc-af83-24d386a97f36-grid.jpg"
   },
   {
     "id": "5e9cf156-cc26-4e29-a6e6-68cb7641c3e5",
@@ -52,7 +56,8 @@
       "en": ""
     },
     "width": 1696,
-    "height": 2400
+    "height": 2400,
+    "thumbSrc": "/media/design/ec4925af-875b-486e-94e4-0e40100a2d63-grid.jpg"
   },
   {
     "id": "df05bfbc-b838-49ba-b8c9-445b5de6a746",
@@ -63,7 +68,8 @@
       "en": ""
     },
     "width": 1182,
-    "height": 1749
+    "height": 1749,
+    "thumbSrc": "/media/design/c889c150-0616-4394-a594-73da1128c9b5-grid.jpg"
   },
   {
     "id": "df72c84a-3a7d-4fd1-a679-c6f754931f96",
@@ -74,7 +80,8 @@
       "en": ""
     },
     "width": 1253,
-    "height": 1820
+    "height": 1820,
+    "thumbSrc": "/media/design/c2ebe3dc-3cc3-4592-913b-d5ed0b09a68f-grid.jpg"
   },
   {
     "id": "7873d8b1-6f4a-4178-9b9e-9a091e8fc988",
@@ -85,7 +92,8 @@
       "en": ""
     },
     "width": 2400,
-    "height": 1729
+    "height": 1729,
+    "thumbSrc": "/media/design/7a8b9468-7935-44d1-b90c-beb104be48af-grid.jpg"
   },
   {
     "id": "900689a1-1cf0-469e-9b02-caed0858e9cd",
@@ -96,6 +104,7 @@
       "en": ""
     },
     "width": 2400,
-    "height": 1713
+    "height": 1713,
+    "thumbSrc": "/media/design/82ffd1c0-85a0-4cfd-9522-ddd8aaab6d13-grid.jpg"
   }
 ]

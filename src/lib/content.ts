@@ -32,6 +32,9 @@ export type Photo = {
   categoryId: string;
   caption: LocalizedText;
   beforeSrc?: string;
+  // A ~800px copy for masonry-grid browsing — src is full resolution
+  // (up to 2400px) and is reserved for the lightbox.
+  thumbSrc?: string;
   width?: number;
   height?: number;
 };

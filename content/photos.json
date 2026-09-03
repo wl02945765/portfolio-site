@@ -1,16 +1,5 @@
 [
   {
-    "id": "fe9b906d-0e78-4680-baa6-58ee3b2b4223",
-    "src": "/media/photos/86f6a175-526b-47a3-ad6f-acf07b52faba.jpg",
-    "categoryId": "48e16848-fbbb-4f25-8724-4dbf33529fc8",
-    "caption": {
-      "zh": "",
-      "en": ""
-    },
-    "width": 2400,
-    "height": 2052
-  },
-  {
     "id": "9e19eeb1-fa7c-45e0-ad4f-5450b56f5ec3",
     "src": "/media/photos/80809e1d-7e6b-4126-bdc6-59f50a4dd0a8.jpg",
     "categoryId": "48e16848-fbbb-4f25-8724-4dbf33529fc8",

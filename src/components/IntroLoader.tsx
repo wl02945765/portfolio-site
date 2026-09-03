@@ -73,9 +73,16 @@ export function IntroLoader() {
     const staticStart = performance.now();
 
     let contentReady = false;
-    Promise.all([waitForImages(), document.fonts.ready]).then(() => {
-      contentReady = true;
-    });
+    Promise.all([waitForImages(), document.fonts.ready])
+      .then(() => {
+        contentReady = true;
+      })
+      // Some in-app browsers (the same ones that restrict sessionStorage)
+      // reject or misbehave on document.fonts — never let readiness
+      // detection itself become the reason nothing ever reveals.
+      .catch(() => {
+        contentReady = true;
+      });
 
     function drawStatic() {
       if (!ctx) return;
@@ -101,14 +108,25 @@ export function IntroLoader() {
     function staticTick(now: number) {
       drawStatic();
       const elapsed = now - staticStart;
-      const pastMinimum = elapsed >= STATIC_DURATION_MS;
-      const timedOut = elapsed >= STATIC_DURATION_MS + MAX_EXTRA_WAIT_MS;
-      if ((pastMinimum && contentReady) || timedOut) {
-        settle();
+      if (elapsed >= STATIC_DURATION_MS && contentReady) {
+        safeSettle();
       } else {
         raf = requestAnimationFrame(staticTick);
       }
     }
+
+    // A plain setTimeout, deliberately NOT inside the rAF loop — some in-app
+    // browsers (Instagram's embedded webview, notably) throttle or fully
+    // pause requestAnimationFrame, which silently stopped staticTick from
+    // ever running again and left people stuck on "NO SIGNAL" forever. This
+    // fires independently of rAF, so there's always a way out.
+    let settled = false;
+    function safeSettle() {
+      if (settled) return;
+      settled = true;
+      settle();
+    }
+    timers.push(window.setTimeout(safeSettle, STATIC_DURATION_MS + MAX_EXTRA_WAIT_MS));
 
     function settle() {
       setLabel("SIGNAL LOCKED");

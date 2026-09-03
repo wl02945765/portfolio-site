@@ -559,6 +559,16 @@ app.delete("/api/categories/:id", (req, res) => {
   res.json({ ok: true });
 });
 
+app.post("/api/categories/reorder", (req, res) => {
+  const { order } = req.body;
+  const categories = readJSON(CATEGORIES_JSON);
+  const byId = new Map(categories.map((c) => [c.id, c]));
+  const reordered = order.map((id) => byId.get(id)).filter(Boolean);
+  writeJSON(CATEGORIES_JSON, reordered);
+  schedulePublish();
+  res.json(reordered);
+});
+
 // ---------- Photos ----------
 
 app.get("/api/photos", (_req, res) => {
@@ -757,6 +767,16 @@ app.delete("/api/design-categories/:id", (req, res) => {
   );
   schedulePublish();
   res.json({ ok: true });
+});
+
+app.post("/api/design-categories/reorder", (req, res) => {
+  const { order } = req.body;
+  const categories = readJSON(DESIGN_CATEGORIES_JSON);
+  const byId = new Map(categories.map((c) => [c.id, c]));
+  const reordered = order.map((id) => byId.get(id)).filter(Boolean);
+  writeJSON(DESIGN_CATEGORIES_JSON, reordered);
+  schedulePublish();
+  res.json(reordered);
 });
 
 // ---------- Design works ----------

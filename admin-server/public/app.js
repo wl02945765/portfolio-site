@@ -200,6 +200,8 @@ function renderCategoryGrid() {
       allPhotos.find((p) => p.categoryId === cat.id);
     const card = document.createElement("div");
     card.className = "card";
+    card.draggable = true;
+    card.dataset.id = cat.id;
     card.style.cursor = "pointer";
     card.innerHTML = `
       <div class="thumb-wrap">
@@ -213,11 +215,25 @@ function renderCategoryGrid() {
         <p style="margin:0;font-size:13px;font-weight:600;">${escapeHtml(cat.name.zh || cat.name.en || "未命名")}</p>
         <p style="margin:0;font-size:11px;color:rgba(0,0,0,0.4);">${count} 張照片</p>
       </div>
+      <div class="card-footer">
+        <span class="handle">⠿ 拖曳排序</span>
+      </div>
     `;
-    card.addEventListener("click", () => openCategory(cat.id));
+    card.addEventListener("click", (e) => {
+      if (e.target.closest(".card-footer")) return;
+      openCategory(cat.id);
+    });
     categoryGrid.appendChild(card);
   });
 }
+
+wireReorder(categoryGrid, (order) =>
+  fetch("/api/categories/reorder", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ order }),
+  }),
+);
 
 function openCategory(id) {
   currentCategoryId = id;
@@ -445,6 +461,8 @@ function renderDesignCategoryGrid() {
       allDesigns.find((p) => p.categoryId === cat.id);
     const card = document.createElement("div");
     card.className = "card";
+    card.draggable = true;
+    card.dataset.id = cat.id;
     card.style.cursor = "pointer";
     card.innerHTML = `
       <div class="thumb-wrap">
@@ -458,11 +476,25 @@ function renderDesignCategoryGrid() {
         <p style="margin:0;font-size:13px;font-weight:600;">${escapeHtml(cat.name.zh || cat.name.en || "未命名")}</p>
         <p style="margin:0;font-size:11px;color:rgba(0,0,0,0.4);">${count} 件作品</p>
       </div>
+      <div class="card-footer">
+        <span class="handle">⠿ 拖曳排序</span>
+      </div>
     `;
-    card.addEventListener("click", () => openDesignCategory(cat.id));
+    card.addEventListener("click", (e) => {
+      if (e.target.closest(".card-footer")) return;
+      openDesignCategory(cat.id);
+    });
     designCategoryGrid.appendChild(card);
   });
 }
+
+wireReorder(designCategoryGrid, (order) =>
+  fetch("/api/design-categories/reorder", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ order }),
+  }),
+);
 
 function openDesignCategory(id) {
   currentDesignCategoryId = id;

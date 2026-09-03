@@ -127,5 +127,22 @@
     },
     "year": "2021",
     "categoryId": "df4fffe0-daa8-45c3-a817-8c4d818f8cc7"
+  },
+  {
+    "id": "0cd5edd6-662b-4e4c-a5c1-66e3a546f0f9",
+    "slug": "fantasi-land-by-metaboom",
+    "thumbnail": "https://img.youtube.com/vi/aOg5rbqZmzU/hqdefault.jpg",
+    "videoSrc": "",
+    "youtubeId": "aOg5rbqZmzU",
+    "title": {
+      "zh": "FANTASI Land by MetaBoom",
+      "en": "FANTASI Land by MetaBoom"
+    },
+    "services": {
+      "zh": "攝影、剪輯",
+      "en": "Videography、Video Editor"
+    },
+    "year": "2023",
+    "categoryId": "df4fffe0-daa8-45c3-a817-8c4d818f8cc7"
   }
 ]

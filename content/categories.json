@@ -158,5 +158,21 @@
       "en": ""
     },
     "coverPhotoId": "a991ab25-3286-4cfd-b1f6-626d40d7bb5c"
+  },
+  {
+    "id": "9ae95c80-d34f-4990-964e-692819faa647",
+    "name": {
+      "zh": "手作",
+      "en": "Handmade"
+    },
+    "description": {
+      "zh": "",
+      "en": ""
+    },
+    "location": {
+      "zh": "",
+      "en": ""
+    },
+    "coverPhotoId": null
   }
 ]

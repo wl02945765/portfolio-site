@@ -2443,5 +2443,16 @@
     "width": 1534,
     "height": 2400,
     "beforeSrc": "/media/photos/before-99a2a3cc-46db-408c-adca-cb15af96a234.JPG"
+  },
+  {
+    "id": "a69971c2-14aa-4d0d-a07d-de193dce6722",
+    "src": "/media/photos/d9467fea-92bd-4128-9310-9cdde73d5a95.jpg",
+    "categoryId": "d8a87ae3-9400-4cef-85fb-b12d6aa66abb",
+    "caption": {
+      "zh": "",
+      "en": ""
+    },
+    "width": 1149,
+    "height": 1461
   }
 ]

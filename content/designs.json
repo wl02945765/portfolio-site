@@ -9,5 +9,16 @@
     },
     "width": 2400,
     "height": 2400
+  },
+  {
+    "id": "5e9cf156-cc26-4e29-a6e6-68cb7641c3e5",
+    "src": "/media/design/ec4925af-875b-486e-94e4-0e40100a2d63.jpg",
+    "categoryId": "bab6b8b3-e150-4f96-b74c-22067c027edf",
+    "caption": {
+      "zh": "",
+      "en": ""
+    },
+    "width": 1696,
+    "height": 2400
   }
 ]

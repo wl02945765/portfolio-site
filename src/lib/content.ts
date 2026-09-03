@@ -9,6 +9,7 @@ import aboutHeroData from "../../content/aboutHero.json";
 import aboutTagsData from "../../content/aboutTags.json";
 import aboutPhilosophyData from "../../content/aboutPhilosophy.json";
 import aboutTimelineData from "../../content/aboutTimeline.json";
+import featuredPhotosData from "../../content/featuredPhotos.json";
 
 export type LocalizedText = {
   zh: string;
@@ -92,6 +93,12 @@ export type AboutTimelineStep = {
   items: { zh: string[]; en: string[] };
 };
 
+export type FeaturedPhoto = {
+  id: string;
+  src: string;
+  caption: LocalizedText;
+};
+
 export function getPhotos(): Photo[] {
   return photosData as Photo[];
 }
@@ -134,4 +141,8 @@ export function getAboutPhilosophy(): AboutTag[] {
 
 export function getAboutTimeline(): AboutTimelineStep[] {
   return aboutTimelineData as AboutTimelineStep[];
+}
+
+export function getFeaturedPhotos(): FeaturedPhoto[] {
+  return featuredPhotosData as FeaturedPhoto[];
 }

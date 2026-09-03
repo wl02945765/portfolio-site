@@ -4,14 +4,16 @@ import { useLanguage } from "@/i18n/LanguageProvider";
 import { PageHeading } from "@/components/PageHeading";
 import { PhotoStripCurtain } from "@/components/PhotoStripCurtain";
 import { CategoryFolders } from "@/components/CategoryFolders";
-import type { Category, Photo } from "@/lib/content";
+import type { Category, FeaturedPhoto, Photo } from "@/lib/content";
 
 export function PhotoGallery({
   photos,
   categories,
+  featuredPhotos,
 }: {
   photos: Photo[];
   categories: Category[];
+  featuredPhotos: FeaturedPhoto[];
 }) {
   const { t } = useLanguage();
 
@@ -28,7 +30,7 @@ export function PhotoGallery({
 
   return (
     <div className="pb-24">
-      <PhotoStripCurtain photos={photos} />
+      {featuredPhotos.length > 0 && <PhotoStripCurtain photos={featuredPhotos} />}
       <CategoryFolders categories={categories} photos={photos} />
     </div>
   );

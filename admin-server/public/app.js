@@ -837,6 +837,82 @@ function escapeHtml(str) {
 loadCategories();
 loadVideoCategories().then(loadVideos);
 
+// --- Photography page: top featured strip ---
+const featuredPhotoGrid = document.getElementById("featured-photo-grid");
+const featuredPhotoStatus = document.getElementById("featured-photo-status");
+
+wireMultiDropzone(
+  document.getElementById("featured-photo-drop"),
+  document.getElementById("featured-photo-file"),
+  document.getElementById("featured-photo-filename"),
+  uploadFeaturedPhotos,
+);
+
+async function loadFeaturedPhotos() {
+  const photos = await fetch("/api/featured-photos").then((r) => r.json());
+  featuredPhotoGrid.innerHTML = "";
+  photos.forEach((photo) => featuredPhotoGrid.appendChild(renderFeaturedPhotoCard(photo)));
+}
+
+function renderFeaturedPhotoCard(photo) {
+  const card = document.createElement("div");
+  card.className = "card";
+  card.draggable = true;
+  card.dataset.id = photo.id;
+  card.innerHTML = `
+    <div class="thumb-wrap">
+      <img class="card-thumb" src="${photo.src}" alt="" />
+    </div>
+    <div class="card-body">
+      <input type="text" data-field="caption_zh" value="${escapeHtml(photo.caption.zh)}" placeholder="中文說明" />
+      <input type="text" data-field="caption_en" value="${escapeHtml(photo.caption.en)}" placeholder="English caption" />
+    </div>
+    <div class="card-footer">
+      <button class="delete-btn">刪除</button>
+    </div>
+  `;
+  card.querySelectorAll("input").forEach((input) => {
+    input.addEventListener("blur", () =>
+      fetch(`/api/featured-photos/${photo.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ [input.dataset.field]: input.value }),
+      }),
+    );
+  });
+  card.querySelector(".delete-btn").addEventListener("click", async () => {
+    if (!confirm("確定要刪除這張照片嗎？")) return;
+    await fetch(`/api/featured-photos/${photo.id}`, { method: "DELETE" });
+    loadFeaturedPhotos();
+  });
+  return card;
+}
+
+wireReorder(featuredPhotoGrid, (order) =>
+  fetch("/api/featured-photos/reorder", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ order }),
+  }),
+);
+
+async function uploadFeaturedPhotos(files) {
+  const fd = new FormData();
+  files.forEach((f) => fd.append("files", f));
+  featuredPhotoStatus.textContent = `上傳 ${files.length} 張中…`;
+  try {
+    const res = await fetch("/api/featured-photos", { method: "POST", body: fd });
+    if (!res.ok) throw new Error(await res.text());
+    featuredPhotoStatus.textContent = "上傳完成！";
+    document.getElementById("featured-photo-filename").textContent = "";
+    loadFeaturedPhotos();
+  } catch (err) {
+    featuredPhotoStatus.textContent = `上傳失敗：${err.message}`;
+  }
+}
+
+loadFeaturedPhotos();
+
 // --- About page: "beyond work" gallery ---
 const aboutGalleryGrid = document.getElementById("about-gallery-grid");
 const aboutGalleryStatus = document.getElementById("about-gallery-status");

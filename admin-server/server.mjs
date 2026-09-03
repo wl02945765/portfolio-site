@@ -22,13 +22,15 @@ const ABOUT_HERO_JSON = path.join(CONTENT_DIR, "aboutHero.json");
 const ABOUT_TAGS_JSON = path.join(CONTENT_DIR, "aboutTags.json");
 const ABOUT_PHILOSOPHY_JSON = path.join(CONTENT_DIR, "aboutPhilosophy.json");
 const ABOUT_TIMELINE_JSON = path.join(CONTENT_DIR, "aboutTimeline.json");
+const FEATURED_PHOTOS_JSON = path.join(CONTENT_DIR, "featuredPhotos.json");
 const PHOTOS_DIR = path.join(MEDIA_DIR, "photos");
 const VIDEOS_DIR = path.join(MEDIA_DIR, "videos");
 const THUMBS_DIR = path.join(VIDEOS_DIR, "thumbs");
 const SOUND_DIR = path.join(MEDIA_DIR, "sound");
 const ABOUT_DIR = path.join(MEDIA_DIR, "about");
+const FEATURED_DIR = path.join(MEDIA_DIR, "featured");
 
-for (const dir of [PHOTOS_DIR, VIDEOS_DIR, THUMBS_DIR, SOUND_DIR, ABOUT_DIR]) {
+for (const dir of [PHOTOS_DIR, VIDEOS_DIR, THUMBS_DIR, SOUND_DIR, ABOUT_DIR, FEATURED_DIR]) {
   fs.mkdirSync(dir, { recursive: true });
 }
 
@@ -295,7 +297,7 @@ function runPublish() {
   publishState.lastError = null;
   try {
     execSync(
-      "git add content/photos.json content/categories.json content/videos.json content/videoCategories.json content/site-text.json content/sound.json content/aboutGallery.json content/aboutSkills.json content/aboutHero.json content/aboutTags.json content/aboutPhilosophy.json content/aboutTimeline.json public/media",
+      "git add content/photos.json content/categories.json content/videos.json content/videoCategories.json content/site-text.json content/sound.json content/aboutGallery.json content/aboutSkills.json content/aboutHero.json content/aboutTags.json content/aboutPhilosophy.json content/aboutTimeline.json content/featuredPhotos.json public/media",
       { cwd: ROOT },
     );
     const diff = spawnSync("git", ["diff", "--cached", "--quiet"], { cwd: ROOT });
@@ -361,6 +363,15 @@ const soundCoverUpload = multer({
 const aboutGalleryUpload = multer({
   storage: multer.diskStorage({
     destination: ABOUT_DIR,
+    filename: (_req, file, cb) =>
+      cb(null, `${randomUUID()}${path.extname(file.originalname)}`),
+  }),
+  limits: { fileSize: 50 * 1024 * 1024 },
+});
+
+const featuredPhotoUpload = multer({
+  storage: multer.diskStorage({
+    destination: FEATURED_DIR,
     filename: (_req, file, cb) =>
       cb(null, `${randomUUID()}${path.extname(file.originalname)}`),
   }),
@@ -618,6 +629,71 @@ app.post("/api/photos/reorder", (req, res) => {
   writeJSON(PHOTOS_JSON, result);
   schedulePublish();
   res.json(result);
+});
+
+// ---------- Photography page: top featured strip ----------
+// Independent from the category photos above — a small hand-picked set for
+// the strip curtain at the top of the Photography page, so it doesn't just
+// mirror the (possibly sparse, possibly huge) full library.
+
+app.get("/api/featured-photos", (_req, res) => {
+  res.json(readJSON(FEATURED_PHOTOS_JSON));
+});
+
+app.post("/api/featured-photos", featuredPhotoUpload.array("files", 50), (req, res) => {
+  if (!req.files || req.files.length === 0) {
+    return res.status(400).json({ error: "missing files" });
+  }
+  const featured = readJSON(FEATURED_PHOTOS_JSON);
+  const created = req.files.map((file) => {
+    const filename = optimizePhoto(FEATURED_DIR, file.filename);
+    return {
+      id: randomUUID(),
+      src: `/media/featured/${filename}`,
+      caption: { zh: "", en: "" },
+    };
+  });
+  featured.push(...created);
+  writeJSON(FEATURED_PHOTOS_JSON, featured);
+  schedulePublish();
+  res.json(created);
+});
+
+app.patch("/api/featured-photos/:id", (req, res) => {
+  const featured = readJSON(FEATURED_PHOTOS_JSON);
+  const item = featured.find((p) => p.id === req.params.id);
+  if (!item) return res.status(404).json({ error: "not found" });
+  if (req.body.caption_zh !== undefined) item.caption.zh = req.body.caption_zh;
+  if (req.body.caption_en !== undefined) item.caption.en = req.body.caption_en;
+  writeJSON(FEATURED_PHOTOS_JSON, featured);
+  schedulePublish();
+  res.json(item);
+});
+
+app.delete("/api/featured-photos/:id", (req, res) => {
+  const featured = readJSON(FEATURED_PHOTOS_JSON);
+  const item = featured.find((p) => p.id === req.params.id);
+  if (!item) return res.status(404).json({ error: "not found" });
+  if (item.src) {
+    const filePath = path.join(ROOT, "public", item.src);
+    if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
+  }
+  writeJSON(
+    FEATURED_PHOTOS_JSON,
+    featured.filter((p) => p.id !== req.params.id),
+  );
+  schedulePublish();
+  res.json({ ok: true });
+});
+
+app.post("/api/featured-photos/reorder", (req, res) => {
+  const { order } = req.body;
+  const featured = readJSON(FEATURED_PHOTOS_JSON);
+  const byId = new Map(featured.map((p) => [p.id, p]));
+  const reordered = order.map((id) => byId.get(id)).filter(Boolean);
+  writeJSON(FEATURED_PHOTOS_JSON, reordered);
+  schedulePublish();
+  res.json(reordered);
 });
 
 // ---------- Video categories ----------

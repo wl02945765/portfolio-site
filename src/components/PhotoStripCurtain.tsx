@@ -3,14 +3,20 @@
 import { useState } from "react";
 import { useLanguage } from "@/i18n/LanguageProvider";
 import { withBasePath } from "@/lib/basePath";
-import type { Photo } from "@/lib/content";
+import type { LocalizedText } from "@/lib/content";
+
+type StripPhoto = {
+  id: string;
+  src: string;
+  caption: LocalizedText;
+};
 
 function pseudoRandom(seed: number) {
   const x = Math.sin(seed * 12.9898) * 43758.5453;
   return x - Math.floor(x);
 }
 
-export function PhotoStripCurtain({ photos }: { photos: Photo[] }) {
+export function PhotoStripCurtain({ photos }: { photos: StripPhoto[] }) {
   const { locale } = useLanguage();
   const [hoveredStrip, setHoveredStrip] = useState<number | null>(null);
 

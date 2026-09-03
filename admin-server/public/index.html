@@ -27,6 +27,21 @@
 
     <main>
       <section id="panel-photos" class="panel active">
+        <div class="upload-form">
+          <h3>精選照片牆</h3>
+          <p class="hint">
+            Photography 頁最上面那條照片長條拼貼，跟下面的分類資料夾完全獨立，自己挑幾張喜歡的上傳就好，不用跟全部照片一樣多。可拖拉多張上傳、編輯中英文說明、拖曳排序。沒有上傳任何照片時這條會直接隱藏。
+          </p>
+          <div id="featured-photo-drop" class="dropzone">
+            <p>拖拉多張照片到這裡，或點擊選擇檔案（可一次選很多張）</p>
+            <input type="file" id="featured-photo-file" accept="image/*" multiple hidden />
+            <p id="featured-photo-filename" class="filename"></p>
+          </div>
+          <p class="status" id="featured-photo-status"></p>
+        </div>
+
+        <div id="featured-photo-grid" class="grid" style="margin-bottom: 40px"></div>
+
         <!-- 分類列表 -->
         <div id="category-list-view">
           <button id="new-category-btn" class="primary-btn">＋ 新增分類</button>

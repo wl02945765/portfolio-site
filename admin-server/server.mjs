@@ -23,14 +23,17 @@ const ABOUT_TAGS_JSON = path.join(CONTENT_DIR, "aboutTags.json");
 const ABOUT_PHILOSOPHY_JSON = path.join(CONTENT_DIR, "aboutPhilosophy.json");
 const ABOUT_TIMELINE_JSON = path.join(CONTENT_DIR, "aboutTimeline.json");
 const FEATURED_PHOTOS_JSON = path.join(CONTENT_DIR, "featuredPhotos.json");
+const DESIGN_CATEGORIES_JSON = path.join(CONTENT_DIR, "designCategories.json");
+const DESIGNS_JSON = path.join(CONTENT_DIR, "designs.json");
 const PHOTOS_DIR = path.join(MEDIA_DIR, "photos");
 const VIDEOS_DIR = path.join(MEDIA_DIR, "videos");
 const THUMBS_DIR = path.join(VIDEOS_DIR, "thumbs");
 const SOUND_DIR = path.join(MEDIA_DIR, "sound");
 const ABOUT_DIR = path.join(MEDIA_DIR, "about");
 const FEATURED_DIR = path.join(MEDIA_DIR, "featured");
+const DESIGN_DIR = path.join(MEDIA_DIR, "design");
 
-for (const dir of [PHOTOS_DIR, VIDEOS_DIR, THUMBS_DIR, SOUND_DIR, ABOUT_DIR, FEATURED_DIR]) {
+for (const dir of [PHOTOS_DIR, VIDEOS_DIR, THUMBS_DIR, SOUND_DIR, ABOUT_DIR, FEATURED_DIR, DESIGN_DIR]) {
   fs.mkdirSync(dir, { recursive: true });
 }
 
@@ -297,7 +300,7 @@ function runPublish() {
   publishState.lastError = null;
   try {
     execSync(
-      "git add content/photos.json content/categories.json content/videos.json content/videoCategories.json content/site-text.json content/sound.json content/aboutGallery.json content/aboutSkills.json content/aboutHero.json content/aboutTags.json content/aboutPhilosophy.json content/aboutTimeline.json content/featuredPhotos.json public/media",
+      "git add content/photos.json content/categories.json content/videos.json content/videoCategories.json content/site-text.json content/sound.json content/aboutGallery.json content/aboutSkills.json content/aboutHero.json content/aboutTags.json content/aboutPhilosophy.json content/aboutTimeline.json content/featuredPhotos.json content/designCategories.json content/designs.json public/media",
       { cwd: ROOT },
     );
     const diff = spawnSync("git", ["diff", "--cached", "--quiet"], { cwd: ROOT });
@@ -372,6 +375,15 @@ const aboutGalleryUpload = multer({
 const featuredPhotoUpload = multer({
   storage: multer.diskStorage({
     destination: FEATURED_DIR,
+    filename: (_req, file, cb) =>
+      cb(null, `${randomUUID()}${path.extname(file.originalname)}`),
+  }),
+  limits: { fileSize: 50 * 1024 * 1024 },
+});
+
+const designPhotoUpload = multer({
+  storage: multer.diskStorage({
+    destination: DESIGN_DIR,
     filename: (_req, file, cb) =>
       cb(null, `${randomUUID()}${path.extname(file.originalname)}`),
   }),
@@ -627,6 +639,166 @@ app.post("/api/photos/reorder", (req, res) => {
   const result = photos.map((p) => (orderSet.has(p.id) ? reorderedSubset[cursor++] : p));
 
   writeJSON(PHOTOS_JSON, result);
+  schedulePublish();
+  res.json(result);
+});
+
+// ---------- Design categories ----------
+// Same shape as Photography's categories — logos, business cards, cards —
+// kept as a fully separate content set (own JSON, own media folder) so the
+// two never mix, even though the endpoints mirror each other exactly.
+
+app.get("/api/design-categories", (_req, res) => {
+  res.json(readJSON(DESIGN_CATEGORIES_JSON));
+});
+
+app.post("/api/design-categories", (req, res) => {
+  const categories = readJSON(DESIGN_CATEGORIES_JSON);
+  const entry = {
+    id: randomUUID(),
+    name: { zh: req.body.name_zh || "", en: req.body.name_en || "" },
+    description: { zh: req.body.description_zh || "", en: req.body.description_en || "" },
+    location: { zh: req.body.location_zh || "", en: req.body.location_en || "" },
+    coverPhotoId: null,
+  };
+  categories.push(entry);
+  writeJSON(DESIGN_CATEGORIES_JSON, categories);
+  schedulePublish();
+  res.json(entry);
+});
+
+app.patch("/api/design-categories/:id", (req, res) => {
+  const categories = readJSON(DESIGN_CATEGORIES_JSON);
+  const item = categories.find((c) => c.id === req.params.id);
+  if (!item) return res.status(404).json({ error: "not found" });
+  if (req.body.name_zh !== undefined) item.name.zh = req.body.name_zh;
+  if (req.body.name_en !== undefined) item.name.en = req.body.name_en;
+  if (req.body.description_zh !== undefined) item.description.zh = req.body.description_zh;
+  if (req.body.description_en !== undefined) item.description.en = req.body.description_en;
+  if (req.body.location_zh !== undefined) item.location.zh = req.body.location_zh;
+  if (req.body.location_en !== undefined) item.location.en = req.body.location_en;
+  writeJSON(DESIGN_CATEGORIES_JSON, categories);
+  schedulePublish();
+  res.json(item);
+});
+
+app.post("/api/design-categories/:id/set-cover", (req, res) => {
+  const { photoId } = req.body;
+  const categories = readJSON(DESIGN_CATEGORIES_JSON);
+  const category = categories.find((c) => c.id === req.params.id);
+  if (!category) return res.status(404).json({ error: "category not found" });
+  const designs = readJSON(DESIGNS_JSON);
+  const design = designs.find((p) => p.id === photoId && p.categoryId === category.id);
+  if (!design) return res.status(400).json({ error: "photo not in this category" });
+  category.coverPhotoId = photoId;
+  writeJSON(DESIGN_CATEGORIES_JSON, categories);
+  schedulePublish();
+  res.json(category);
+});
+
+app.delete("/api/design-categories/:id", (req, res) => {
+  const categories = readJSON(DESIGN_CATEGORIES_JSON);
+  const designs = readJSON(DESIGNS_JSON);
+  const hasDesigns = designs.some((p) => p.categoryId === req.params.id);
+  if (hasDesigns) {
+    return res
+      .status(400)
+      .json({ error: "category still has photos — delete or move them first" });
+  }
+  writeJSON(
+    DESIGN_CATEGORIES_JSON,
+    categories.filter((c) => c.id !== req.params.id),
+  );
+  schedulePublish();
+  res.json({ ok: true });
+});
+
+// ---------- Design works ----------
+
+app.get("/api/designs", (_req, res) => {
+  res.json(readJSON(DESIGNS_JSON));
+});
+
+app.post("/api/design-categories/:id/designs", designPhotoUpload.array("files", 200), (req, res) => {
+  if (!req.files || req.files.length === 0) {
+    return res.status(400).json({ error: "missing files" });
+  }
+  const categories = readJSON(DESIGN_CATEGORIES_JSON);
+  const category = categories.find((c) => c.id === req.params.id);
+  if (!category) return res.status(404).json({ error: "category not found" });
+
+  const designs = readJSON(DESIGNS_JSON);
+  const created = req.files.map((file) => {
+    const filename = optimizePhoto(DESIGN_DIR, file.filename);
+    const { width, height } = getImageDimensions(path.join(DESIGN_DIR, filename));
+    return {
+      id: randomUUID(),
+      src: `/media/design/${filename}`,
+      categoryId: category.id,
+      caption: { zh: "", en: "" },
+      width: width || undefined,
+      height: height || undefined,
+    };
+  });
+  designs.push(...created);
+  writeJSON(DESIGNS_JSON, designs);
+
+  if (!category.coverPhotoId) {
+    category.coverPhotoId = created[0].id;
+    writeJSON(DESIGN_CATEGORIES_JSON, categories);
+  }
+
+  schedulePublish();
+  res.json(created);
+});
+
+app.patch("/api/designs/:id", (req, res) => {
+  const designs = readJSON(DESIGNS_JSON);
+  const item = designs.find((p) => p.id === req.params.id);
+  if (!item) return res.status(404).json({ error: "not found" });
+  if (req.body.caption_zh !== undefined) item.caption.zh = req.body.caption_zh;
+  if (req.body.caption_en !== undefined) item.caption.en = req.body.caption_en;
+  writeJSON(DESIGNS_JSON, designs);
+  schedulePublish();
+  res.json(item);
+});
+
+app.delete("/api/designs/:id", (req, res) => {
+  const designs = readJSON(DESIGNS_JSON);
+  const item = designs.find((p) => p.id === req.params.id);
+  if (!item) return res.status(404).json({ error: "not found" });
+  const filePath = path.join(ROOT, "public", item.src);
+  if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
+  writeJSON(
+    DESIGNS_JSON,
+    designs.filter((p) => p.id !== req.params.id),
+  );
+
+  const categories = readJSON(DESIGN_CATEGORIES_JSON);
+  const category = categories.find((c) => c.id === item.categoryId);
+  if (category && category.coverPhotoId === item.id) {
+    const remaining = designs.filter(
+      (p) => p.categoryId === item.categoryId && p.id !== item.id,
+    );
+    category.coverPhotoId = remaining[0]?.id ?? null;
+    writeJSON(DESIGN_CATEGORIES_JSON, categories);
+  }
+
+  schedulePublish();
+  res.json({ ok: true });
+});
+
+app.post("/api/designs/reorder", (req, res) => {
+  const { order } = req.body;
+  const designs = readJSON(DESIGNS_JSON);
+  const byId = new Map(designs.map((p) => [p.id, p]));
+  const reorderedSubset = order.map((id) => byId.get(id)).filter(Boolean);
+  const orderSet = new Set(order);
+
+  let cursor = 0;
+  const result = designs.map((p) => (orderSet.has(p.id) ? reorderedSubset[cursor++] : p));
+
+  writeJSON(DESIGNS_JSON, result);
   schedulePublish();
   res.json(result);
 });

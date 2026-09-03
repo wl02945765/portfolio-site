@@ -10,11 +10,15 @@ import type { Category, Photo } from "@/lib/content";
 export function CategoryFolders({
   categories,
   photos,
+  section,
 }: {
   categories: Category[];
   photos: Photo[];
+  section: "photography" | "design";
 }) {
   const { t, locale } = useLanguage();
+  const sectionText = t[section];
+  const basePath = section === "design" ? "/design" : "/photography";
 
   const folders = useMemo(
     () =>
@@ -31,18 +35,18 @@ export function CategoryFolders({
 
   return (
     <div className="px-6 pb-24 pt-16 sm:px-10 sm:pt-20">
-      <PageHeading>{t.photography.heading}</PageHeading>
+      <PageHeading>{sectionText.heading}</PageHeading>
 
       {folders.length === 0 ? (
         <div className="flex items-center justify-center px-6 py-32 text-center text-sm tracking-wide text-zinc-500">
-          {t.photography.folderEmpty}
+          {sectionText.folderEmpty}
         </div>
       ) : (
         <div className="mt-10 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
           {folders.map(({ category, cover, count }) => (
             <Link
               key={category.id}
-              href={`/photography/${category.id}`}
+              href={`${basePath}/${category.id}`}
               className="group relative block aspect-square w-full overflow-hidden bg-black"
             >
               <img

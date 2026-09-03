@@ -17,6 +17,7 @@
       <span class="brand">Ching's Profile <em>後台管理</em></span>
       <nav class="tabs">
         <button class="tab-btn active" data-tab="photos">攝影</button>
+        <button class="tab-btn" data-tab="design">平面設計</button>
         <button class="tab-btn" data-tab="videos">影片</button>
         <button class="tab-btn" data-tab="sound">Sound</button>
         <button class="tab-btn" data-tab="about">About 頁</button>
@@ -90,6 +91,58 @@
           </form>
 
           <div id="photo-grid" class="grid"></div>
+        </div>
+      </section>
+
+      <section id="panel-design" class="panel">
+        <!-- 分類列表 -->
+        <div id="design-category-list-view">
+          <button id="new-design-category-btn" class="primary-btn">＋ 新增分類</button>
+
+          <form id="design-category-form" class="upload-form" style="display: none">
+            <div class="fields">
+              <label>中文名稱 <input type="text" name="name_zh" placeholder="例如：Logo 設計" required /></label>
+              <label>English Name <input type="text" name="name_en" placeholder="e.g. Logo Design" /></label>
+              <label>中文說明 <input type="text" name="description_zh" placeholder="這個分類的簡短說明" /></label>
+              <label>English Description <input type="text" name="description_en" /></label>
+              <label>中文地點 <input type="text" name="location_zh" /></label>
+              <label>English Location <input type="text" name="location_en" /></label>
+            </div>
+            <button type="submit" class="primary-btn">建立分類</button>
+            <button type="button" id="cancel-design-category-btn" class="cover-btn">取消</button>
+            <p class="status" id="design-category-status"></p>
+          </form>
+
+          <div id="design-category-grid" class="grid"></div>
+        </div>
+
+        <!-- 分類內部：管理說明/地點 + 作品 -->
+        <div id="design-category-detail-view" style="display: none">
+          <button id="back-to-design-categories-btn" class="cover-btn">← 返回分類列表</button>
+
+          <div class="upload-form">
+            <div class="fields">
+              <label>中文名稱 <input type="text" data-designcat-field="name_zh" /></label>
+              <label>English Name <input type="text" data-designcat-field="name_en" /></label>
+              <label>中文說明 <input type="text" data-designcat-field="description_zh" /></label>
+              <label>English Description <input type="text" data-designcat-field="description_en" /></label>
+              <label>中文地點 <input type="text" data-designcat-field="location_zh" /></label>
+              <label>English Location <input type="text" data-designcat-field="location_en" /></label>
+            </div>
+            <button type="button" id="delete-design-category-btn" class="delete-btn">刪除這個分類</button>
+          </div>
+
+          <form id="design-photo-form" class="upload-form">
+            <div id="design-photo-drop" class="dropzone">
+              <p>拖拉多張圖片到這裡，或點擊選擇檔案（可一次選很多張）</p>
+              <input type="file" id="design-photo-file" accept="image/*" multiple hidden />
+              <p id="design-photo-filename" class="filename"></p>
+            </div>
+            <button type="submit" class="primary-btn">上傳作品</button>
+            <p class="status" id="design-photo-status"></p>
+          </form>
+
+          <div id="design-photo-grid" class="grid"></div>
         </div>
       </section>
 

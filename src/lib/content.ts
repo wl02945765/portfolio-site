@@ -10,6 +10,8 @@ import aboutTagsData from "../../content/aboutTags.json";
 import aboutPhilosophyData from "../../content/aboutPhilosophy.json";
 import aboutTimelineData from "../../content/aboutTimeline.json";
 import featuredPhotosData from "../../content/featuredPhotos.json";
+import designCategoriesData from "../../content/designCategories.json";
+import designsData from "../../content/designs.json";
 
 export type LocalizedText = {
   zh: string;
@@ -148,4 +150,15 @@ export function getAboutTimeline(): AboutTimelineStep[] {
 
 export function getFeaturedPhotos(): FeaturedPhoto[] {
   return featuredPhotosData as FeaturedPhoto[];
+}
+
+// Graphic design (logos, business cards, etc.) reuses the exact Category/Photo
+// shape as Photography — it's the same "categorised images with captions"
+// model, just a separate content set so the two don't mix.
+export function getDesignCategories(): Category[] {
+  return designCategoriesData as Category[];
+}
+
+export function getDesignPhotos(): Photo[] {
+  return designsData as Photo[];
 }

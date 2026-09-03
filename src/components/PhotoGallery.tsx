@@ -31,7 +31,7 @@ export function PhotoGallery({
   return (
     <div className="pb-24">
       {featuredPhotos.length > 0 && <PhotoStripCurtain photos={featuredPhotos} />}
-      <CategoryFolders categories={categories} photos={photos} />
+      <CategoryFolders categories={categories} photos={photos} section="photography" />
     </div>
   );
 }

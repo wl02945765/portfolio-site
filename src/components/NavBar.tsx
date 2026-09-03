@@ -14,6 +14,7 @@ export function NavBar() {
   const navItems = [
     { href: "/about", label: t.nav.aboutLabel },
     { href: "/photography", label: t.nav.photographyLabel },
+    { href: "/design", label: t.nav.designLabel },
     { href: "/video-work", label: t.nav.videoWorkLabel },
     { href: "/sound", label: t.nav.soundLabel },
     { href: "/contact", label: t.nav.contactLabel },

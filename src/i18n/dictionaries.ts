@@ -7,6 +7,7 @@ export type Dictionary = {
   nav: {
     aboutLabel: string;
     photographyLabel: string;
+    designLabel: string;
     videoWorkLabel: string;
     soundLabel: string;
     contactLabel: string;
@@ -20,6 +21,12 @@ export type Dictionary = {
     empty: string;
     folderEmpty: string;
     backToPhotography: string;
+  };
+  design: {
+    heading: string;
+    empty: string;
+    folderEmpty: string;
+    backToDesign: string;
   };
   videoWork: {
     heading: string;

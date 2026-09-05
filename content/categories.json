@@ -80,6 +80,22 @@
     "coverPhotoId": "a991ab25-3286-4cfd-b1f6-626d40d7bb5c"
   },
   {
+    "id": "9ae95c80-d34f-4990-964e-692819faa647",
+    "name": {
+      "zh": "手作",
+      "en": "Handmade"
+    },
+    "description": {
+      "zh": "",
+      "en": ""
+    },
+    "location": {
+      "zh": "",
+      "en": ""
+    },
+    "coverPhotoId": "ba976d2b-f8b1-47ae-b1da-358a188e208a"
+  },
+  {
     "id": "2e001a7a-9e1a-4079-ad81-f023f1a8ec90",
     "name": {
       "zh": "山海之間",
@@ -126,22 +142,6 @@
       "en": ""
     },
     "coverPhotoId": "61f5376c-2209-4754-82a5-627be318e7b3"
-  },
-  {
-    "id": "9ae95c80-d34f-4990-964e-692819faa647",
-    "name": {
-      "zh": "手作",
-      "en": "Handmade"
-    },
-    "description": {
-      "zh": "",
-      "en": ""
-    },
-    "location": {
-      "zh": "",
-      "en": ""
-    },
-    "coverPhotoId": "ba976d2b-f8b1-47ae-b1da-358a188e208a"
   },
   {
     "id": "a05768f7-7958-4f34-8103-732a7122007b",

@@ -12,5 +12,11 @@
     "zh": "現場錄音、音效、混音後製、燈光、攝影",
     "en": "Location Sound、Sound Effects (SFX)、Sound Mixing、Lighting、Cinematography "
   },
-  "links": []
+  "links": [
+    {
+      "id": "f591449d-fd45-40e7-8f49-f6d79ed5e3a8",
+      "label": "podcast and youtube",
+      "url": "https://www.youtube.com/watch?v=B4T5R1Yshpk&t=310s"
+    }
+  ]
 }

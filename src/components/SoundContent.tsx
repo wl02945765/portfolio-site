@@ -13,10 +13,10 @@ export function SoundContent({ sound, episodes }: { sound: Sound; episodes: Soun
   const role = sound.role[locale];
 
   return (
-    <div className="flex flex-1 flex-col px-6 pb-24 sm:px-10">
+    <div className="flex flex-1 flex-col pb-24">
       <PageHeading>{t.sound.heading}</PageHeading>
 
-      <div className="mt-10 flex flex-col gap-10 lg:flex-row">
+      <div className="mt-10 flex flex-col gap-10 px-6 sm:px-10 lg:flex-row">
         {sound.coverImage && (
           <img
             src={withBasePath(sound.coverImage)}
@@ -71,7 +71,7 @@ export function SoundContent({ sound, episodes }: { sound: Sound; episodes: Soun
       </div>
 
       {episodes.length > 0 && (
-        <div className="mt-16 flex flex-col gap-6">
+        <div className="mt-16 flex flex-col gap-6 px-6 sm:px-10">
           {episodes.map((episode, i) => (
             <SoundEpisodeCard key={episode.id} episode={episode} channelNumber={i + 1} />
           ))}

@@ -34,15 +34,15 @@ export function CategoryFolders({
   );
 
   return (
-    <div className="px-6 pb-24 pt-16 sm:px-10 sm:pt-20">
+    <div className="pb-24">
       <PageHeading>{sectionText.heading}</PageHeading>
 
       {folders.length === 0 ? (
-        <div className="flex items-center justify-center px-6 py-32 text-center text-sm tracking-wide text-zinc-500">
+        <div className="flex items-center justify-center px-6 py-32 text-center text-sm tracking-wide text-zinc-500 sm:px-10">
           {sectionText.folderEmpty}
         </div>
       ) : (
-        <div className="mt-10 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+        <div className="mt-10 grid grid-cols-2 gap-4 px-6 sm:px-10 sm:grid-cols-3 lg:grid-cols-4">
           {folders.map(({ category, cover, count }) => (
             <Link
               key={category.id}

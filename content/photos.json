@@ -528,30 +528,6 @@
     "thumbSrc": "/media/photos/bd8e260b-1364-4778-b906-ced801f78481-grid.jpg"
   },
   {
-    "id": "26f5fe53-5307-47d9-b8ac-fe9d7ce8b11c",
-    "src": "/media/photos/0464d4ea-74d3-4723-b106-03894014581f.JPG",
-    "categoryId": "4feb1b24-b23a-4b9d-b696-4b557c3e3ee5",
-    "caption": {
-      "zh": "",
-      "en": ""
-    },
-    "width": 2400,
-    "height": 1600,
-    "thumbSrc": "/media/photos/0464d4ea-74d3-4723-b106-03894014581f-grid.jpg"
-  },
-  {
-    "id": "665b73f1-6e31-428d-b54b-6929d8a1ed96",
-    "src": "/media/photos/5b03b98a-7ef3-4f25-9fb3-959b4ee5b031.JPG",
-    "categoryId": "4feb1b24-b23a-4b9d-b696-4b557c3e3ee5",
-    "caption": {
-      "zh": "",
-      "en": ""
-    },
-    "width": 2400,
-    "height": 1349,
-    "thumbSrc": "/media/photos/5b03b98a-7ef3-4f25-9fb3-959b4ee5b031-grid.jpg"
-  },
-  {
     "id": "475347fb-5d42-4d65-a60e-4e9cd98a0da8",
     "src": "/media/photos/540d1516-60c8-4e67-a9b8-b0dadf73c234.JPG",
     "categoryId": "4feb1b24-b23a-4b9d-b696-4b557c3e3ee5",

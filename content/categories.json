@@ -64,6 +64,22 @@
     "coverPhotoId": "8bd3874d-bdf0-47f7-b19f-3e73ba2662ab"
   },
   {
+    "id": "42bc0c3e-bb83-407b-83c5-7b483d71ad84",
+    "name": {
+      "zh": "Classic Watches",
+      "en": "Classic Watches"
+    },
+    "description": {
+      "zh": "",
+      "en": ""
+    },
+    "location": {
+      "zh": "",
+      "en": ""
+    },
+    "coverPhotoId": "a991ab25-3286-4cfd-b1f6-626d40d7bb5c"
+  },
+  {
     "id": "2e001a7a-9e1a-4079-ad81-f023f1a8ec90",
     "name": {
       "zh": "山海之間",
@@ -112,6 +128,22 @@
     "coverPhotoId": "61f5376c-2209-4754-82a5-627be318e7b3"
   },
   {
+    "id": "9ae95c80-d34f-4990-964e-692819faa647",
+    "name": {
+      "zh": "手作",
+      "en": "Handmade"
+    },
+    "description": {
+      "zh": "",
+      "en": ""
+    },
+    "location": {
+      "zh": "",
+      "en": ""
+    },
+    "coverPhotoId": "ba976d2b-f8b1-47ae-b1da-358a188e208a"
+  },
+  {
     "id": "a05768f7-7958-4f34-8103-732a7122007b",
     "name": {
       "zh": "光影人像",
@@ -142,37 +174,5 @@
       "en": ""
     },
     "coverPhotoId": "5f288e01-753c-4bbb-891e-249a97425b02"
-  },
-  {
-    "id": "9ae95c80-d34f-4990-964e-692819faa647",
-    "name": {
-      "zh": "手作",
-      "en": "Handmade"
-    },
-    "description": {
-      "zh": "",
-      "en": ""
-    },
-    "location": {
-      "zh": "",
-      "en": ""
-    },
-    "coverPhotoId": "ba976d2b-f8b1-47ae-b1da-358a188e208a"
-  },
-  {
-    "id": "42bc0c3e-bb83-407b-83c5-7b483d71ad84",
-    "name": {
-      "zh": "Classic Watches",
-      "en": "Classic Watches"
-    },
-    "description": {
-      "zh": "",
-      "en": ""
-    },
-    "location": {
-      "zh": "",
-      "en": ""
-    },
-    "coverPhotoId": "a991ab25-3286-4cfd-b1f6-626d40d7bb5c"
   }
 ]

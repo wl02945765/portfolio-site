@@ -33,7 +33,7 @@ export function SoundContent({ sound, episodes }: { sound: Sound; episodes: Soun
           )}
 
           {showDescription && (
-            <p className="max-w-xl text-base leading-8 tracking-wide text-zinc-400">
+            <p className="max-w-xl whitespace-pre-line text-base leading-8 tracking-wide text-zinc-400">
               {showDescription}
             </p>
           )}
@@ -43,7 +43,7 @@ export function SoundContent({ sound, episodes }: { sound: Sound; episodes: Soun
               <p className="text-xs uppercase tracking-[0.15em] text-zinc-500">
                 {t.sound.roleHeading}
               </p>
-              <p className="mt-2 max-w-xl text-sm leading-7 text-zinc-400">{role}</p>
+              <p className="mt-2 max-w-xl whitespace-pre-line text-sm leading-7 text-zinc-400">{role}</p>
             </div>
           )}
 

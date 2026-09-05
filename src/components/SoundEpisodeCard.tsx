@@ -39,7 +39,9 @@ export function SoundEpisodeCard({ episode, channelNumber }: { episode: SoundEpi
           </div>
         )}
 
-        {description && <p className="mb-4 text-sm leading-7 text-zinc-400">{description}</p>}
+        {description && (
+          <p className="mb-4 whitespace-pre-line text-sm leading-7 text-zinc-400">{description}</p>
+        )}
 
         {episode.audioSrc && (
           <audio controls src={withBasePath(episode.audioSrc)} className="mb-4 w-full" />

@@ -128,22 +128,6 @@
     "coverPhotoId": "1c2246a0-8532-4c75-be27-39c13c5c2bd6"
   },
   {
-    "id": "9d4644fb-6018-4884-a716-f41520046f3a",
-    "name": {
-      "zh": "細節",
-      "en": "Details"
-    },
-    "description": {
-      "zh": "裁縫手作特寫、餐桌美食、炊煮火光，以及雕塑、疊椅、五金紋理與花卉微距等近距離構圖。",
-      "en": "Close-up craft in motion — hands at a sewing machine, food and fire — alongside still-life details in sculpture, texture and macro florals."
-    },
-    "location": {
-      "zh": "",
-      "en": ""
-    },
-    "coverPhotoId": "61f5376c-2209-4754-82a5-627be318e7b3"
-  },
-  {
     "id": "a05768f7-7958-4f34-8103-732a7122007b",
     "name": {
       "zh": "光影人像",
@@ -158,6 +142,22 @@
       "en": ""
     },
     "coverPhotoId": "36e9ff41-2985-4e8a-a1a3-7da6f13b97bc"
+  },
+  {
+    "id": "9d4644fb-6018-4884-a716-f41520046f3a",
+    "name": {
+      "zh": "細節",
+      "en": "Details"
+    },
+    "description": {
+      "zh": "裁縫手作特寫、餐桌美食、炊煮火光，以及雕塑、疊椅、五金紋理與花卉微距等近距離構圖。",
+      "en": "Close-up craft in motion — hands at a sewing machine, food and fire — alongside still-life details in sculpture, texture and macro florals."
+    },
+    "location": {
+      "zh": "",
+      "en": ""
+    },
+    "coverPhotoId": "61f5376c-2209-4754-82a5-627be318e7b3"
   },
   {
     "id": "c2b548a9-7beb-4b44-b7ff-bdfcfe0139be",

@@ -124,7 +124,7 @@ export function AudioCompareToggle({
         onEnded={handleEnded}
       />
 
-      <p className="mb-3 text-[10px] uppercase tracking-[0.14em] text-zinc-500">Input Select</p>
+      <p className="mb-3 text-[10px] uppercase tracking-[0.14em] text-zinc-500">Before / After</p>
       <div className="mb-4 flex gap-[2px]">
         <button
           type="button"

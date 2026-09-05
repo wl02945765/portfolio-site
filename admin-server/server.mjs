@@ -16,6 +16,7 @@ const VIDEOS_JSON = path.join(CONTENT_DIR, "videos.json");
 const VIDEO_CATEGORIES_JSON = path.join(CONTENT_DIR, "videoCategories.json");
 const SITE_TEXT_JSON = path.join(CONTENT_DIR, "site-text.json");
 const SOUND_JSON = path.join(CONTENT_DIR, "sound.json");
+const SOUND_EPISODES_JSON = path.join(CONTENT_DIR, "soundEpisodes.json");
 const ABOUT_GALLERY_JSON = path.join(CONTENT_DIR, "aboutGallery.json");
 const ABOUT_SKILLS_JSON = path.join(CONTENT_DIR, "aboutSkills.json");
 const ABOUT_HERO_JSON = path.join(CONTENT_DIR, "aboutHero.json");
@@ -352,6 +353,41 @@ function compressVideo(dir, filename) {
   return finalFilename;
 }
 
+// Transcodes any uploaded audio file to a fixed AAC/m4a format. Always run
+// through the exact same ffmpeg args regardless of caller — the raw/mixed
+// compare pair depends on both sides going through identical encoding so
+// no codec-specific container padding drifts them out of alignment.
+function compressAudio(dir, filename) {
+  const inputPath = path.join(dir, filename);
+  const ext = path.extname(filename).toLowerCase();
+  const base = filename.slice(0, -ext.length) || filename;
+  const finalFilename = `${base}.m4a`;
+  const tmpPath = path.join(dir, `${base}.compressing.m4a`);
+
+  const result = spawnSync("ffmpeg", [
+    "-y",
+    "-i",
+    inputPath,
+    "-c:a",
+    "aac",
+    "-b:a",
+    "192k",
+    "-movflags",
+    "+faststart",
+    tmpPath,
+  ]);
+
+  if (result.status !== 0 || !fs.existsSync(tmpPath)) {
+    if (fs.existsSync(tmpPath)) fs.unlinkSync(tmpPath);
+    console.error("[sound] ffmpeg audio transcode failed, keeping raw upload:", result.stderr?.toString().slice(-2000));
+    return filename;
+  }
+
+  fs.unlinkSync(inputPath);
+  fs.renameSync(tmpPath, path.join(dir, finalFilename));
+  return finalFilename;
+}
+
 // Recursively merges a partial nested patch (e.g. { zh: { photography: { heading: "..." } } })
 // into the existing site-text object, leaving every other field untouched.
 function deepMerge(target, patch) {
@@ -387,7 +423,7 @@ function runPublish() {
   publishState.lastError = null;
   try {
     execSync(
-      "git add content/photos.json content/categories.json content/videos.json content/videoCategories.json content/site-text.json content/sound.json content/aboutGallery.json content/aboutSkills.json content/aboutHero.json content/aboutTags.json content/aboutPhilosophy.json content/aboutTimeline.json content/featuredPhotos.json content/designCategories.json content/designs.json public/media",
+      "git add content/photos.json content/categories.json content/videos.json content/videoCategories.json content/site-text.json content/sound.json content/soundEpisodes.json content/aboutGallery.json content/aboutSkills.json content/aboutHero.json content/aboutTags.json content/aboutPhilosophy.json content/aboutTimeline.json content/featuredPhotos.json content/designCategories.json content/designs.json public/media",
       { cwd: ROOT },
     );
     const diff = spawnSync("git", ["diff", "--cached", "--quiet"], { cwd: ROOT });
@@ -448,6 +484,33 @@ const soundCoverUpload = multer({
       cb(null, `cover-${randomUUID()}${path.extname(file.originalname)}`),
   }),
   limits: { fileSize: 50 * 1024 * 1024 },
+});
+
+const soundEpisodeUpload = multer({
+  storage: multer.diskStorage({
+    destination: SOUND_DIR,
+    filename: (_req, file, cb) =>
+      cb(null, `episode-${randomUUID()}${path.extname(file.originalname)}`),
+  }),
+  limits: { fileSize: 500 * 1024 * 1024 },
+});
+
+const soundCompareRawUpload = multer({
+  storage: multer.diskStorage({
+    destination: SOUND_DIR,
+    filename: (_req, file, cb) =>
+      cb(null, `raw-${randomUUID()}${path.extname(file.originalname)}`),
+  }),
+  limits: { fileSize: 500 * 1024 * 1024 },
+});
+
+const soundCompareMixedUpload = multer({
+  storage: multer.diskStorage({
+    destination: SOUND_DIR,
+    filename: (_req, file, cb) =>
+      cb(null, `mixed-${randomUUID()}${path.extname(file.originalname)}`),
+  }),
+  limits: { fileSize: 500 * 1024 * 1024 },
 });
 
 const aboutGalleryUpload = multer({
@@ -577,6 +640,175 @@ app.post("/api/sound/links/reorder", (req, res) => {
   writeJSON(SOUND_JSON, data);
   schedulePublish();
   res.json(data.links);
+});
+
+// ---------- Sound episodes (podcast entries, e.g. 歲月車廂) ----------
+// An episode can have a self-hosted audio file AND a YouTube version at the
+// same time — unlike Video, these are not mutually exclusive here — plus an
+// optional raw/mixed A-B compare pair.
+
+app.get("/api/sound/episodes", (_req, res) => {
+  res.json(readJSON(SOUND_EPISODES_JSON));
+});
+
+app.post("/api/sound/episodes", soundEpisodeUpload.single("file"), (req, res) => {
+  const episodes = readJSON(SOUND_EPISODES_JSON);
+  const entry = {
+    id: randomUUID(),
+    title: { zh: req.body.title_zh || "", en: req.body.title_en || "" },
+    description: { zh: req.body.description_zh || "", en: req.body.description_en || "" },
+    date: req.body.date || "",
+    audioSrc: req.file ? `/media/sound/${compressAudio(SOUND_DIR, req.file.filename)}` : "",
+  };
+  episodes.push(entry);
+  writeJSON(SOUND_EPISODES_JSON, episodes);
+  schedulePublish();
+  res.json(entry);
+});
+
+app.patch("/api/sound/episodes/:id", (req, res) => {
+  const episodes = readJSON(SOUND_EPISODES_JSON);
+  const item = episodes.find((e) => e.id === req.params.id);
+  if (!item) return res.status(404).json({ error: "not found" });
+  if (req.body.title_zh !== undefined) item.title.zh = req.body.title_zh;
+  if (req.body.title_en !== undefined) item.title.en = req.body.title_en;
+  if (req.body.description_zh !== undefined) {
+    item.description = item.description || { zh: "", en: "" };
+    item.description.zh = req.body.description_zh;
+  }
+  if (req.body.description_en !== undefined) {
+    item.description = item.description || { zh: "", en: "" };
+    item.description.en = req.body.description_en;
+  }
+  if (req.body.date !== undefined) item.date = req.body.date;
+  writeJSON(SOUND_EPISODES_JSON, episodes);
+  schedulePublish();
+  res.json(item);
+});
+
+app.post("/api/sound/episodes/:id/youtube", (req, res) => {
+  const youtubeId = extractYoutubeId(req.body.youtube_url);
+  if (!youtubeId) {
+    return res.status(400).json({ error: "看不出這是 YouTube 影片連結，確認網址有沒有貼對" });
+  }
+  const episodes = readJSON(SOUND_EPISODES_JSON);
+  const item = episodes.find((e) => e.id === req.params.id);
+  if (!item) return res.status(404).json({ error: "not found" });
+  item.youtubeId = youtubeId;
+  writeJSON(SOUND_EPISODES_JSON, episodes);
+  schedulePublish();
+  res.json(item);
+});
+
+app.delete("/api/sound/episodes/:id/youtube", (req, res) => {
+  const episodes = readJSON(SOUND_EPISODES_JSON);
+  const item = episodes.find((e) => e.id === req.params.id);
+  if (!item) return res.status(404).json({ error: "not found" });
+  delete item.youtubeId;
+  writeJSON(SOUND_EPISODES_JSON, episodes);
+  schedulePublish();
+  res.json(item);
+});
+
+// Checks the raw/mixed pair's durations once both halves are present and
+// reports a mismatch instead of silently trimming either side — an auto-trim
+// could clip the wrong one, so this is surfaced to the admin as a warning.
+function compareDurationWarning(item) {
+  if (!item.compare?.rawSrc || !item.compare?.mixedSrc) return undefined;
+  const rawPath = path.join(ROOT, "public", item.compare.rawSrc);
+  const mixedPath = path.join(ROOT, "public", item.compare.mixedSrc);
+  const rawDuration = probeDurationSeconds(rawPath);
+  const mixedDuration = probeDurationSeconds(mixedPath);
+  if (rawDuration == null || mixedDuration == null) return undefined;
+  const diffMs = Math.abs(rawDuration - mixedDuration) * 1000;
+  if (diffMs > 200) {
+    return `raw/mixed 時長相差 ${Math.round(diffMs)}ms，確認一下母帶剪輯是否對齊`;
+  }
+  return undefined;
+}
+
+app.post("/api/sound/episodes/:id/compare/raw", soundCompareRawUpload.single("file"), (req, res) => {
+  if (!req.file) return res.status(400).json({ error: "missing file" });
+  const episodes = readJSON(SOUND_EPISODES_JSON);
+  const item = episodes.find((e) => e.id === req.params.id);
+  if (!item) return res.status(404).json({ error: "not found" });
+  if (item.compare?.rawSrc) {
+    const oldPath = path.join(ROOT, "public", item.compare.rawSrc);
+    if (fs.existsSync(oldPath)) fs.unlinkSync(oldPath);
+  }
+  item.compare = item.compare || {};
+  item.compare.rawSrc = `/media/sound/${compressAudio(SOUND_DIR, req.file.filename)}`;
+  writeJSON(SOUND_EPISODES_JSON, episodes);
+  schedulePublish();
+  res.json({ ...item, warning: compareDurationWarning(item) });
+});
+
+app.post("/api/sound/episodes/:id/compare/mixed", soundCompareMixedUpload.single("file"), (req, res) => {
+  if (!req.file) return res.status(400).json({ error: "missing file" });
+  const episodes = readJSON(SOUND_EPISODES_JSON);
+  const item = episodes.find((e) => e.id === req.params.id);
+  if (!item) return res.status(404).json({ error: "not found" });
+  if (item.compare?.mixedSrc) {
+    const oldPath = path.join(ROOT, "public", item.compare.mixedSrc);
+    if (fs.existsSync(oldPath)) fs.unlinkSync(oldPath);
+  }
+  item.compare = item.compare || {};
+  item.compare.mixedSrc = `/media/sound/${compressAudio(SOUND_DIR, req.file.filename)}`;
+  writeJSON(SOUND_EPISODES_JSON, episodes);
+  schedulePublish();
+  res.json({ ...item, warning: compareDurationWarning(item) });
+});
+
+app.delete("/api/sound/episodes/:id/compare", (req, res) => {
+  const episodes = readJSON(SOUND_EPISODES_JSON);
+  const item = episodes.find((e) => e.id === req.params.id);
+  if (!item) return res.status(404).json({ error: "not found" });
+  if (item.compare?.rawSrc) {
+    const rawPath = path.join(ROOT, "public", item.compare.rawSrc);
+    if (fs.existsSync(rawPath)) fs.unlinkSync(rawPath);
+  }
+  if (item.compare?.mixedSrc) {
+    const mixedPath = path.join(ROOT, "public", item.compare.mixedSrc);
+    if (fs.existsSync(mixedPath)) fs.unlinkSync(mixedPath);
+  }
+  delete item.compare;
+  writeJSON(SOUND_EPISODES_JSON, episodes);
+  schedulePublish();
+  res.json(item);
+});
+
+app.delete("/api/sound/episodes/:id", (req, res) => {
+  const episodes = readJSON(SOUND_EPISODES_JSON);
+  const item = episodes.find((e) => e.id === req.params.id);
+  if (!item) return res.status(404).json({ error: "not found" });
+  if (item.audioSrc) {
+    const audioPath = path.join(ROOT, "public", item.audioSrc);
+    if (fs.existsSync(audioPath)) fs.unlinkSync(audioPath);
+  }
+  if (item.compare?.rawSrc) {
+    const rawPath = path.join(ROOT, "public", item.compare.rawSrc);
+    if (fs.existsSync(rawPath)) fs.unlinkSync(rawPath);
+  }
+  if (item.compare?.mixedSrc) {
+    const mixedPath = path.join(ROOT, "public", item.compare.mixedSrc);
+    if (fs.existsSync(mixedPath)) fs.unlinkSync(mixedPath);
+  }
+  writeJSON(
+    SOUND_EPISODES_JSON,
+    episodes.filter((e) => e.id !== req.params.id),
+  );
+  schedulePublish();
+  res.json({ ok: true });
+});
+
+app.post("/api/sound/episodes/reorder", (req, res) => {
+  const { order } = req.body;
+  const episodes = readJSON(SOUND_EPISODES_JSON);
+  const byId = new Map(episodes.map((e) => [e.id, e]));
+  const reordered = order.map((id) => byId.get(id)).filter(Boolean);
+  writeJSON(SOUND_EPISODES_JSON, reordered);
+  schedulePublish();
+  res.json(reordered);
 });
 
 // ---------- Categories ----------

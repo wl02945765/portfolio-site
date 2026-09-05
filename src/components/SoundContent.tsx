@@ -3,9 +3,10 @@
 import { useLanguage } from "@/i18n/LanguageProvider";
 import { PageHeading } from "@/components/PageHeading";
 import { withBasePath } from "@/lib/basePath";
-import type { Sound } from "@/lib/content";
+import { SoundEpisodeCard } from "@/components/SoundEpisodeCard";
+import type { Sound, SoundEpisode } from "@/lib/content";
 
-export function SoundContent({ sound }: { sound: Sound }) {
+export function SoundContent({ sound, episodes }: { sound: Sound; episodes: SoundEpisode[] }) {
   const { t, locale } = useLanguage();
   const showName = sound.showName[locale];
   const showDescription = sound.showDescription[locale];
@@ -68,6 +69,14 @@ export function SoundContent({ sound }: { sound: Sound }) {
           )}
         </div>
       </div>
+
+      {episodes.length > 0 && (
+        <div className="mt-16 flex flex-col gap-6">
+          {episodes.map((episode, i) => (
+            <SoundEpisodeCard key={episode.id} episode={episode} channelNumber={i + 1} />
+          ))}
+        </div>
+      )}
     </div>
   );
 }

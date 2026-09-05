@@ -179,6 +179,29 @@
         </form>
 
         <div id="sound-link-grid" class="grid"></div>
+
+        <h3 style="margin-top: 32px">集數（例如「歲月車廂」）</h3>
+        <p class="hint">每一集可以獨立附上自架音檔、YouTube 連結，以及一組「未混音／混音後」對比試聽。</p>
+
+        <form id="sound-episode-form" class="upload-form">
+          <div class="fields">
+            <label>集數標題（中文） <input type="text" name="title_zh" placeholder="例如：歲月車廂" required /></label>
+            <label>Episode Title（English） <input type="text" name="title_en" /></label>
+          </div>
+          <div class="fields">
+            <label>簡介（中文） <textarea name="description_zh" rows="2"></textarea></label>
+            <label>Description（English） <textarea name="description_en" rows="2"></textarea></label>
+          </div>
+          <div id="sound-episode-drop" class="dropzone">
+            <p>（選填）拖拉音檔到這裡，或點擊選擇檔案</p>
+            <input type="file" id="sound-episode-file" accept="audio/*" hidden />
+            <p id="sound-episode-filename" class="filename"></p>
+          </div>
+          <button type="submit" class="primary-btn">＋ 新增集數</button>
+          <p class="status" id="sound-episode-status"></p>
+        </form>
+
+        <div id="sound-episode-list"></div>
       </section>
 
       <section id="panel-about" class="panel">

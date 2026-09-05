@@ -746,6 +746,163 @@ document.getElementById("sound-link-form").addEventListener("submit", async (e) 
 
 loadSound();
 
+// --- Sound episodes (podcast entries, e.g. 歲月車廂) ---
+let selectedSoundEpisodeFile = null;
+let allSoundEpisodes = [];
+
+wireDropzone(
+  document.getElementById("sound-episode-drop"),
+  document.getElementById("sound-episode-file"),
+  document.getElementById("sound-episode-filename"),
+  (file) => (selectedSoundEpisodeFile = file),
+);
+
+async function loadSoundEpisodes() {
+  allSoundEpisodes = await fetch("/api/sound/episodes").then((r) => r.json());
+  renderSoundEpisodeList();
+}
+
+function soundEpisodeBadges(ep) {
+  const badges = [];
+  if (ep.audioSrc) badges.push('<span class="cover-badge">♪ Audio</span>');
+  if (ep.youtubeId) badges.push('<span class="cover-badge">▶ YouTube</span>');
+  if (ep.compare?.rawSrc && ep.compare?.mixedSrc) badges.push('<span class="cover-badge">⇄ Compare</span>');
+  return badges.join(" ");
+}
+
+function renderSoundEpisodeList() {
+  const list = document.getElementById("sound-episode-list");
+  list.innerHTML = "";
+  allSoundEpisodes.forEach((ep) => {
+    const card = document.createElement("div");
+    card.className = "card";
+    card.draggable = true;
+    card.dataset.id = ep.id;
+    card.style.marginBottom = "16px";
+    card.innerHTML = `
+      <div class="card-body">
+        <div style="margin-bottom:8px">${soundEpisodeBadges(ep)}</div>
+        <input type="text" data-field="title_zh" value="${escapeHtml(ep.title.zh)}" placeholder="標題（中文）" />
+        <input type="text" data-field="title_en" value="${escapeHtml(ep.title.en)}" placeholder="Title (English)" />
+        <textarea data-field="description_zh" placeholder="簡介（中文）" rows="2">${escapeHtml(ep.description?.zh || "")}</textarea>
+        <textarea data-field="description_en" placeholder="Description (English)" rows="2">${escapeHtml(ep.description?.en || "")}</textarea>
+
+        <div style="margin-top:10px">
+          <label style="display:block;font-size:12px;margin-bottom:4px">YouTube 連結</label>
+          <div style="display:flex;gap:8px">
+            <input type="url" class="yt-url" placeholder="https://youtube.com/watch?v=..." value="${ep.youtubeId ? `https://youtu.be/${ep.youtubeId}` : ""}" style="flex:1" />
+            <button type="button" class="cover-btn yt-attach-btn">更新</button>
+          </div>
+        </div>
+
+        <div style="margin-top:10px;display:flex;gap:16px;flex-wrap:wrap">
+          <label style="font-size:12px">
+            未混音檔案
+            <input type="file" accept="audio/*" class="raw-file" />
+          </label>
+          <label style="font-size:12px">
+            混音後檔案
+            <input type="file" accept="audio/*" class="mixed-file" />
+          </label>
+        </div>
+        <p class="status compare-warning"></p>
+      </div>
+      <div class="card-footer">
+        <span class="handle">⠿ 拖曳排序</span>
+        <button class="delete-btn">刪除整集</button>
+      </div>
+    `;
+
+    card.querySelectorAll("input[data-field], textarea[data-field]").forEach((input) => {
+      input.addEventListener("blur", () =>
+        fetch(`/api/sound/episodes/${ep.id}`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ [input.dataset.field]: input.value }),
+        }),
+      );
+    });
+
+    card.querySelector(".yt-attach-btn").addEventListener("click", async () => {
+      const url = card.querySelector(".yt-url").value;
+      const res = await fetch(`/api/sound/episodes/${ep.id}/youtube`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ youtube_url: url }),
+      });
+      if (!res.ok) {
+        alert((await res.json().catch(() => ({}))).error || "更新失敗");
+        return;
+      }
+      loadSoundEpisodes();
+    });
+
+    const warningEl = card.querySelector(".compare-warning");
+    async function uploadCompareSide(side, file) {
+      const fd = new FormData();
+      fd.append("file", file);
+      warningEl.textContent = "上傳中…";
+      const res = await fetch(`/api/sound/episodes/${ep.id}/compare/${side}`, { method: "POST", body: fd });
+      const data = await res.json().catch(() => ({}));
+      warningEl.textContent = data.warning || "";
+      loadSoundEpisodes();
+    }
+    card.querySelector(".raw-file").addEventListener("change", (e) => {
+      if (e.target.files[0]) uploadCompareSide("raw", e.target.files[0]);
+    });
+    card.querySelector(".mixed-file").addEventListener("change", (e) => {
+      if (e.target.files[0]) uploadCompareSide("mixed", e.target.files[0]);
+    });
+
+    card.querySelector(".delete-btn").addEventListener("click", async () => {
+      if (!confirm("確定要刪除這整集嗎？（含音檔跟對比檔案）")) return;
+      await fetch(`/api/sound/episodes/${ep.id}`, { method: "DELETE" });
+      loadSoundEpisodes();
+    });
+
+    list.appendChild(card);
+  });
+}
+
+wireReorder(document.getElementById("sound-episode-list"), (order) =>
+  fetch("/api/sound/episodes/reorder", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ order }),
+  }),
+);
+
+document.getElementById("sound-episode-form").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const form = e.target;
+  const fd = new FormData();
+  if (selectedSoundEpisodeFile) fd.append("file", selectedSoundEpisodeFile);
+  fd.append("title_zh", form.title_zh.value);
+  fd.append("title_en", form.title_en.value);
+  fd.append("description_zh", form.description_zh.value);
+  fd.append("description_en", form.description_en.value);
+
+  const statusEl = document.getElementById("sound-episode-status");
+  statusEl.textContent = "新增中…";
+  const submitBtn = form.querySelector("button[type=submit]");
+  submitBtn.disabled = true;
+  try {
+    const res = await fetch("/api/sound/episodes", { method: "POST", body: fd });
+    if (!res.ok) throw new Error(await res.text());
+    statusEl.textContent = "新增完成！";
+    form.reset();
+    document.getElementById("sound-episode-filename").textContent = "";
+    selectedSoundEpisodeFile = null;
+    loadSoundEpisodes();
+  } catch (err) {
+    statusEl.textContent = `新增失敗：${err.message}`;
+  } finally {
+    submitBtn.disabled = false;
+  }
+});
+
+loadSoundEpisodes();
+
 // --- Site text (About/Hero/etc copy editing) ---
 const TEXT_SCHEMA = [
   {

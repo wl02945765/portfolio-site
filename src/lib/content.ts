@@ -3,6 +3,7 @@ import categoriesData from "../../content/categories.json";
 import videosData from "../../content/videos.json";
 import videoCategoriesData from "../../content/videoCategories.json";
 import soundData from "../../content/sound.json";
+import soundEpisodesData from "../../content/soundEpisodes.json";
 import aboutGalleryData from "../../content/aboutGallery.json";
 import aboutSkillsData from "../../content/aboutSkills.json";
 import aboutHeroData from "../../content/aboutHero.json";
@@ -76,6 +77,21 @@ export type Sound = {
   links: SoundLink[];
 };
 
+export type SoundAudioCompare = {
+  rawSrc: string;
+  mixedSrc: string;
+};
+
+export type SoundEpisode = {
+  id: string;
+  title: LocalizedText;
+  description?: LocalizedText;
+  date?: string;
+  audioSrc?: string;
+  youtubeId?: string;
+  compare?: SoundAudioCompare;
+};
+
 export type AboutGalleryPhoto = {
   id: string;
   src: string;
@@ -134,6 +150,10 @@ export function getVideoCategories(): VideoCategory[] {
 
 export function getSound(): Sound {
   return soundData as Sound;
+}
+
+export function getSoundEpisodes(): SoundEpisode[] {
+  return soundEpisodesData as SoundEpisode[];
 }
 
 export function getAboutGallery(): AboutGalleryPhoto[] {

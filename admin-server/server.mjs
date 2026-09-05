@@ -388,6 +388,23 @@ function compressAudio(dir, filename) {
   return finalFilename;
 }
 
+// GitHub rejects any single file over 100MB — a failed/ineffective transcode
+// (e.g. a video-container "audio" master ffmpeg can't touch) must not be
+// allowed to silently land in a commit, or every subsequent auto-publish
+// push fails until someone notices and manually fixes the git history.
+const SOUND_UPLOAD_SIZE_LIMIT_BYTES = 90 * 1024 * 1024;
+
+function compressAudioOrReject(dir, filename) {
+  const finalFilename = compressAudio(dir, filename);
+  const finalPath = path.join(dir, finalFilename);
+  const size = fs.existsSync(finalPath) ? fs.statSync(finalPath).size : 0;
+  if (size > SOUND_UPLOAD_SIZE_LIMIT_BYTES) {
+    fs.unlinkSync(finalPath);
+    return null;
+  }
+  return finalFilename;
+}
+
 // Recursively merges a partial nested patch (e.g. { zh: { photography: { heading: "..." } } })
 // into the existing site-text object, leaving every other field untouched.
 function deepMerge(target, patch) {
@@ -652,13 +669,20 @@ app.get("/api/sound/episodes", (_req, res) => {
 });
 
 app.post("/api/sound/episodes", soundEpisodeUpload.single("file"), (req, res) => {
+  let audioFilename = null;
+  if (req.file) {
+    audioFilename = compressAudioOrReject(SOUND_DIR, req.file.filename);
+    if (!audioFilename) {
+      return res.status(413).json({ error: "音檔轉檔後仍超過 90MB（GitHub 上限 100MB），確認來源檔案是不是選錯成影片檔了" });
+    }
+  }
   const episodes = readJSON(SOUND_EPISODES_JSON);
   const entry = {
     id: randomUUID(),
     title: { zh: req.body.title_zh || "", en: req.body.title_en || "" },
     description: { zh: req.body.description_zh || "", en: req.body.description_en || "" },
     date: req.body.date || "",
-    audioSrc: req.file ? `/media/sound/${compressAudio(SOUND_DIR, req.file.filename)}` : "",
+    audioSrc: audioFilename ? `/media/sound/${audioFilename}` : "",
   };
   episodes.push(entry);
   writeJSON(SOUND_EPISODES_JSON, episodes);
@@ -729,6 +753,10 @@ function compareDurationWarning(item) {
 
 app.post("/api/sound/episodes/:id/compare/raw", soundCompareRawUpload.single("file"), (req, res) => {
   if (!req.file) return res.status(400).json({ error: "missing file" });
+  const filename = compressAudioOrReject(SOUND_DIR, req.file.filename);
+  if (!filename) {
+    return res.status(413).json({ error: "音檔轉檔後仍超過 90MB（GitHub 上限 100MB），確認來源檔案是不是選錯成影片檔了" });
+  }
   const episodes = readJSON(SOUND_EPISODES_JSON);
   const item = episodes.find((e) => e.id === req.params.id);
   if (!item) return res.status(404).json({ error: "not found" });
@@ -737,7 +765,7 @@ app.post("/api/sound/episodes/:id/compare/raw", soundCompareRawUpload.single("fi
     if (fs.existsSync(oldPath)) fs.unlinkSync(oldPath);
   }
   item.compare = item.compare || {};
-  item.compare.rawSrc = `/media/sound/${compressAudio(SOUND_DIR, req.file.filename)}`;
+  item.compare.rawSrc = `/media/sound/${filename}`;
   writeJSON(SOUND_EPISODES_JSON, episodes);
   schedulePublish();
   res.json({ ...item, warning: compareDurationWarning(item) });
@@ -745,6 +773,10 @@ app.post("/api/sound/episodes/:id/compare/raw", soundCompareRawUpload.single("fi
 
 app.post("/api/sound/episodes/:id/compare/mixed", soundCompareMixedUpload.single("file"), (req, res) => {
   if (!req.file) return res.status(400).json({ error: "missing file" });
+  const filename = compressAudioOrReject(SOUND_DIR, req.file.filename);
+  if (!filename) {
+    return res.status(413).json({ error: "音檔轉檔後仍超過 90MB（GitHub 上限 100MB），確認來源檔案是不是選錯成影片檔了" });
+  }
   const episodes = readJSON(SOUND_EPISODES_JSON);
   const item = episodes.find((e) => e.id === req.params.id);
   if (!item) return res.status(404).json({ error: "not found" });
@@ -753,7 +785,7 @@ app.post("/api/sound/episodes/:id/compare/mixed", soundCompareMixedUpload.single
     if (fs.existsSync(oldPath)) fs.unlinkSync(oldPath);
   }
   item.compare = item.compare || {};
-  item.compare.mixedSrc = `/media/sound/${compressAudio(SOUND_DIR, req.file.filename)}`;
+  item.compare.mixedSrc = `/media/sound/${filename}`;
   writeJSON(SOUND_EPISODES_JSON, episodes);
   schedulePublish();
   res.json({ ...item, warning: compareDurationWarning(item) });

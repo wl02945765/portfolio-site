@@ -844,6 +844,10 @@ function renderSoundEpisodeList() {
       warningEl.textContent = "上傳中…";
       const res = await fetch(`/api/sound/episodes/${ep.id}/compare/${side}`, { method: "POST", body: fd });
       const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        warningEl.textContent = data.error || "上傳失敗";
+        return;
+      }
       warningEl.textContent = data.warning || "";
       loadSoundEpisodes();
     }
@@ -888,7 +892,7 @@ document.getElementById("sound-episode-form").addEventListener("submit", async (
   submitBtn.disabled = true;
   try {
     const res = await fetch("/api/sound/episodes", { method: "POST", body: fd });
-    if (!res.ok) throw new Error(await res.text());
+    if (!res.ok) throw new Error((await res.json().catch(() => ({}))).error || "新增失敗");
     statusEl.textContent = "新增完成！";
     form.reset();
     document.getElementById("sound-episode-filename").textContent = "";

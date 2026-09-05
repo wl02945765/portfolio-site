@@ -21,7 +21,7 @@ export function SoundContent({ sound, episodes }: { sound: Sound; episodes: Soun
           <img
             src={withBasePath(sound.coverImage)}
             alt={showName}
-            className="aspect-square w-full max-w-sm rounded-sm object-cover lg:w-80 lg:shrink-0"
+            className="aspect-square w-full max-w-sm rounded-sm bg-black object-contain lg:w-80 lg:shrink-0"
           />
         )}
 

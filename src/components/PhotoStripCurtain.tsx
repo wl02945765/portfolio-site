@@ -109,7 +109,12 @@ export function PhotoStripCurtain({ photos }: { photos: StripPhoto[] }) {
                   objectPosition: `${strip.objectPositionX} center`,
                   opacity: isHovered ? 0 : 1,
                   transition: "opacity 300ms ease",
+                  WebkitTouchCallout: "none",
+                  WebkitUserSelect: "none",
+                  userSelect: "none",
                 }}
+                onContextMenu={(e) => e.preventDefault()}
+                draggable={false}
               />
               <div
                 className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center p-6 sm:p-10"
@@ -121,6 +126,9 @@ export function PhotoStripCurtain({ photos }: { photos: StripPhoto[] }) {
                   loading="eager"
                   decoding="async"
                   className="h-full w-full max-w-none object-contain"
+                  style={{ WebkitTouchCallout: "none", WebkitUserSelect: "none", userSelect: "none" }}
+                  onContextMenu={(e) => e.preventDefault()}
+                  draggable={false}
                 />
                 <p className="mt-4 shrink-0 text-xs tracking-wide text-zinc-300">
                   {strip.photo.caption[locale]}

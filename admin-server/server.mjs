@@ -897,13 +897,10 @@ app.get("/api/designs", (_req, res) => {
   res.json(readJSON(DESIGNS_JSON));
 });
 
-app.post("/api/design-categories/:id/designs", designPhotoUpload.array("files", 200), (req, res) => {
+app.post("/api/designs", designPhotoUpload.array("files", 200), (req, res) => {
   if (!req.files || req.files.length === 0) {
     return res.status(400).json({ error: "missing files" });
   }
-  const categories = readJSON(DESIGN_CATEGORIES_JSON);
-  const category = categories.find((c) => c.id === req.params.id);
-  if (!category) return res.status(404).json({ error: "category not found" });
 
   const designs = readJSON(DESIGNS_JSON);
   const created = req.files.map((file) => {
@@ -914,7 +911,6 @@ app.post("/api/design-categories/:id/designs", designPhotoUpload.array("files", 
       id: randomUUID(),
       src: `/media/design/${filename}`,
       thumbSrc: thumbFilename ? `/media/design/${thumbFilename}` : undefined,
-      categoryId: category.id,
       caption: { zh: "", en: "" },
       width: width || undefined,
       height: height || undefined,
@@ -922,11 +918,6 @@ app.post("/api/design-categories/:id/designs", designPhotoUpload.array("files", 
   });
   designs.push(...created);
   writeJSON(DESIGNS_JSON, designs);
-
-  if (!category.coverPhotoId) {
-    category.coverPhotoId = created[0].id;
-    writeJSON(DESIGN_CATEGORIES_JSON, categories);
-  }
 
   schedulePublish();
   res.json(created);

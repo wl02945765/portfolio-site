@@ -29,7 +29,7 @@ export type Category = {
 export type Photo = {
   id: string;
   src: string;
-  categoryId: string;
+  categoryId?: string;
   caption: LocalizedText;
   beforeSrc?: string;
   // A ~1200px copy of src, matched in size to beforeSrc — used on the

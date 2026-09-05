@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist_Mono, Inter, EB_Garamond, LXGW_WenKai_TC, Chiron_Hei_HK } from "next/font/google";
+import { Geist_Mono, Instrument_Serif, Noto_Serif_TC, Inter, Chiron_Hei_HK } from "next/font/google";
 import "./globals.css";
 import { LanguageProvider } from "@/i18n/LanguageProvider";
 import { NavBar } from "@/components/NavBar";
@@ -14,17 +14,18 @@ const inter = Inter({
   display: "swap",
 });
 
-const ebGaramond = EB_Garamond({
-  variable: "--font-eb-garamond",
+const instrumentSerif = Instrument_Serif({
+  variable: "--font-instrument-serif",
   subsets: ["latin"],
-  weight: ["400", "500", "600"],
+  weight: ["400"],
+  style: ["normal", "italic"],
   display: "swap",
 });
 
-const lxgwWenKaiTC = LXGW_WenKai_TC({
-  variable: "--font-lxgw-wenkai-tc",
+const notoSerifTC = Noto_Serif_TC({
+  variable: "--font-noto-serif-tc",
   subsets: ["latin"],
-  weight: ["400", "700"],
+  weight: ["400", "500", "600"],
   display: "swap",
 });
 
@@ -54,7 +55,7 @@ export default function RootLayout({
   return (
     <html
       lang="zh-Hant"
-      className={`${inter.variable} ${ebGaramond.variable} ${lxgwWenKaiTC.variable} ${chironHeiHK.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${inter.variable} ${instrumentSerif.variable} ${notoSerifTC.variable} ${chironHeiHK.variable} ${geistMono.variable} h-full antialiased`}
       style={{ fontSize: `${Math.round(fontScale * 10000) / 100}%` }}
     >
       <body className="min-h-full flex flex-col bg-black text-zinc-300">

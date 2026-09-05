@@ -109,19 +109,12 @@ function wireMultiDropzone(dropEl, inputEl, filenameEl, onFiles) {
 
 let selectedPhotoFiles = [];
 let selectedVideoFile = null;
-let selectedDesignPhotoFiles = [];
 
 wireMultiDropzone(
   document.getElementById("photo-drop"),
   document.getElementById("photo-file"),
   document.getElementById("photo-filename"),
   (files) => (selectedPhotoFiles = files),
-);
-wireMultiDropzone(
-  document.getElementById("design-photo-drop"),
-  document.getElementById("design-photo-file"),
-  document.getElementById("design-photo-filename"),
-  (files) => (selectedDesignPhotoFiles = files),
 );
 wireDropzone(
   document.getElementById("video-drop"),
@@ -428,245 +421,6 @@ document.getElementById("photo-form").addEventListener("submit", async (e) => {
     submitBtn.disabled = false;
   }
 });
-
-// --- Design categories + works (mirrors Categories + Photos above exactly,
-// just pointed at /api/design-categories and /api/designs so the two
-// content sets never mix) ---
-const designCategoryListView = document.getElementById("design-category-list-view");
-const designCategoryDetailView = document.getElementById("design-category-detail-view");
-const designCategoryGrid = document.getElementById("design-category-grid");
-const designCategoryStatus = document.getElementById("design-category-status");
-const designPhotoGrid = document.getElementById("design-photo-grid");
-const designPhotoStatus = document.getElementById("design-photo-status");
-
-let currentDesignCategoryId = null;
-let allDesignCategories = [];
-let allDesigns = [];
-
-async function loadDesignCategories() {
-  [allDesignCategories, allDesigns] = await Promise.all([
-    fetch("/api/design-categories").then((r) => r.json()),
-    fetch("/api/designs").then((r) => r.json()),
-  ]);
-  renderDesignCategoryGrid();
-  if (currentDesignCategoryId) renderDesignCategoryDetail();
-}
-
-function renderDesignCategoryGrid() {
-  designCategoryGrid.innerHTML = "";
-  allDesignCategories.forEach((cat) => {
-    const count = allDesigns.filter((p) => p.categoryId === cat.id).length;
-    const cover =
-      allDesigns.find((p) => p.id === cat.coverPhotoId) ??
-      allDesigns.find((p) => p.categoryId === cat.id);
-    const card = document.createElement("div");
-    card.className = "card";
-    card.draggable = true;
-    card.dataset.id = cat.id;
-    card.style.cursor = "pointer";
-    card.innerHTML = `
-      <div class="thumb-wrap">
-        ${
-          cover
-            ? `<img class="card-thumb" src="${cover.src}" alt="" />`
-            : `<div class="card-thumb" style="display:flex;align-items:center;justify-content:center;color:rgba(0,0,0,0.3);font-size:11px;">尚無作品</div>`
-        }
-      </div>
-      <div class="card-body">
-        <p style="margin:0;font-size:13px;font-weight:600;">${escapeHtml(cat.name.zh || cat.name.en || "未命名")}</p>
-        <p style="margin:0;font-size:11px;color:rgba(0,0,0,0.4);">${count} 件作品</p>
-      </div>
-      <div class="card-footer">
-        <span class="handle">⠿ 拖曳排序</span>
-      </div>
-    `;
-    card.addEventListener("click", (e) => {
-      if (e.target.closest(".card-footer")) return;
-      openDesignCategory(cat.id);
-    });
-    designCategoryGrid.appendChild(card);
-  });
-}
-
-wireReorder(designCategoryGrid, (order) =>
-  fetch("/api/design-categories/reorder", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ order }),
-  }),
-);
-
-function openDesignCategory(id) {
-  currentDesignCategoryId = id;
-  designCategoryListView.style.display = "none";
-  designCategoryDetailView.style.display = "block";
-  renderDesignCategoryDetail();
-}
-
-function backToDesignCategories() {
-  currentDesignCategoryId = null;
-  designCategoryDetailView.style.display = "none";
-  designCategoryListView.style.display = "block";
-}
-
-document.getElementById("back-to-design-categories-btn").addEventListener("click", backToDesignCategories);
-
-function renderDesignCategoryDetail() {
-  const cat = allDesignCategories.find((c) => c.id === currentDesignCategoryId);
-  if (!cat) return backToDesignCategories();
-
-  designCategoryDetailView.querySelectorAll("[data-designcat-field]").forEach((input) => {
-    const [group, lang] = input.dataset.designcatField.split("_");
-    input.value = cat[group]?.[lang] || "";
-    input.onblur = async () => {
-      await fetch(`/api/design-categories/${cat.id}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ [input.dataset.designcatField]: input.value }),
-      });
-      loadDesignCategories();
-    };
-  });
-
-  const categoryDesigns = allDesigns.filter((p) => p.categoryId === cat.id);
-  designPhotoGrid.innerHTML = "";
-  categoryDesigns.forEach((photo) => designPhotoGrid.appendChild(renderDesignPhotoCard(photo, cat)));
-}
-
-document.getElementById("delete-design-category-btn").addEventListener("click", async () => {
-  if (!confirm("確定要刪除這個分類嗎？（分類內還有作品的話無法刪除）")) return;
-  const res = await fetch(`/api/design-categories/${currentDesignCategoryId}`, { method: "DELETE" });
-  if (!res.ok) {
-    const err = await res.json().catch(() => ({}));
-    alert(err.error || "刪除失敗");
-    return;
-  }
-  backToDesignCategories();
-  loadDesignCategories();
-});
-
-// --- New design category form ---
-const newDesignCategoryBtn = document.getElementById("new-design-category-btn");
-const designCategoryForm = document.getElementById("design-category-form");
-newDesignCategoryBtn.addEventListener("click", () => {
-  designCategoryForm.style.display = designCategoryForm.style.display === "none" ? "block" : "none";
-});
-document.getElementById("cancel-design-category-btn").addEventListener("click", () => {
-  designCategoryForm.reset();
-  designCategoryForm.style.display = "none";
-});
-designCategoryForm.addEventListener("submit", async (e) => {
-  e.preventDefault();
-  const form = e.target;
-  const body = {
-    name_zh: form.name_zh.value,
-    name_en: form.name_en.value,
-    description_zh: form.description_zh.value,
-    description_en: form.description_en.value,
-    location_zh: form.location_zh.value,
-    location_en: form.location_en.value,
-  };
-  designCategoryStatus.textContent = "建立中…";
-  try {
-    const res = await fetch("/api/design-categories", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
-    });
-    if (!res.ok) throw new Error(await res.text());
-    designCategoryStatus.textContent = "";
-    form.reset();
-    form.style.display = "none";
-    loadDesignCategories();
-  } catch (err) {
-    designCategoryStatus.textContent = `建立失敗：${err.message}`;
-  }
-});
-
-function renderDesignPhotoCard(photo, category) {
-  const isCover = category.coverPhotoId === photo.id;
-  const card = document.createElement("div");
-  card.className = "card" + (isCover ? " is-cover" : "");
-  card.draggable = true;
-  card.dataset.id = photo.id;
-  card.innerHTML = `
-    <div class="thumb-wrap">
-      <img class="card-thumb" src="${photo.src}" alt="" />
-      ${isCover ? '<span class="cover-badge">★ 分類封面</span>' : ""}
-    </div>
-    <div class="card-body">
-      <input type="text" data-field="caption_zh" value="${escapeHtml(photo.caption.zh)}" placeholder="中文說明" />
-      <input type="text" data-field="caption_en" value="${escapeHtml(photo.caption.en)}" placeholder="English caption" />
-    </div>
-    <div class="card-footer">
-      <button class="cover-btn">${isCover ? "★ 已是封面" : "設為封面"}</button>
-      <button class="delete-btn">刪除</button>
-    </div>
-  `;
-  card.querySelectorAll("input").forEach((input) => {
-    input.addEventListener("blur", () =>
-      fetch(`/api/designs/${photo.id}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ [input.dataset.field]: input.value }),
-      }).then(() => loadDesignCategories()),
-    );
-  });
-  card.querySelector(".cover-btn").addEventListener("click", async () => {
-    await fetch(`/api/design-categories/${category.id}/set-cover`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ photoId: photo.id }),
-    });
-    loadDesignCategories();
-  });
-  card.querySelector(".delete-btn").addEventListener("click", async () => {
-    if (!confirm("確定要刪除這件作品嗎？")) return;
-    await fetch(`/api/designs/${photo.id}`, { method: "DELETE" });
-    loadDesignCategories();
-  });
-  return card;
-}
-
-wireReorder(designPhotoGrid, (order) =>
-  fetch("/api/designs/reorder", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ order }),
-  }),
-);
-
-document.getElementById("design-photo-form").addEventListener("submit", async (e) => {
-  e.preventDefault();
-  if (!selectedDesignPhotoFiles.length) {
-    designPhotoStatus.textContent = "請先選擇圖片";
-    return;
-  }
-  const fd = new FormData();
-  selectedDesignPhotoFiles.forEach((f) => fd.append("files", f));
-
-  designPhotoStatus.textContent = `上傳 ${selectedDesignPhotoFiles.length} 張中…`;
-  const submitBtn = e.target.querySelector("button[type=submit]");
-  submitBtn.disabled = true;
-  try {
-    const res = await fetch(`/api/design-categories/${currentDesignCategoryId}/designs`, {
-      method: "POST",
-      body: fd,
-    });
-    if (!res.ok) throw new Error(await res.text());
-    designPhotoStatus.textContent = "上傳完成！";
-    e.target.reset();
-    document.getElementById("design-photo-filename").textContent = "";
-    selectedDesignPhotoFiles = [];
-    loadDesignCategories();
-  } catch (err) {
-    designPhotoStatus.textContent = `上傳失敗：${err.message}`;
-  } finally {
-    submitBtn.disabled = false;
-  }
-});
-
-loadDesignCategories();
 
 // --- Videos ---
 const videoGrid = document.getElementById("video-grid");
@@ -1000,7 +754,6 @@ const TEXT_SCHEMA = [
       { path: "brandName", label: "左上角品牌標題（同時也是瀏覽器分頁標題）" },
       { path: "nav.aboutLabel", label: "導覽列「About Me」項目文字" },
       { path: "nav.photographyLabel", label: "導覽列「Photography」項目文字" },
-      { path: "nav.designLabel", label: "導覽列「Design」項目文字" },
       { path: "nav.videoWorkLabel", label: "導覽列「Video Work」項目文字" },
       { path: "nav.soundLabel", label: "導覽列「Sound」項目文字" },
       { path: "nav.contactLabel", label: "導覽列「Contact」項目文字" },
@@ -1022,15 +775,6 @@ const TEXT_SCHEMA = [
       { path: "photography.empty", label: "尚無作品時的提示文字" },
       { path: "photography.folderEmpty", label: "分類內尚無照片時的提示文字" },
       { path: "photography.backToPhotography", label: "「返回」連結文字" },
-    ],
-  },
-  {
-    section: "Design 頁",
-    fields: [
-      { path: "design.heading", label: "頁面標題" },
-      { path: "design.empty", label: "尚無作品時的提示文字" },
-      { path: "design.folderEmpty", label: "分類內尚無作品時的提示文字" },
-      { path: "design.backToDesign", label: "「返回」連結文字" },
     ],
   },
   {

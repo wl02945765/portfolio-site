@@ -9,7 +9,7 @@
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-inter), var(--font-chiron-hei-hk), sans-serif;
-  --font-serif: var(--font-eb-garamond), var(--font-lxgw-wenkai-tc), serif;
+  --font-serif: var(--font-instrument-serif), var(--font-noto-serif-tc), serif;
   --font-mono: var(--font-geist-mono);
 }
 

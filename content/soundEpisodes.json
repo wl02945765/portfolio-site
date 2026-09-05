@@ -10,6 +10,9 @@
       "en": "Can't believe we hit Episode 200 already!\r\nHonestly, this project was just us asking for trouble.\r\nHope the audio quality is somewhat bearable...\r\nWe really gave it our all... Never doing crazy experiments like this again, lesson learned!"
     },
     "date": "",
-    "audioSrc": "/media/sound/episode-d3fa993e-5a6e-4a14-8624-5412cc04aaeb.m4a"
+    "audioSrc": "/media/sound/episode-d3fa993e-5a6e-4a14-8624-5412cc04aaeb.m4a",
+    "compare": {
+      "mixedSrc": "/media/sound/mixed-cb57e786-5f69-4875-8646-6819ba3a4b9a.m4a"
+    }
   }
 ]

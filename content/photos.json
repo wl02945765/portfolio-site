@@ -1020,18 +1020,6 @@
     "thumbSrc": "/media/photos/f4bf5d1e-1a2b-4b92-86c3-f2b178be5df0-grid.jpg"
   },
   {
-    "id": "a85d8ac1-7a4e-43f2-9426-e9317457a508",
-    "src": "/media/photos/b2ad5754-8335-46ce-a7b9-a469817a720b.jpg",
-    "categoryId": "2e001a7a-9e1a-4079-ad81-f023f1a8ec90",
-    "caption": {
-      "zh": "",
-      "en": ""
-    },
-    "width": 1350,
-    "height": 2400,
-    "thumbSrc": "/media/photos/b2ad5754-8335-46ce-a7b9-a469817a720b-grid.jpg"
-  },
-  {
     "id": "31aaa3e4-e1b8-4da2-b6e2-15668b034cf1",
     "src": "/media/photos/fb72b88f-87a9-4494-892e-dad697938b2e.jpg",
     "categoryId": "2e001a7a-9e1a-4079-ad81-f023f1a8ec90",

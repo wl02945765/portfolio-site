@@ -1272,18 +1272,6 @@
     "thumbSrc": "/media/photos/8dedbc83-39da-4d78-a166-0411f3830e4b-grid.jpg"
   },
   {
-    "id": "c05f5724-79a9-4398-8098-aba94a19a0c6",
-    "src": "/media/photos/7713b765-eb55-4e63-a962-dba5211199d4.jpg",
-    "categoryId": "2e001a7a-9e1a-4079-ad81-f023f1a8ec90",
-    "caption": {
-      "zh": "",
-      "en": ""
-    },
-    "width": 2400,
-    "height": 1800,
-    "thumbSrc": "/media/photos/7713b765-eb55-4e63-a962-dba5211199d4-grid.jpg"
-  },
-  {
     "id": "4629a36f-58e0-45a4-841d-ce7a14231388",
     "src": "/media/photos/bbef6833-5467-429f-a038-ae5574b233f7.jpg",
     "categoryId": "4feb1b24-b23a-4b9d-b696-4b557c3e3ee5",

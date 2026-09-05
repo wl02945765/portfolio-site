@@ -1272,18 +1272,6 @@
     "thumbSrc": "/media/photos/04e19296-665f-449a-b86c-f760619064e8-grid.jpg"
   },
   {
-    "id": "7c4eeb8f-0a44-49f8-a588-dbaaf1442408",
-    "src": "/media/photos/01fa3150-d095-4828-8900-a810f53809b4.JPG",
-    "categoryId": "9d4644fb-6018-4884-a716-f41520046f3a",
-    "caption": {
-      "zh": "",
-      "en": ""
-    },
-    "width": 2048,
-    "height": 1152,
-    "thumbSrc": "/media/photos/01fa3150-d095-4828-8900-a810f53809b4-grid.jpg"
-  },
-  {
     "id": "113f67e6-13c7-499b-86c0-7be9b7ade3cf",
     "src": "/media/photos/236634be-7106-4f59-9d22-0ddc29aae1b1.jpg",
     "categoryId": "9d4644fb-6018-4884-a716-f41520046f3a",
@@ -1414,6 +1402,18 @@
     "width": 2048,
     "height": 1152,
     "thumbSrc": "/media/photos/6268995b-7bed-4659-a029-4345a44a95a0-grid.jpg"
+  },
+  {
+    "id": "7c4eeb8f-0a44-49f8-a588-dbaaf1442408",
+    "src": "/media/photos/01fa3150-d095-4828-8900-a810f53809b4.JPG",
+    "categoryId": "9d4644fb-6018-4884-a716-f41520046f3a",
+    "caption": {
+      "zh": "",
+      "en": ""
+    },
+    "width": 2048,
+    "height": 1152,
+    "thumbSrc": "/media/photos/01fa3150-d095-4828-8900-a810f53809b4-grid.jpg"
   },
   {
     "id": "6d42d151-1d65-40da-a277-198d2158970a",

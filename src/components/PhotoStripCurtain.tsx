@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useLanguage } from "@/i18n/LanguageProvider";
 import { withBasePath } from "@/lib/basePath";
 import type { LocalizedText } from "@/lib/content";
@@ -31,8 +31,23 @@ function pseudoRandom(seed: number) {
 export function PhotoStripCurtain({ photos }: { photos: StripPhoto[] }) {
   const { locale } = useLanguage();
   const [hoveredStrip, setHoveredStrip] = useState<number | null>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   if (photos.length === 0) return null;
+
+  // A finger can't land on one specific strip out of dozens crammed edge to
+  // edge — dragging anywhere across the row is the whole point. This maps
+  // the pointer's x position to a strip by its original equal share of the
+  // row's width, not by hit-testing the (already-expanded, unevenly sized)
+  // DOM elements, so it stays accurate as strips animate open and closed
+  // underneath the finger.
+  function updateHoverFromClientX(clientX: number) {
+    const el = containerRef.current;
+    if (!el) return;
+    const rect = el.getBoundingClientRect();
+    const ratio = Math.min(1, Math.max(0, (clientX - rect.left) / rect.width));
+    setHoveredStrip(Math.min(photos.length - 1, Math.floor(ratio * photos.length)));
+  }
 
   // One strip per uploaded photo — never repeated. Gets denser purely as
   // more photos get uploaded, not by cycling the same ones multiple times.
@@ -46,7 +61,27 @@ export function PhotoStripCurtain({ photos }: { photos: StripPhoto[] }) {
 
   return (
     <section className="relative h-[65vh] w-full overflow-hidden bg-black">
-      <div className="absolute inset-0 flex">
+      <div
+        ref={containerRef}
+        className="absolute inset-0 flex touch-pan-y select-none"
+        onPointerDown={(e) => {
+          try {
+            e.currentTarget.setPointerCapture(e.pointerId);
+          } catch {
+            // best-effort — the scrub still works without capture
+          }
+          updateHoverFromClientX(e.clientX);
+        }}
+        onPointerMove={(e) => {
+          // Buttons/pressure is 0 for a mouse that's merely passing over
+          // without a button held — still fine to react to, since this row
+          // has nothing else to scroll or click underneath it. A touch
+          // point only ever sends pointermove while in contact, so this one
+          // handler naturally covers both hover (mouse) and drag (touch).
+          updateHoverFromClientX(e.clientX);
+        }}
+        onPointerLeave={() => setHoveredStrip(null)}
+      >
         {strips.map((strip, i) => {
           const isHovered = i === hoveredStrip;
           return (
@@ -57,8 +92,6 @@ export function PhotoStripCurtain({ photos }: { photos: StripPhoto[] }) {
                 flex: isHovered ? "0 0 clamp(280px, 42vw, 640px)" : "1 1 0%",
                 transition: "flex-basis 450ms ease, flex-grow 450ms ease",
               }}
-              onMouseEnter={() => setHoveredStrip(i)}
-              onMouseLeave={() => setHoveredStrip(null)}
             >
               {/* Real <img>, not a CSS background-image — the browser's preload
                   scanner only discovers <img src> while parsing the raw HTML;

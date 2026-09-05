@@ -113,7 +113,7 @@ export function NavBar() {
               <button
                 type="button"
                 onClick={() => setLocale(locale === "zh" ? "en" : "zh")}
-                className="w-fit font-mono text-[11px] font-medium tracking-[0.05em] text-zinc-500 transition-colors hover:text-zinc-200"
+                className="w-fit font-mono text-sm font-medium tracking-[0.05em] text-zinc-500 transition-colors hover:text-zinc-200"
                 aria-label="Switch language"
               >
                 {locale === "zh" ? "中 / EN" : "EN / 中"}

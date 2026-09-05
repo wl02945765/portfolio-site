@@ -797,11 +797,11 @@ function renderSoundEpisodeList() {
 
         <div style="margin-top:10px;display:flex;gap:16px;flex-wrap:wrap">
           <label style="font-size:12px">
-            未混音檔案
+            未混音檔案 ${ep.compare?.rawSrc ? '<span style="color:#2a7a2a">✓ 已上傳</span>' : ""}
             <input type="file" accept="audio/*" class="raw-file" />
           </label>
           <label style="font-size:12px">
-            混音後檔案
+            混音後檔案 ${ep.compare?.mixedSrc ? '<span style="color:#2a7a2a">✓ 已上傳</span>' : ""}
             <input type="file" accept="audio/*" class="mixed-file" />
           </label>
         </div>

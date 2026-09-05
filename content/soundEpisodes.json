@@ -1,1 +1,15 @@
-[]
+[
+  {
+    "id": "89a02359-97c7-4258-af92-0a6961282ec1",
+    "title": {
+      "zh": "歲月車廂",
+      "en": "Years in a Carriage"
+    },
+    "description": {
+      "zh": "一段測試集數",
+      "en": "test episode"
+    },
+    "date": "",
+    "audioSrc": "/media/sound/episode-33c95c5e-7dd1-4fdb-980e-0b42bda60fef.m4a"
+  }
+]

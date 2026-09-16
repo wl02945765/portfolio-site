@@ -56,8 +56,11 @@
     },
     "contact": {
       "heading": "CONTACT",
-      "body": "如過你對我的作品有興趣，歡迎聯繫我，我們可以一起打造新的故事 ",
-      "emailLabel": "Email"
+      "intro": "選一個你順手的方式，我都在。",
+      "emailLabel": "Email",
+      "locationLabel": "Location",
+      "location": "新北市，台灣",
+      "ctaButton": "寄送 Email"
     }
   },
   "en": {
@@ -114,8 +117,11 @@
     },
     "contact": {
       "heading": "CONTACT",
-      "body": "If you're interested in my work, feel free to reach out. Let's create some new stories together.",
-      "emailLabel": "Email"
+      "intro": "Pick whichever way works for you — I'm around.",
+      "emailLabel": "Email",
+      "locationLabel": "Location",
+      "location": "Taipei, Taiwan",
+      "ctaButton": "Send Email"
     }
   }
 }

@@ -52,6 +52,7 @@ export function IntroLoader() {
     const line = lineRef.current;
     if (!canvas || !barTop || !barBottom || !line) {
       document.body.style.overflow = "";
+      setVisible(false);
       return;
     }
 

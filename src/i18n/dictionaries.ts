@@ -38,6 +38,8 @@ export type Dictionary = {
     heading: string;
     linksHeading: string;
     roleHeading: string;
+    genreLabel: string;
+    hostsLabel: string;
   };
   about: {
     heading: string;

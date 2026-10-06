@@ -22,3 +22,17 @@ body {
 .heading-font {
   font-family: var(--font-serif);
 }
+
+/* Audio page console: VU meter bars bounce between a low and full level */
+@keyframes vu-bounce {
+  from { height: 18%; }
+  to { height: 100%; }
+}
+
+.vu-bar {
+  animation: vu-bounce 1.1s ease-in-out infinite alternate;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vu-bar { animation: none; height: 55%; }
+}

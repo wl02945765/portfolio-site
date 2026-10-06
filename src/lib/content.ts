@@ -76,6 +76,8 @@ export type Sound = {
   showName: LocalizedText;
   showDescription: LocalizedText;
   role: LocalizedText;
+  genre?: LocalizedText;
+  hosts?: LocalizedText;
   links: SoundLink[];
 };
 

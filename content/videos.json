@@ -74,29 +74,13 @@
     "videoSrc": "/media/videos/5c4cee5c-ec16-4584-be3a-7932c0607bf0.mp4",
     "title": {
       "zh": "中國旅行",
-      "en": "China "
-    },
-    "services": {
-      "zh": "",
-      "en": ""
-    },
-    "year": "2026",
-    "categoryId": "18b7cd7c-b5c2-48bf-9920-070605da559a"
-  },
-  {
-    "id": "6282c329-0ffe-4e1d-b954-c002d11fef56",
-    "slug": "untitled-2",
-    "thumbnail": "/media/videos/thumbs/6282c329-0ffe-4e1d-b954-c002d11fef56.jpg",
-    "videoSrc": "/media/videos/e559b0bf-5aa8-4fa8-a9a2-8b21ea91d070.mp4",
-    "title": {
-      "zh": "華納兄弟電影世界-飛車表演",
-      "en": "Warner Bros-Hollywood Stunt Driver"
+      "en": "Travle in China "
     },
     "services": {
       "zh": "企劃、攝影、剪輯、配樂",
       "en": "Producer、Videography、Video Editor、BGM"
     },
-    "year": "2025",
+    "year": "2026",
     "categoryId": "18b7cd7c-b5c2-48bf-9920-070605da559a"
   },
   {
@@ -123,6 +107,22 @@
     "title": {
       "zh": "澳洲打工度假-Noosa Day2",
       "en": "Working Holiday-Australia Noosa"
+    },
+    "services": {
+      "zh": "企劃、攝影、剪輯、配樂",
+      "en": "Producer、Videography、Video Editor、BGM"
+    },
+    "year": "2025",
+    "categoryId": "18b7cd7c-b5c2-48bf-9920-070605da559a"
+  },
+  {
+    "id": "6282c329-0ffe-4e1d-b954-c002d11fef56",
+    "slug": "untitled-2",
+    "thumbnail": "/media/videos/thumbs/6282c329-0ffe-4e1d-b954-c002d11fef56.jpg",
+    "videoSrc": "/media/videos/e559b0bf-5aa8-4fa8-a9a2-8b21ea91d070.mp4",
+    "title": {
+      "zh": "華納兄弟電影世界-飛車表演",
+      "en": "Warner Bros-Hollywood Stunt Driver"
     },
     "services": {
       "zh": "企劃、攝影、剪輯、配樂",

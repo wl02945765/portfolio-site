@@ -37,7 +37,9 @@
     "sound": {
       "heading": "Audio",
       "linksHeading": "收聽連結",
-      "roleHeading": "負責項目"
+      "roleHeading": "負責項目",
+      "genreLabel": "類型",
+      "hostsLabel": "主持"
     },
     "about": {
       "heading": "ABOUT ME",
@@ -136,7 +138,9 @@
     "sound": {
       "heading": "Audio",
       "linksHeading": "Listen On",
-      "roleHeading": "My Role"
+      "roleHeading": "My Role",
+      "genreLabel": "Format",
+      "hostsLabel": "Hosts"
     },
     "about": {
       "heading": "ABOUT ME",

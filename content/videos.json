@@ -162,5 +162,21 @@
     },
     "year": "2025",
     "categoryId": "18b7cd7c-b5c2-48bf-9920-070605da559a"
+  },
+  {
+    "id": "4d89e4ce-d165-4e84-8ce0-38bf60553c77",
+    "slug": "china",
+    "thumbnail": "/media/videos/thumbs/4d89e4ce-d165-4e84-8ce0-38bf60553c77.jpg",
+    "videoSrc": "/media/videos/5c4cee5c-ec16-4584-be3a-7932c0607bf0.mp4",
+    "title": {
+      "zh": "中國旅行",
+      "en": "China "
+    },
+    "services": {
+      "zh": "",
+      "en": ""
+    },
+    "year": "2026",
+    "categoryId": "18b7cd7c-b5c2-48bf-9920-070605da559a"
   }
 ]

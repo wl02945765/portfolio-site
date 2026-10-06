@@ -23,5 +23,13 @@
       "label": "YOUTUBE",
       "url": "https://www.youtube.com/@timecarriage"
     }
-  ]
+  ],
+  "genre": {
+    "zh": "Podcast 談話節目",
+    "en": "Talk podcast"
+  },
+  "hosts": {
+    "zh": "小旻 & 珮蒂",
+    "en": "小旻 & 珮蒂"
+  }
 }

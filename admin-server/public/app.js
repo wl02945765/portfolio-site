@@ -969,8 +969,11 @@ const TEXT_SCHEMA = [
     section: "Contact 頁",
     fields: [
       { path: "contact.heading", label: "頁面標題" },
-      { path: "contact.body", label: "說明文字", type: "textarea" },
+      { path: "contact.intro", label: "開場白", type: "textarea" },
       { path: "contact.emailLabel", label: "Email 欄位標籤" },
+      { path: "contact.locationLabel", label: "地點欄位標籤" },
+      { path: "contact.location", label: "地點內容" },
+      { path: "contact.ctaButton", label: "「寄送 Email」按鈕文字" },
     ],
   },
 ];
@@ -1322,6 +1325,121 @@ function renderAboutHeroPreview(data) {
 fetch("/api/about-hero")
   .then((r) => r.json())
   .then(renderAboutHeroPreview);
+
+// --- Contact page: visual panel image ---
+wireDropzone(
+  document.getElementById("contact-visual-drop"),
+  document.getElementById("contact-visual-file"),
+  document.getElementById("contact-visual-filename"),
+  (file) => uploadContactVisual(file),
+);
+
+async function uploadContactVisual(file) {
+  const fd = new FormData();
+  fd.append("file", file);
+  document.getElementById("contact-visual-filename").textContent = "上傳中…";
+  const res = await fetch("/api/contact-visual/image", { method: "POST", body: fd });
+  const data = await res.json();
+  document.getElementById("contact-visual-filename").textContent = "已更新照片";
+  renderContactVisualPreview(data);
+}
+
+document.getElementById("contact-visual-remove").addEventListener("click", async () => {
+  const res = await fetch("/api/contact-visual/image", { method: "DELETE" });
+  const data = await res.json();
+  document.getElementById("contact-visual-filename").textContent = "已移除，改回字母標記";
+  renderContactVisualPreview(data);
+});
+
+function renderContactVisualPreview(data) {
+  const preview = document.getElementById("contact-visual-preview");
+  const removeBtn = document.getElementById("contact-visual-remove");
+  if (data?.visualImage) {
+    preview.src = data.visualImage;
+    preview.style.display = "block";
+    removeBtn.style.display = "inline-block";
+  } else {
+    preview.style.display = "none";
+    removeBtn.style.display = "none";
+  }
+}
+
+fetch("/api/contact-visual")
+  .then((r) => r.json())
+  .then(renderContactVisualPreview);
+
+// --- Contact page: extra channels (Instagram, Facebook, LINE, ...) ---
+const contactLinkGrid = document.getElementById("contact-link-grid");
+const contactLinkStatus = document.getElementById("contact-link-status");
+
+function renderContactLinks(links) {
+  contactLinkGrid.innerHTML = "";
+  (links || []).forEach((link) => {
+    const card = document.createElement("div");
+    card.className = "card";
+    card.draggable = true;
+    card.dataset.id = link.id;
+    card.innerHTML = `
+      <div class="card-body">
+        <input type="text" data-field="label" value="${escapeHtml(link.label)}" placeholder="名稱" />
+        <input type="text" data-field="url" value="${escapeHtml(link.url)}" placeholder="連結網址" />
+      </div>
+      <div class="card-footer">
+        <span class="handle">⠿ 拖曳排序</span>
+        <button class="delete-btn">刪除</button>
+      </div>
+    `;
+    card.querySelectorAll("input").forEach((input) => {
+      input.addEventListener("blur", () =>
+        fetch(`/api/contact-links/${link.id}`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ [input.dataset.field]: input.value }),
+        }),
+      );
+    });
+    card.querySelector(".delete-btn").addEventListener("click", async () => {
+      if (!confirm("確定要刪除這個聯絡方式嗎？")) return;
+      await fetch(`/api/contact-links/${link.id}`, { method: "DELETE" });
+      loadContactLinks();
+    });
+    contactLinkGrid.appendChild(card);
+  });
+}
+
+async function loadContactLinks() {
+  const links = await fetch("/api/contact-links").then((r) => r.json());
+  renderContactLinks(links);
+}
+
+wireReorder(contactLinkGrid, (order) =>
+  fetch("/api/contact-links/reorder", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ order }),
+  }),
+);
+
+document.getElementById("contact-link-form").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const form = e.target;
+  contactLinkStatus.textContent = "新增中…";
+  try {
+    const res = await fetch("/api/contact-links", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ label: form.label.value, url: form.url.value }),
+    });
+    if (!res.ok) throw new Error(await res.text());
+    contactLinkStatus.textContent = "";
+    form.reset();
+    loadContactLinks();
+  } catch (err) {
+    contactLinkStatus.textContent = `新增失敗：${err.message}`;
+  }
+});
+
+loadContactLinks();
 
 // --- About page: hero tags ---
 const aboutTagList = document.getElementById("about-tag-list");

@@ -56,11 +56,49 @@
     },
     "contact": {
       "heading": "CONTACT",
-      "intro": "選一個你順手的方式，我都在。",
+      "intro": "三個問題，一分鐘填完。我會在一個工作天內回覆報價與檔期。",
       "emailLabel": "Email",
       "locationLabel": "Location",
-      "location": "新北市，台灣",
-      "ctaButton": "寄送 Email"
+      "location": "新北市樹林區",
+      "ctaButton": "寄送 Email",
+      "titleLead": "Tell me about your",
+      "titleAccent": "project.",
+      "directLabel": "或直接寫信",
+      "copyLabel": "複製",
+      "copiedLabel": "已複製",
+      "typeQuestion": "想合作的類型",
+      "types": [
+        "攝影",
+        "影片",
+        "聲音／Podcast",
+        "其他"
+      ],
+      "budgetQuestion": "預算區間",
+      "budgets": [
+        "1 萬以下",
+        "1–3 萬",
+        "3–5 萬",
+        "還不確定"
+      ],
+      "descQuestion": "簡單說說你的案子",
+      "descPlaceholder": "例：咖啡店品牌形象照，約 20 張，11 月中拍攝",
+      "nameLabel": "你的稱呼",
+      "namePlaceholder": "例：王小姐",
+      "timelineLabel": "希望時程",
+      "timelinePlaceholder": "例：2026 年 11 月",
+      "submitButton": "整理成信件並寄出",
+      "formError": "請至少選一個類型，並簡單描述你的案子。",
+      "previewTitle": "信件已整理好",
+      "previewHint": "如果郵件程式沒有自動打開，可以複製內容自行寄到上面的信箱。",
+      "copyAll": "複製全文",
+      "openMail": "再次開啟郵件程式",
+      "mailSubject": "合作詢問",
+      "mailGreeting": "Ching 你好，",
+      "mailIntro": "我想詢問以下案子：",
+      "mailType": "類型",
+      "mailBudget": "預算",
+      "mailTimeline": "希望時程",
+      "mailUnset": "未填"
     }
   },
   "en": {
@@ -117,11 +155,49 @@
     },
     "contact": {
       "heading": "CONTACT",
-      "intro": "Pick whichever way works for you — I'm around.",
+      "intro": "Three quick questions, about a minute. I'll reply with a quote and availability within one business day.",
       "emailLabel": "Email",
       "locationLabel": "Location",
-      "location": "New Taipei City, Taiwan",
-      "ctaButton": "Send Email"
+      "location": "Shulin, New Taipei City",
+      "ctaButton": "Send Email",
+      "titleLead": "Tell me about your",
+      "titleAccent": "project.",
+      "directLabel": "Or email me directly",
+      "copyLabel": "Copy",
+      "copiedLabel": "Copied",
+      "typeQuestion": "What do you need?",
+      "types": [
+        "Photography",
+        "Video",
+        "Sound / Podcast",
+        "Other"
+      ],
+      "budgetQuestion": "Budget (TWD)",
+      "budgets": [
+        "Under 10k",
+        "10k–30k",
+        "30k–50k",
+        "Not sure yet"
+      ],
+      "descQuestion": "Tell me a bit about it",
+      "descPlaceholder": "e.g. Brand photos for a café, about 20 shots, mid-November",
+      "nameLabel": "Your name",
+      "namePlaceholder": "e.g. Amy Wang",
+      "timelineLabel": "Timeline",
+      "timelinePlaceholder": "e.g. November 2026",
+      "submitButton": "Write the email",
+      "formError": "Pick at least one type and add a short description.",
+      "previewTitle": "Your email is ready",
+      "previewHint": "If your mail app didn't open, copy this and send it to the address above.",
+      "copyAll": "Copy all",
+      "openMail": "Open mail app again",
+      "mailSubject": "Project inquiry",
+      "mailGreeting": "Hi Ching,",
+      "mailIntro": "I'd like to ask about a project:",
+      "mailType": "Type",
+      "mailBudget": "Budget",
+      "mailTimeline": "Timeline",
+      "mailUnset": "Not specified"
     }
   }
 }

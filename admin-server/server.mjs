@@ -20,6 +20,8 @@ const SOUND_EPISODES_JSON = path.join(CONTENT_DIR, "soundEpisodes.json");
 const ABOUT_GALLERY_JSON = path.join(CONTENT_DIR, "aboutGallery.json");
 const ABOUT_SKILLS_JSON = path.join(CONTENT_DIR, "aboutSkills.json");
 const ABOUT_HERO_JSON = path.join(CONTENT_DIR, "aboutHero.json");
+const CONTACT_JSON = path.join(CONTENT_DIR, "contact.json");
+const CONTACT_LINKS_JSON = path.join(CONTENT_DIR, "contactLinks.json");
 const ABOUT_TAGS_JSON = path.join(CONTENT_DIR, "aboutTags.json");
 const ABOUT_PHILOSOPHY_JSON = path.join(CONTENT_DIR, "aboutPhilosophy.json");
 const ABOUT_TIMELINE_JSON = path.join(CONTENT_DIR, "aboutTimeline.json");
@@ -33,8 +35,9 @@ const SOUND_DIR = path.join(MEDIA_DIR, "sound");
 const ABOUT_DIR = path.join(MEDIA_DIR, "about");
 const FEATURED_DIR = path.join(MEDIA_DIR, "featured");
 const DESIGN_DIR = path.join(MEDIA_DIR, "design");
+const CONTACT_DIR = path.join(MEDIA_DIR, "contact");
 
-for (const dir of [PHOTOS_DIR, VIDEOS_DIR, THUMBS_DIR, SOUND_DIR, ABOUT_DIR, FEATURED_DIR, DESIGN_DIR]) {
+for (const dir of [PHOTOS_DIR, VIDEOS_DIR, THUMBS_DIR, SOUND_DIR, ABOUT_DIR, FEATURED_DIR, DESIGN_DIR, CONTACT_DIR]) {
   fs.mkdirSync(dir, { recursive: true });
 }
 
@@ -440,7 +443,7 @@ function runPublish() {
   publishState.lastError = null;
   try {
     execSync(
-      "git add content/photos.json content/categories.json content/videos.json content/videoCategories.json content/site-text.json content/sound.json content/soundEpisodes.json content/aboutGallery.json content/aboutSkills.json content/aboutHero.json content/aboutTags.json content/aboutPhilosophy.json content/aboutTimeline.json content/featuredPhotos.json content/designCategories.json content/designs.json public/media",
+      "git add content/photos.json content/categories.json content/videos.json content/videoCategories.json content/site-text.json content/sound.json content/soundEpisodes.json content/aboutGallery.json content/aboutSkills.json content/aboutHero.json content/aboutTags.json content/aboutPhilosophy.json content/aboutTimeline.json content/featuredPhotos.json content/designCategories.json content/designs.json content/contact.json content/contactLinks.json public/media",
       { cwd: ROOT },
     );
     const diff = spawnSync("git", ["diff", "--cached", "--quiet"], { cwd: ROOT });
@@ -571,6 +574,15 @@ const aboutHeroUpload = multer({
     destination: ABOUT_DIR,
     filename: (_req, file, cb) =>
       cb(null, `portrait-${randomUUID()}${path.extname(file.originalname)}`),
+  }),
+  limits: { fileSize: 50 * 1024 * 1024 },
+});
+
+const contactVisualUpload = multer({
+  storage: multer.diskStorage({
+    destination: CONTACT_DIR,
+    filename: (_req, file, cb) =>
+      cb(null, `visual-${randomUUID()}${path.extname(file.originalname)}`),
   }),
   limits: { fileSize: 50 * 1024 * 1024 },
 });
@@ -1618,6 +1630,85 @@ app.post("/api/about-hero/portrait", aboutHeroUpload.single("file"), (req, res) 
   writeJSON(ABOUT_HERO_JSON, data);
   schedulePublish();
   res.json(data);
+});
+
+// ---------- Contact page: visual panel image ----------
+
+app.get("/api/contact-visual", (_req, res) => {
+  res.json(fs.existsSync(CONTACT_JSON) ? JSON.parse(fs.readFileSync(CONTACT_JSON, "utf-8")) : { visualImage: "" });
+});
+
+app.post("/api/contact-visual/image", contactVisualUpload.single("file"), (req, res) => {
+  if (!req.file) return res.status(400).json({ error: "missing file" });
+  const data = fs.existsSync(CONTACT_JSON)
+    ? JSON.parse(fs.readFileSync(CONTACT_JSON, "utf-8"))
+    : { visualImage: "" };
+  if (data.visualImage) {
+    const oldPath = path.join(ROOT, "public", data.visualImage);
+    if (fs.existsSync(oldPath)) fs.unlinkSync(oldPath);
+  }
+  const filename = optimizePhoto(CONTACT_DIR, req.file.filename);
+  data.visualImage = `/media/contact/${filename}`;
+  writeJSON(CONTACT_JSON, data);
+  schedulePublish();
+  res.json(data);
+});
+
+app.delete("/api/contact-visual/image", (_req, res) => {
+  const data = fs.existsSync(CONTACT_JSON)
+    ? JSON.parse(fs.readFileSync(CONTACT_JSON, "utf-8"))
+    : { visualImage: "" };
+  if (data.visualImage) {
+    const oldPath = path.join(ROOT, "public", data.visualImage);
+    if (fs.existsSync(oldPath)) fs.unlinkSync(oldPath);
+  }
+  data.visualImage = "";
+  writeJSON(CONTACT_JSON, data);
+  schedulePublish();
+  res.json(data);
+});
+
+// ---------- Contact page: extra channels (Instagram, Facebook, LINE, ...) ----------
+
+app.get("/api/contact-links", (_req, res) => {
+  res.json(readJSON(CONTACT_LINKS_JSON));
+});
+
+app.post("/api/contact-links", (req, res) => {
+  const data = readJSON(CONTACT_LINKS_JSON);
+  const link = { id: randomUUID(), label: req.body.label || "", url: req.body.url || "" };
+  data.push(link);
+  writeJSON(CONTACT_LINKS_JSON, data);
+  schedulePublish();
+  res.json(link);
+});
+
+app.patch("/api/contact-links/:id", (req, res) => {
+  const data = readJSON(CONTACT_LINKS_JSON);
+  const link = data.find((l) => l.id === req.params.id);
+  if (!link) return res.status(404).json({ error: "not found" });
+  if (req.body.label !== undefined) link.label = req.body.label;
+  if (req.body.url !== undefined) link.url = req.body.url;
+  writeJSON(CONTACT_LINKS_JSON, data);
+  schedulePublish();
+  res.json(link);
+});
+
+app.delete("/api/contact-links/:id", (req, res) => {
+  const data = readJSON(CONTACT_LINKS_JSON);
+  writeJSON(CONTACT_LINKS_JSON, data.filter((l) => l.id !== req.params.id));
+  schedulePublish();
+  res.json({ ok: true });
+});
+
+app.post("/api/contact-links/reorder", (req, res) => {
+  const { order } = req.body;
+  const data = readJSON(CONTACT_LINKS_JSON);
+  const byId = new Map(data.map((l) => [l.id, l]));
+  const reordered = order.map((id) => byId.get(id)).filter(Boolean);
+  writeJSON(CONTACT_LINKS_JSON, reordered);
+  schedulePublish();
+  res.json(reordered);
 });
 
 // ---------- About page: hero tags ----------

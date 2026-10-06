@@ -13,6 +13,8 @@ import aboutTimelineData from "../../content/aboutTimeline.json";
 import featuredPhotosData from "../../content/featuredPhotos.json";
 import designCategoriesData from "../../content/designCategories.json";
 import designsData from "../../content/designs.json";
+import contactData from "../../content/contact.json";
+import contactLinksData from "../../content/contactLinks.json";
 
 export type LocalizedText = {
   zh: string;
@@ -108,6 +110,16 @@ export type AboutHero = {
   portraitSrc: string;
 };
 
+export type ContactVisual = {
+  visualImage: string;
+};
+
+export type ContactLink = {
+  id: string;
+  label: string;
+  url: string;
+};
+
 export type AboutTag = {
   id: string;
   zh: string;
@@ -166,6 +178,14 @@ export function getAboutSkills(): AboutSkillGroup[] {
 
 export function getAboutHero(): AboutHero {
   return aboutHeroData as AboutHero;
+}
+
+export function getContactVisual(): ContactVisual {
+  return contactData as ContactVisual;
+}
+
+export function getContactLinks(): ContactLink[] {
+  return contactLinksData as ContactLink[];
 }
 
 export function getAboutTags(): AboutTag[] {

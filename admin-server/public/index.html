@@ -285,6 +285,33 @@
       </section>
 
       <section id="panel-text" class="panel">
+        <div class="upload-form">
+          <h3>Contact 頁裝飾照片</h3>
+          <p class="hint">聯絡頁左側的裝飾區塊。不上傳的話會顯示預設的淡化「C」字母標記。</p>
+          <div id="contact-visual-drop" class="dropzone">
+            <p>拖拉照片到這裡，或點擊選擇檔案</p>
+            <input type="file" id="contact-visual-file" accept="image/*" hidden />
+            <p id="contact-visual-filename" class="filename"></p>
+          </div>
+          <img id="contact-visual-preview" style="display: none; max-width: 200px; border-radius: 8px; margin-top: 16px" />
+          <p class="status" id="contact-visual-status"></p>
+          <button type="button" id="contact-visual-remove" class="delete-btn" style="display: none; margin-top: 8px">
+            移除照片，改回「C」字母標記
+          </button>
+        </div>
+
+        <div class="upload-form">
+          <h3>Contact 頁其他聯絡方式</h3>
+          <p class="hint">Email 和 Location 是固定欄位（上面文字編輯區調整），這裡可以自由新增 Instagram、Facebook、LINE 等其他管道，會依序顯示在 Email／Location 下方。拖曳可以排序。</p>
+          <form id="contact-link-form" class="fields">
+            <label>名稱 <input type="text" name="label" placeholder="例如：Instagram" required /></label>
+            <label>連結網址 <input type="url" name="url" placeholder="https://..." required /></label>
+            <button type="submit" class="primary-btn">＋ 新增聯絡方式</button>
+          </form>
+          <p class="status" id="contact-link-status"></p>
+          <div id="contact-link-grid" class="grid"></div>
+        </div>
+
         <div class="text-section">
           <h3>字體大小</h3>
           <p class="hint">調整整個網站的文字大小，拖曳後會自動存檔並發布，不用另外跟 Claude 說。</p>

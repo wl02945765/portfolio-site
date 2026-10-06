@@ -1,29 +1,5 @@
 [
   {
-    "id": "beyond-2",
-    "src": "",
-    "caption": {
-      "zh": "展覽",
-      "en": "Exhibition"
-    }
-  },
-  {
-    "id": "beyond-3",
-    "src": "",
-    "caption": {
-      "zh": "生活",
-      "en": "Lifestyle"
-    }
-  },
-  {
-    "id": "beyond-4",
-    "src": "",
-    "caption": {
-      "zh": "日常",
-      "en": "Everyday"
-    }
-  },
-  {
     "id": "87c17891-ef87-4076-8c34-8980a371ed6f",
     "src": "/media/about/3e069845-565b-420f-86c1-036c090f2ce8.jpg",
     "caption": {

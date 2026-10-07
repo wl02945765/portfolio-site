@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "eslint",
     "admin": "node admin-server/server.mjs",
-    "export": "STATIC_EXPORT=true next build"
+    "export": "STATIC_EXPORT=true next build",
+    "build:cloudflare": "STATIC_EXPORT=true next build && node scripts/cloudflare-postbuild.mjs"
   },
   "dependencies": {
     "express": "^5.2.1",

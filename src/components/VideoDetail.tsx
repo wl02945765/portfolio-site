@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { AnimatePresence, motion, type Variants } from "framer-motion";
 import { useLanguage } from "@/i18n/LanguageProvider";
@@ -68,6 +68,43 @@ export function VideoDetail({ video }: { video: Video }) {
 
   const isExternal = Boolean(video.youtubeId);
 
+  // Uploaded videos are adaptive HLS (1080p + 720p, ~4s segments): the live
+  // site is on Cloudflare Pages, which caps single files at 25 MiB, and
+  // segments also let a slow connection drop to 720p instead of stalling.
+  // Safari plays HLS natively; elsewhere hls.js (loaded only on this page)
+  // feeds the same <video>. Nothing is fetched until the visitor hits play.
+  useEffect(() => {
+    const el = videoRef.current;
+    if (isExternal || !el || !video.videoSrc) return;
+    const url = withBasePath(video.videoSrc);
+    if (!video.videoSrc.endsWith(".m3u8") || el.canPlayType("application/vnd.apple.mpegurl")) {
+      el.src = url;
+      return;
+    }
+    let cancelled = false;
+    let destroy = () => {};
+    import("hls.js").then(({ default: Hls }) => {
+      if (cancelled) return;
+      if (!Hls.isSupported()) {
+        el.src = url;
+        return;
+      }
+      const hls = new Hls({ autoStartLoad: false, capLevelToPlayerSize: true });
+      hls.loadSource(url);
+      hls.attachMedia(el);
+      const start = () => hls.startLoad();
+      el.addEventListener("play", start, { once: true });
+      destroy = () => {
+        el.removeEventListener("play", start);
+        hls.destroy();
+      };
+    });
+    return () => {
+      cancelled = true;
+      destroy();
+    };
+  }, [isExternal, video.videoSrc]);
+
   return (
     <div className="flex flex-1 flex-col px-6 pb-24 pt-16 sm:px-10 sm:pt-20">
       <Link
@@ -98,7 +135,7 @@ export function VideoDetail({ video }: { video: Video }) {
             <>
               <video
                 ref={videoRef}
-                src={withBasePath(video.videoSrc)}
+                preload="none"
                 poster={withBasePath(video.thumbnail)}
                 playsInline
                 onClick={togglePlay}

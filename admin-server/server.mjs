@@ -255,6 +255,90 @@ function makeVideoPreview(dir, filename, variant = "sd", outBase = null) {
   return result.status === 0 && fs.existsSync(previewPath) ? previewFilename : null;
 }
 
+// The detail-page player streams adaptive HLS instead of one mp4: the live
+// site is on Cloudflare Pages, which rejects any file over 25 MiB (most
+// masters are 35-100MB), and two renditions let a slow connection fall back
+// to 720p instead of stalling. Keyframes are forced every 2s so both
+// renditions cut at the same points (needed for clean switching). The 1080p
+// rendition never exceeds the source's own bitrate.
+function makeHls(dir, filename) {
+  const inputPath = path.join(dir, filename);
+  const ext = path.extname(filename);
+  const hlsDirName = `${filename.slice(0, -ext.length)}-hls`;
+  const hlsDir = path.join(dir, hlsDirName);
+  fs.rmSync(hlsDir, { recursive: true, force: true });
+  fs.mkdirSync(hlsDir);
+
+  const probe = (args) => spawnSync("ffprobe", ["-v", "error", ...args, inputPath]).stdout?.toString().trim() || "";
+  const hasAudio = Boolean(probe(["-select_streams", "a", "-show_entries", "stream=index", "-of", "csv=p=0"]));
+  const sourceKbps = Math.round(Number(probe(["-show_entries", "format=bit_rate", "-of", "csv=p=0"])) / 1000) || 6000;
+  const maxKbps1080 = Math.max(2500, Math.min(6000, sourceKbps));
+
+  const result = spawnSync("ffmpeg", [
+    "-y",
+    "-i",
+    inputPath,
+    "-filter_complex",
+    "[0:v:0]split=2[a][b];" +
+      "[a]scale=w=1920:h=1080:force_original_aspect_ratio=decrease:force_divisible_by=2[v1];" +
+      "[b]scale=w=1280:h=720:force_original_aspect_ratio=decrease:force_divisible_by=2[v2]",
+    "-map",
+    "[v1]",
+    "-map",
+    "[v2]",
+    ...(hasAudio ? ["-map", "0:a:0", "-map", "0:a:0", "-c:a", "aac", "-b:a", "128k", "-ac", "2"] : []),
+    "-c:v",
+    "libx264",
+    "-preset",
+    "slow",
+    "-pix_fmt",
+    "yuv420p",
+    "-profile:v",
+    "high",
+    "-force_key_frames",
+    "expr:gte(t,n_forced*2)",
+    "-sc_threshold",
+    "0",
+    "-crf:v:0",
+    "21",
+    "-maxrate:v:0",
+    `${maxKbps1080}k`,
+    "-bufsize:v:0",
+    `${maxKbps1080 * 2}k`,
+    "-crf:v:1",
+    "23",
+    "-maxrate:v:1",
+    "2500k",
+    "-bufsize:v:1",
+    "5000k",
+    "-f",
+    "hls",
+    "-hls_time",
+    "4",
+    "-hls_playlist_type",
+    "vod",
+    "-hls_segment_type",
+    "fmp4",
+    "-hls_flags",
+    "independent_segments",
+    "-master_pl_name",
+    "index.m3u8",
+    "-var_stream_map",
+    hasAudio ? "v:0,a:0 v:1,a:1" : "v:0 v:1",
+    "-hls_segment_filename",
+    path.join(hlsDir, "%v", "seg_%03d.m4s"),
+    "-hls_fmp4_init_filename",
+    "init.mp4",
+    path.join(hlsDir, "%v", "playlist.m3u8"),
+  ]);
+  if (result.status !== 0 || !fs.existsSync(path.join(hlsDir, "index.m3u8"))) {
+    console.error("[video] HLS packaging failed, keeping mp4:", result.stderr?.toString().slice(-2000));
+    fs.rmSync(hlsDir, { recursive: true, force: true });
+    return null;
+  }
+  return `${hlsDirName}/index.m3u8`;
+}
+
 function compressVideo(dir, filename) {
   const inputPath = path.join(dir, filename);
   const ext = path.extname(filename).toLowerCase();
@@ -1420,13 +1504,17 @@ app.post("/api/videos", videoUpload.single("file"), (req, res) => {
 
   const previewFilename = makeVideoPreview(VIDEOS_DIR, filename);
   const previewHdFilename = makeVideoPreview(VIDEOS_DIR, filename, "hd");
+  // Thumbnail and previews are cut from the mp4 above; after packaging the
+  // HLS copy the mp4 itself isn't served anywhere, so it's dropped.
+  const hlsPlaylist = makeHls(VIDEOS_DIR, filename);
+  if (hlsPlaylist) fs.unlinkSync(videoPath);
 
   const entry = {
     id,
     slug,
     thumbnail,
     thumbnailSmall,
-    videoSrc: `/media/videos/${filename}`,
+    videoSrc: `/media/videos/${hlsPlaylist || filename}`,
     previewSrc: previewFilename ? `/media/videos/${previewFilename}` : undefined,
     previewHdSrc: previewHdFilename ? `/media/videos/${previewHdFilename}` : undefined,
     title: { zh: req.body.title_zh || "", en: req.body.title_en || "" },
@@ -1542,7 +1630,9 @@ app.delete("/api/videos/:id", (req, res) => {
   for (const src of [item.videoSrc, item.previewSrc, item.previewHdSrc, item.thumbnail, item.thumbnailSmall]) {
     if (!src || !src.startsWith("/")) continue;
     const filePath = path.join(ROOT, "public", src);
-    if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
+    // An HLS videoSrc is a playlist inside its own "<id>-hls/" folder.
+    if (src.endsWith(".m3u8")) fs.rmSync(path.dirname(filePath), { recursive: true, force: true });
+    else if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
   }
   writeJSON(
     VIDEOS_JSON,

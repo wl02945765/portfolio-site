@@ -95,9 +95,9 @@ function CameraTile({
           from the upload, or for YouTube-backed videos from the YouTube
           source), fetched only on hover — streaming a full master here meant
           sweeping the mouse across the grid pulled several 20-80MB files. */}
-      {(video.previewSrc || video.videoSrc) && (
+      {video.previewSrc && (
         <video
-          src={withBasePath(video.previewSrc || video.videoSrc)}
+          src={withBasePath(video.previewSrc)}
           muted
           loop
           playsInline
@@ -171,7 +171,8 @@ export function VisionMixerWall({ videos, categories }: { videos: Video[]; categ
   }
   const activeCamNumber = camNumbers.get(active.id) ?? 1;
   const youtubePlaying = Boolean(active.youtubeId) && playingYoutubeId === active.id;
-  const monitorPreview = active.previewHdSrc || active.previewSrc || active.videoSrc;
+  // videoSrc is an HLS playlist (detail page only), never a loopable file.
+  const monitorPreview = active.previewHdSrc || active.previewSrc;
 
   return (
     <div className="pb-24">

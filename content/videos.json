@@ -79,7 +79,7 @@
     "id": "4d89e4ce-d165-4e84-8ce0-38bf60553c77",
     "slug": "china",
     "thumbnail": "/media/videos/thumbs/4d89e4ce-d165-4e84-8ce0-38bf60553c77.webp",
-    "videoSrc": "/media/videos/5c4cee5c-ec16-4584-be3a-7932c0607bf0.mp4",
+    "videoSrc": "/media/videos/5c4cee5c-ec16-4584-be3a-7932c0607bf0-hls/index.m3u8",
     "title": {
       "zh": "中國旅行",
       "en": "Travle in China "
@@ -98,7 +98,7 @@
     "id": "6891e03b-eca1-4144-9563-b73c80f8dabe",
     "slug": "untitled",
     "thumbnail": "/media/videos/thumbs/6891e03b-eca1-4144-9563-b73c80f8dabe.webp",
-    "videoSrc": "/media/videos/c325fa93-2d19-475d-8872-f28c2812b738.mp4",
+    "videoSrc": "/media/videos/c325fa93-2d19-475d-8872-f28c2812b738-hls/index.m3u8",
     "title": {
       "zh": "雪梨-直升機",
       "en": "Sydney Helicopter Tour"
@@ -117,7 +117,7 @@
     "id": "6282c329-0ffe-4e1d-b954-c002d11fef56",
     "slug": "untitled-2",
     "thumbnail": "/media/videos/thumbs/6282c329-0ffe-4e1d-b954-c002d11fef56.webp",
-    "videoSrc": "/media/videos/e559b0bf-5aa8-4fa8-a9a2-8b21ea91d070.mp4",
+    "videoSrc": "/media/videos/e559b0bf-5aa8-4fa8-a9a2-8b21ea91d070-hls/index.m3u8",
     "title": {
       "zh": "華納兄弟電影世界-飛車表演",
       "en": "Warner Bros-Hollywood Stunt Driver"
@@ -136,7 +136,7 @@
     "id": "07f59bc3-d93f-485f-819d-252ead46bf0d",
     "slug": "untitled-3",
     "thumbnail": "/media/videos/thumbs/07f59bc3-d93f-485f-819d-252ead46bf0d.webp",
-    "videoSrc": "/media/videos/0fbb5d6c-54d9-4262-9f2a-462b0a3e2a0f.mp4",
+    "videoSrc": "/media/videos/0fbb5d6c-54d9-4262-9f2a-462b0a3e2a0f-hls/index.m3u8",
     "title": {
       "zh": "澳洲-公路旅遊",
       "en": "Australia-Road Trip"
@@ -155,7 +155,7 @@
     "id": "ec14202d-3591-4825-9aff-0776bdb296c4",
     "slug": "untitled-7",
     "thumbnail": "/media/videos/thumbs/ec14202d-3591-4825-9aff-0776bdb296c4.webp",
-    "videoSrc": "/media/videos/928ef1b5-ae2a-41d6-be8c-d4a12155ff11.mp4",
+    "videoSrc": "/media/videos/928ef1b5-ae2a-41d6-be8c-d4a12155ff11-hls/index.m3u8",
     "title": {
       "zh": "澳洲打工度假-Noosa Day2",
       "en": "Working Holiday-Australia Noosa"
@@ -174,7 +174,7 @@
     "id": "ef790bd7-13ee-4308-b219-e73a496dcaa3",
     "slug": "untitled-6",
     "thumbnail": "/media/videos/thumbs/ef790bd7-13ee-4308-b219-e73a496dcaa3.webp",
-    "videoSrc": "/media/videos/4a121718-9fbd-4409-b282-7e3a319a25bd.mp4",
+    "videoSrc": "/media/videos/4a121718-9fbd-4409-b282-7e3a319a25bd-hls/index.m3u8",
     "title": {
       "zh": "澳洲打工度假-Noosa Day3",
       "en": "Working Holiday-Australia Noosa"
@@ -193,7 +193,7 @@
     "id": "42a58fdc-adfc-4f0f-9793-cbecf292cd3b",
     "slug": "untitled-4",
     "thumbnail": "/media/videos/thumbs/42a58fdc-adfc-4f0f-9793-cbecf292cd3b.webp",
-    "videoSrc": "/media/videos/0cc9e305-45bf-48d2-8b32-685c2b3ba1fa.mp4",
+    "videoSrc": "/media/videos/0cc9e305-45bf-48d2-8b32-685c2b3ba1fa-hls/index.m3u8",
     "title": {
       "zh": "澳洲打工度假-Sunshine Coast",
       "en": "Working Holiday-Australia Sunshine Coast"

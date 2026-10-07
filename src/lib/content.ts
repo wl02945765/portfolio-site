@@ -59,6 +59,8 @@ export type Video = {
   // even on 2x screens at their largest, ~330px); thumbnail itself (up to
   // 1280px) is for the big PGM monitor and the detail page poster.
   thumbnailSmall?: string;
+  // Uploaded videos: an adaptive HLS master playlist ("…-hls/index.m3u8",
+  // 1080p + 720p renditions). "" for YouTube-backed videos.
   videoSrc: string;
   // Same ~8s loop at 1280px for the PGM monitor, where the 640px one looked
   // soft stretched across the full width.

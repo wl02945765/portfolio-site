@@ -100,6 +100,8 @@ export type AboutGalleryPhoto = {
   id: string;
   src: string;
   caption: LocalizedText;
+  width?: number;
+  height?: number;
 };
 
 export type AboutSkillGroup = {
@@ -143,6 +145,9 @@ export type FeaturedPhoto = {
   // large curated set of full-res files was blowing past mobile Safari's
   // per-tab memory budget and crashing the tab outright.
   thumbSrc?: string;
+  // An even smaller copy (~500px tall) for the strip's resting, collapsed
+  // state; thumbSrc is only fetched once a strip is actually opened.
+  miniSrc?: string;
   caption: LocalizedText;
 };
 

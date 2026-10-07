@@ -9,6 +9,7 @@ type StripPhoto = {
   id: string;
   src: string;
   thumbSrc?: string;
+  miniSrc?: string;
   caption: LocalizedText;
 };
 
@@ -31,6 +32,11 @@ function pseudoRandom(seed: number) {
 export function PhotoStripCurtain({ photos }: { photos: StripPhoto[] }) {
   const { locale } = useLanguage();
   const [hoveredStrip, setHoveredStrip] = useState<number | null>(null);
+  // Strips that have been opened at least once. The expanded, larger copy is
+  // only requested for these — loading it for all strips up front is what
+  // made this row so heavy — and it stays mounted afterwards so re-opening
+  // the same strip doesn't flash.
+  const [openedStrips, setOpenedStrips] = useState<Set<number>>(() => new Set());
   const containerRef = useRef<HTMLDivElement>(null);
 
   if (photos.length === 0) return null;
@@ -46,7 +52,9 @@ export function PhotoStripCurtain({ photos }: { photos: StripPhoto[] }) {
     if (!el) return;
     const rect = el.getBoundingClientRect();
     const ratio = Math.min(1, Math.max(0, (clientX - rect.left) / rect.width));
-    setHoveredStrip(Math.min(photos.length - 1, Math.floor(ratio * photos.length)));
+    const index = Math.min(photos.length - 1, Math.floor(ratio * photos.length));
+    setHoveredStrip(index);
+    setOpenedStrips((prev) => (prev.has(index) ? prev : new Set(prev).add(index)));
   }
 
   // One strip per uploaded photo — never repeated. Gets denser purely as
@@ -99,7 +107,7 @@ export function PhotoStripCurtain({ photos }: { photos: StripPhoto[] }) {
                   is what made this strip visibly pop in after the page had
                   already loaded. */}
               <img
-                src={withBasePath(strip.photo.thumbSrc || strip.photo.src)}
+                src={withBasePath(strip.photo.miniSrc || strip.photo.thumbSrc || strip.photo.src)}
                 alt=""
                 loading="eager"
                 fetchPriority={i < HIGH_PRIORITY_COUNT ? "high" : "auto"}
@@ -120,16 +128,17 @@ export function PhotoStripCurtain({ photos }: { photos: StripPhoto[] }) {
                 className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center p-6 sm:p-10"
                 style={{ opacity: isHovered ? 1 : 0, transition: "opacity 300ms ease 150ms" }}
               >
+                {openedStrips.has(i) && (
                 <img
                   src={withBasePath(strip.photo.thumbSrc || strip.photo.src)}
                   alt=""
-                  loading="eager"
                   decoding="async"
                   className="h-full w-full max-w-none object-contain"
                   style={{ WebkitTouchCallout: "none", WebkitUserSelect: "none", userSelect: "none" }}
                   onContextMenu={(e) => e.preventDefault()}
                   draggable={false}
                 />
+                )}
                 <p className="mt-4 shrink-0 text-xs tracking-wide text-zinc-300">
                   {strip.photo.caption[locale]}
                 </p>

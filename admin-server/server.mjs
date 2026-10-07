@@ -173,6 +173,51 @@ function makeStripThumbnail(dir, filename) {
   return fs.existsSync(thumbPath) ? thumbFilename : null;
 }
 
+// The filmstrip's resting state: dozens of strips each only ~10-40px wide,
+// so the ~1400px strip copy was pure waste there — and since every strip
+// loads eagerly, 60+ of those at once was ~18MB of downloads and hundreds of
+// MB of decoded bitmaps before anyone hovered anything. This copy only needs
+// enough height to fill the 65vh row; the strip copy loads on hover.
+const STRIP_MINI_HEIGHT = 500;
+const STRIP_MINI_QUALITY = 65;
+
+function makeStripMini(dir, filename) {
+  const ext = path.extname(filename);
+  const base = filename.slice(0, -ext.length);
+  const miniFilename = `${base}-mini.jpg`;
+  const miniPath = path.join(dir, miniFilename);
+  spawnSync("sips", [
+    "-s",
+    "format",
+    "jpeg",
+    "--resampleHeight",
+    String(STRIP_MINI_HEIGHT),
+    "--setProperty",
+    "formatOptions",
+    String(STRIP_MINI_QUALITY),
+    path.join(dir, filename),
+    "--out",
+    miniPath,
+  ]);
+  return fs.existsSync(miniPath) ? miniFilename : null;
+}
+
+// About gallery tiles never show larger than ~a quarter of a 4xl column, so
+// the full MAX_PHOTO_DIMENSION upload is shrunk until its short side is
+// ABOUT_GALLERY_SHORT_SIDE.
+const ABOUT_GALLERY_SHORT_SIDE = 900;
+
+function shrinkForAboutGallery(dir, filename) {
+  const filePath = path.join(dir, filename);
+  const { width, height } = getImageDimensions(filePath);
+  const shortSide = Math.min(width, height);
+  if (shortSide > ABOUT_GALLERY_SHORT_SIDE) {
+    const longSide = Math.round((Math.max(width, height) * ABOUT_GALLERY_SHORT_SIDE) / shortSide);
+    spawnSync("sips", ["-Z", String(longSide), "--setProperty", "formatOptions", "78", filePath]);
+  }
+  return getImageDimensions(filePath);
+}
+
 // The Photography grid's before/after wipe tile shows both images at the
 // same on-screen size, so shipping the "before" at its full MAX_PHOTO_DIMENSION
 // while the "after" was the ~530px grid thumbnail made the after side look
@@ -1271,10 +1316,12 @@ app.post("/api/featured-photos", featuredPhotoUpload.array("files", 50), (req, r
   const created = req.files.map((file) => {
     const filename = optimizePhoto(FEATURED_DIR, file.filename);
     const thumbFilename = makeStripThumbnail(FEATURED_DIR, filename);
+    const miniFilename = makeStripMini(FEATURED_DIR, filename);
     return {
       id: randomUUID(),
       src: `/media/featured/${filename}`,
       thumbSrc: thumbFilename ? `/media/featured/${thumbFilename}` : undefined,
+      miniSrc: miniFilename ? `/media/featured/${miniFilename}` : undefined,
       caption: { zh: "", en: "" },
     };
   });
@@ -1303,9 +1350,10 @@ app.delete("/api/featured-photos/:id", (req, res) => {
     const filePath = path.join(ROOT, "public", item.src);
     if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
   }
-  if (item.thumbSrc) {
-    const thumbPath = path.join(ROOT, "public", item.thumbSrc);
-    if (fs.existsSync(thumbPath)) fs.unlinkSync(thumbPath);
+  for (const extra of [item.thumbSrc, item.miniSrc]) {
+    if (!extra) continue;
+    const extraPath = path.join(ROOT, "public", extra);
+    if (fs.existsSync(extraPath)) fs.unlinkSync(extraPath);
   }
   writeJSON(
     FEATURED_PHOTOS_JSON,
@@ -1512,10 +1560,13 @@ app.post("/api/about-gallery", aboutGalleryUpload.array("files", 20), (req, res)
   const gallery = readJSON(ABOUT_GALLERY_JSON);
   const created = req.files.map((file) => {
     const filename = optimizePhoto(ABOUT_DIR, file.filename);
+    const { width, height } = shrinkForAboutGallery(ABOUT_DIR, filename);
     return {
       id: randomUUID(),
       src: `/media/about/${filename}`,
       caption: { zh: "", en: "" },
+      width: width || undefined,
+      height: height || undefined,
     };
   });
   gallery.push(...created);

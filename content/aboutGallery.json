@@ -5,7 +5,9 @@
     "caption": {
       "zh": "",
       "en": ""
-    }
+    },
+    "width": 900,
+    "height": 1200
   },
   {
     "id": "5f6c3a9f-2214-4db3-b5a2-a7132bb4b7c8",
@@ -13,7 +15,9 @@
     "caption": {
       "zh": "",
       "en": ""
-    }
+    },
+    "width": 900,
+    "height": 1200
   },
   {
     "id": "505b84ec-d8da-49b9-9289-554c827541fb",
@@ -21,7 +25,9 @@
     "caption": {
       "zh": "",
       "en": ""
-    }
+    },
+    "width": 900,
+    "height": 1600
   },
   {
     "id": "df19e22e-e833-4db7-ab3c-30889adf7c9b",
@@ -29,7 +35,9 @@
     "caption": {
       "zh": "",
       "en": ""
-    }
+    },
+    "width": 1600,
+    "height": 900
   },
   {
     "id": "a5c1df09-ce81-4a45-a43e-1a79d504e18c",
@@ -37,7 +45,9 @@
     "caption": {
       "zh": "",
       "en": ""
-    }
+    },
+    "width": 1600,
+    "height": 900
   },
   {
     "id": "7d531a33-63ab-4de4-934e-40c502bf75d5",
@@ -45,7 +55,9 @@
     "caption": {
       "zh": "",
       "en": ""
-    }
+    },
+    "width": 1600,
+    "height": 900
   },
   {
     "id": "2830732d-0034-47a1-8492-0c7ccf791091",
@@ -53,7 +65,9 @@
     "caption": {
       "zh": "",
       "en": ""
-    }
+    },
+    "width": 1600,
+    "height": 900
   },
   {
     "id": "f4e210db-d216-4ab9-8a86-a9f775cef82b",
@@ -61,7 +75,9 @@
     "caption": {
       "zh": "",
       "en": ""
-    }
+    },
+    "width": 900,
+    "height": 1200
   },
   {
     "id": "adaea26a-7598-4c3d-89dc-83af1e906d3b",
@@ -69,7 +85,9 @@
     "caption": {
       "zh": "",
       "en": ""
-    }
+    },
+    "width": 1200,
+    "height": 900
   },
   {
     "id": "54be924e-b3db-4cf0-b0b5-bbcb8c8a11a4",
@@ -77,7 +95,9 @@
     "caption": {
       "zh": "",
       "en": ""
-    }
+    },
+    "width": 900,
+    "height": 1200
   },
   {
     "id": "9050c203-85f9-4735-a558-012617e1450e",
@@ -85,7 +105,9 @@
     "caption": {
       "zh": "",
       "en": ""
-    }
+    },
+    "width": 1200,
+    "height": 900
   },
   {
     "id": "d5319994-1d4b-4f7c-a23d-61bf1c3f125f",
@@ -93,7 +115,9 @@
     "caption": {
       "zh": "",
       "en": ""
-    }
+    },
+    "width": 1200,
+    "height": 900
   },
   {
     "id": "c7c47dbd-2d40-4170-b693-46de7a7c0c3a",
@@ -101,6 +125,8 @@
     "caption": {
       "zh": "",
       "en": ""
-    }
+    },
+    "width": 1200,
+    "height": 900
   }
 ]

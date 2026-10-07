@@ -276,31 +276,43 @@ export function AboutContent() {
             ))}
           </div>
 
-          <div className="mt-14 grid grid-cols-2 gap-4 sm:grid-cols-4">
-            {galleryPhotos.map((photo) =>
-              photo.src ? (
+          {/* Justified rows: every photo keeps its own aspect ratio (no
+              forced 4:5 crop chopping landscape shots), and each row stretches
+              to fill the full width. flex-grow = aspect ratio is what makes a
+              row's photos share one height. The trailing spacer soaks up the
+              last row's leftover space so a short final row isn't blown up. */}
+          <div className="mt-14 flex flex-wrap gap-3 [--row-h:130px] sm:[--row-h:200px]">
+            {galleryPhotos.map((photo) => {
+              const ratio = photo.width && photo.height ? photo.width / photo.height : 4 / 5;
+              return (
                 <motion.div
                   key={photo.id}
                   variants={fadeUp}
-                  className="group relative aspect-[4/5] w-full overflow-hidden rounded-sm bg-black"
+                  className="group relative overflow-hidden rounded-sm bg-black"
+                  style={{ flexGrow: ratio, flexBasis: `calc(var(--row-h) * ${ratio})`, aspectRatio: ratio }}
                 >
-                  <img
-                    src={withBasePath(photo.src)}
-                    alt={photo.caption[locale]}
-                    className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]"
-                  />
-                  {photo.caption[locale] && (
-                    <span className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 to-transparent p-3 text-xs tracking-wide text-zinc-200">
-                      {photo.caption[locale]}
-                    </span>
+                  {photo.src ? (
+                    <>
+                      <img
+                        src={withBasePath(photo.src)}
+                        alt={photo.caption[locale]}
+                        loading="lazy"
+                        decoding="async"
+                        className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]"
+                      />
+                      {photo.caption[locale] && (
+                        <span className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 to-transparent p-3 text-xs tracking-wide text-zinc-200">
+                          {photo.caption[locale]}
+                        </span>
+                      )}
+                    </>
+                  ) : (
+                    <Placeholder label={photo.caption[locale]} className="absolute! inset-0" />
                   )}
                 </motion.div>
-              ) : (
-                <motion.div key={photo.id} variants={fadeUp}>
-                  <Placeholder label={photo.caption[locale]} className="aspect-[4/5] w-full" />
-                </motion.div>
-              ),
-            )}
+              );
+            })}
+            <div aria-hidden="true" style={{ flexGrow: 10, flexBasis: 0 }} />
           </div>
         </div>
       </motion.section>

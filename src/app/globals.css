@@ -36,3 +36,33 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .vu-bar { animation: none; height: 55%; }
 }
+
+/* Site-wide grain (NoiseOverlay): jump the pre-rendered tile between offsets
+   to fake the old per-frame reseed. steps(1) means no interpolation, and only
+   transform changes, so this stays on the compositor. */
+@keyframes noise-flicker {
+  0% { transform: translate(0, 0); }
+  8% { transform: translate(-173px, 89px); }
+  16% { transform: translate(61px, -211px); }
+  24% { transform: translate(-307px, -43px); }
+  32% { transform: translate(139px, 251px); }
+  40% { transform: translate(-29px, -337px); }
+  48% { transform: translate(283px, 17px); }
+  56% { transform: translate(-241px, 199px); }
+  64% { transform: translate(97px, -127px); }
+  72% { transform: translate(-389px, 311px); }
+  80% { transform: translate(223px, -277px); }
+  88% { transform: translate(-113px, 157px); }
+  100% { transform: translate(0, 0); }
+}
+
+.noise-flicker {
+  animation: noise-flicker 2.2s steps(1) infinite;
+  will-change: transform;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .noise-flicker {
+    animation: none;
+  }
+}

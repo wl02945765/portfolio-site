@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import type Hls from "hls.js";
 import Link from "next/link";
 import { AnimatePresence, motion, type Variants } from "framer-motion";
 import { useLanguage } from "@/i18n/LanguageProvider";
@@ -26,6 +27,24 @@ const videoReveal: Variants = {
 
 const SPEEDS = [0.5, 1, 1.25, 1.5, 2];
 
+// One selectable rendition. `id` is the hls.js level index, or the position in
+// the parsed master playlist when the browser plays HLS natively (Safari).
+type QualityOption = { id: number; height: number; uri?: string };
+const AUTO_QUALITY = -1;
+
+// Pulls the renditions (height + playlist URL) out of an HLS master playlist,
+// lowest first — the same order hls.js reports its levels in.
+function parseMasterPlaylist(text: string, masterUrl: string): QualityOption[] {
+  const lines = text.split("\n").map((l) => l.trim());
+  const found: { height: number; uri: string }[] = [];
+  lines.forEach((line, i) => {
+    const m = line.match(/^#EXT-X-STREAM-INF:.*RESOLUTION=\d+x(\d+)/);
+    const uri = lines[i + 1];
+    if (m && uri && !uri.startsWith("#")) found.push({ height: Number(m[1]), uri: new URL(uri, masterUrl).href });
+  });
+  return found.sort((a, b) => a.height - b.height).map((q, id) => ({ id, ...q }));
+}
+
 export function VideoDetail({ video }: { video: Video }) {
   const { t, locale } = useLanguage();
 
@@ -36,6 +55,46 @@ export function VideoDetail({ video }: { video: Video }) {
   const [progress, setProgress] = useState(0);
   const [infosOpen, setInfosOpen] = useState(false);
   const [speed, setSpeed] = useState(1);
+  const [qualities, setQualities] = useState<QualityOption[]>([]);
+  const [quality, setQuality] = useState(AUTO_QUALITY);
+  const [qualityOpen, setQualityOpen] = useState(false);
+  const hlsRef = useRef<Hls | null>(null);
+  const masterUrlRef = useRef("");
+  const resumeAtRef = useRef(0);
+  const resumeHandlerRef = useRef<(() => void) | null>(null);
+
+  function selectQuality(id: number) {
+    const el = videoRef.current;
+    setQuality(id);
+    setQualityOpen(false);
+    if (!el) return;
+    const hls = hlsRef.current;
+    if (hls) {
+      // hls.js: -1 returns to automatic switching; otherwise pin that level.
+      hls.currentLevel = id;
+      return;
+    }
+    // Native HLS (Safari) has no level API, so load the chosen rendition's own
+    // playlist (or the master again for Auto) and resume where we were.
+    const target = id === AUTO_QUALITY ? masterUrlRef.current : qualities.find((q) => q.id === id)?.uri;
+    if (!target) return;
+    // The element is preload="none", so after a src swap nothing loads until
+    // play() — if the visitor switches while paused, the position to resume at
+    // must be remembered across several swaps (currentTime reads 0 by then).
+    const resumeAt = el.readyState > 0 ? el.currentTime : resumeAtRef.current;
+    const wasPlaying = !el.paused;
+    resumeAtRef.current = resumeAt;
+    if (resumeHandlerRef.current) el.removeEventListener("loadedmetadata", resumeHandlerRef.current);
+    const onLoaded = () => {
+      el.currentTime = resumeAtRef.current;
+      resumeAtRef.current = 0;
+      resumeHandlerRef.current = null;
+    };
+    resumeHandlerRef.current = onLoaded;
+    el.addEventListener("loadedmetadata", onLoaded, { once: true });
+    el.src = target;
+    if (wasPlaying) el.play().catch(() => {});
+  }
 
   function togglePlay() {
     const el = videoRef.current;
@@ -77,12 +136,23 @@ export function VideoDetail({ video }: { video: Video }) {
     const el = videoRef.current;
     if (isExternal || !el || !video.videoSrc) return;
     const url = withBasePath(video.videoSrc);
-    if (!video.videoSrc.endsWith(".m3u8") || el.canPlayType("application/vnd.apple.mpegurl")) {
-      el.src = url;
-      return;
-    }
     let cancelled = false;
     let destroy = () => {};
+    if (!video.videoSrc.endsWith(".m3u8") || el.canPlayType("application/vnd.apple.mpegurl")) {
+      el.src = url;
+      if (video.videoSrc.endsWith(".m3u8")) {
+        masterUrlRef.current = new URL(url, window.location.href).href;
+        fetch(masterUrlRef.current)
+          .then((r) => r.text())
+          .then((text) => {
+            if (!cancelled) setQualities(parseMasterPlaylist(text, masterUrlRef.current));
+          })
+          .catch(() => {});
+      }
+      return () => {
+        cancelled = true;
+      };
+    }
     import("hls.js").then(({ default: Hls }) => {
       if (cancelled) return;
       if (!Hls.isSupported()) {
@@ -90,6 +160,10 @@ export function VideoDetail({ video }: { video: Video }) {
         return;
       }
       const hls = new Hls({ autoStartLoad: false, capLevelToPlayerSize: true });
+      hlsRef.current = hls;
+      hls.on(Hls.Events.MANIFEST_PARSED, () => {
+        setQualities(hls.levels.map((l, id) => ({ id, height: l.height })));
+      });
       hls.loadSource(url);
       hls.attachMedia(el);
       const start = () => hls.startLoad();
@@ -97,6 +171,7 @@ export function VideoDetail({ video }: { video: Video }) {
       destroy = () => {
         el.removeEventListener("play", start);
         hls.destroy();
+        hlsRef.current = null;
       };
     });
     return () => {
@@ -196,6 +271,43 @@ export function VideoDetail({ video }: { video: Video }) {
                     </button>
                   </div>
                   <div className="flex items-center gap-4">
+                    {qualities.length > 1 && (
+                      <div className="relative">
+                        <button
+                          onClick={() => setQualityOpen((o) => !o)}
+                          aria-haspopup="listbox"
+                          aria-expanded={qualityOpen}
+                          className="text-[11px] uppercase tracking-[0.15em] text-zinc-300 hover:text-white"
+                        >
+                          {quality === AUTO_QUALITY
+                            ? "Auto"
+                            : `${qualities.find((q) => q.id === quality)?.height ?? ""}p`}
+                        </button>
+                        {qualityOpen && (
+                          <ul
+                            role="listbox"
+                            className="absolute bottom-full right-0 mb-3 min-w-[84px] border border-white/15 bg-black/90 py-1 backdrop-blur-sm"
+                          >
+                            {[...qualities]
+                              .sort((a, b) => b.height - a.height)
+                              .map((q) => ({ id: q.id, label: `${q.height}p` }))
+                              .concat({ id: AUTO_QUALITY, label: "Auto" })
+                              .map((option) => (
+                                <li key={option.id} role="option" aria-selected={quality === option.id}>
+                                  <button
+                                    onClick={() => selectQuality(option.id)}
+                                    className={`block w-full px-4 py-1.5 text-left text-[11px] uppercase tracking-[0.15em] transition-colors hover:text-white ${
+                                      quality === option.id ? "text-[#c9a66b]" : "text-zinc-400"
+                                    }`}
+                                  >
+                                    {option.label}
+                                  </button>
+                                </li>
+                              ))}
+                          </ul>
+                        )}
+                      </div>
+                    )}
                     <button
                       onClick={handleFullscreen}
                       className="text-[11px] uppercase tracking-[0.15em] text-zinc-300 hover:text-white"

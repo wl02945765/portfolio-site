@@ -19,6 +19,12 @@ export function NavBar() {
     { href: "/contact", label: t.nav.contactLabel },
   ];
 
+  // The static export serves every page with a trailing slash ("/about/"),
+  // and detail pages live under their section ("/video-work/china/"), so an
+  // exact `=== href` match never lit up the current item on the live site.
+  const currentPath = pathname.replace(/\/+$/, "") || "/";
+  const isActive = (href: string) => currentPath === href || currentPath.startsWith(`${href}/`);
+
   // Close the mobile menu whenever the route changes.
   useEffect(() => {
     setMenuOpen(false);
@@ -37,7 +43,7 @@ export function NavBar() {
         {/* Desktop nav */}
         <nav className="hidden items-center gap-5 md:flex md:gap-8">
           {navItems.map((item) => {
-            const active = pathname === item.href;
+            const active = isActive(item.href);
             return (
               <Link
                 key={item.href}
@@ -96,7 +102,7 @@ export function NavBar() {
           >
             <div className="flex flex-col gap-6 px-6 py-8 sm:px-10">
               {navItems.map((item) => {
-                const active = pathname === item.href;
+                const active = isActive(item.href);
                 return (
                   <Link
                     key={item.href}

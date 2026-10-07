@@ -43,6 +43,13 @@ jobs:
           STATIC_EXPORT: "true"
           GITHUB_PAGES_BASE_PATH: ${{ steps.base-path.outputs.value }}
 
+      # The live site is on Cloudflare Pages now; this copy only forwards old
+      # github.io links there and serves the >25 MiB media Cloudflare can't host.
+      - name: Point pages at Cloudflare
+        run: node scripts/github-redirect-pages.mjs
+        env:
+          GITHUB_PAGES_BASE_PATH: ${{ steps.base-path.outputs.value }}
+
       - uses: actions/upload-pages-artifact@v3
         with:
           path: out

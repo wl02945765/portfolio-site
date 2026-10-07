@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useLanguage } from "@/i18n/LanguageProvider";
 import { PageHeading } from "@/components/PageHeading";
 import { withBasePath } from "@/lib/basePath";
+import { YoutubeThumb } from "@/components/YoutubeThumb";
 import type { Video, VideoCategory } from "@/lib/content";
 
 type Row = { key: string; label: string; videos: Video[] };
@@ -57,6 +58,9 @@ function CameraTile({
   onSelect: () => void;
   locale: "zh" | "en";
 }) {
+  const thumbTone = isOnAir
+    ? "brightness-100"
+    : "brightness-75 saturate-[.85] group-hover:brightness-95 group-hover:saturate-100";
   return (
     <button
       type="button"
@@ -72,19 +76,26 @@ function CameraTile({
         isOnAir ? "outline-red-600" : "outline-transparent hover:outline-zinc-500"
       }`}
     >
-      <img
-        src={withBasePath(video.thumbnail)}
-        alt={video.title[locale]}
-        className={`absolute inset-0 h-full w-full object-cover transition-all duration-200 ${
-          isOnAir ? "brightness-100" : "brightness-75 saturate-[.85] group-hover:brightness-95 group-hover:saturate-100"
-        }`}
-      />
-      {/* Hover-scrub preview only exists for uploaded files — a YouTube-backed
-          video has no raw file to loop, so it just stays on the thumbnail.
-          previewSrc is a short ~0.5MB loop; streaming the full master here
-          meant sweeping the mouse across the grid pulled several 20-80MB
-          files at once. */}
-      {video.videoSrc && (
+      {video.youtubeId ? (
+        <YoutubeThumb
+          id={video.youtubeId}
+          start="sddefault"
+          alt={video.title[locale]}
+          className={`absolute inset-0 h-full w-full object-cover transition-all duration-200 ${thumbTone}`}
+        />
+      ) : (
+        <img
+          src={withBasePath(video.thumbnailSmall || video.thumbnail)}
+          alt={video.title[locale]}
+          decoding="async"
+          className={`absolute inset-0 h-full w-full object-cover transition-all duration-200 ${thumbTone}`}
+        />
+      )}
+      {/* Hover preview: previewSrc is a short ~0.2-0.9MB silent loop (cut
+          from the upload, or for YouTube-backed videos from the YouTube
+          source), fetched only on hover — streaming a full master here meant
+          sweeping the mouse across the grid pulled several 20-80MB files. */}
+      {(video.previewSrc || video.videoSrc) && (
         <video
           src={withBasePath(video.previewSrc || video.videoSrc)}
           muted
@@ -117,6 +128,21 @@ export function VisionMixerWall({ videos, categories }: { videos: Video[]; categ
   // YouTube player running (and downloading) the whole time the page was open.
   const [playingYoutubeId, setPlayingYoutubeId] = useState<string | null>(null);
   const pgmVideoRef = useRef<HTMLVideoElement>(null);
+  // The monitor's preview loop waits for the page's own load to finish so it
+  // never competes with the thumbnails/fonts above the fold; until it is
+  // actually playing it stays invisible over the (already sharp) thumbnail.
+  const [pageLoaded, setPageLoaded] = useState(false);
+  const [pgmReadyId, setPgmReadyId] = useState<string | null>(null);
+  useEffect(() => {
+    const onLoad = () => setPageLoaded(true);
+    // Client-side navigation lands here with the document already loaded.
+    if (document.readyState === "complete") {
+      const id = window.setTimeout(onLoad, 0);
+      return () => window.clearTimeout(id);
+    }
+    window.addEventListener("load", onLoad, { once: true });
+    return () => window.removeEventListener("load", onLoad);
+  }, []);
 
   if (videos.length === 0) {
     return (
@@ -145,6 +171,7 @@ export function VisionMixerWall({ videos, categories }: { videos: Video[]; categ
   }
   const activeCamNumber = camNumbers.get(active.id) ?? 1;
   const youtubePlaying = Boolean(active.youtubeId) && playingYoutubeId === active.id;
+  const monitorPreview = active.previewHdSrc || active.previewSrc || active.videoSrc;
 
   return (
     <div className="pb-24">
@@ -152,49 +179,60 @@ export function VisionMixerWall({ videos, categories }: { videos: Video[]; categ
 
       <div className="mt-8 px-6 sm:px-10">
         <div className="relative aspect-video w-full overflow-hidden bg-black">
-          {active.youtubeId ? (
+          {youtubePlaying ? (
+            <iframe
+              key={active.id}
+              src={`https://www.youtube-nocookie.com/embed/${active.youtubeId}?autoplay=1&modestbranding=1&rel=0`}
+              title={active.title[locale]}
+              allow="autoplay; encrypted-media; fullscreen"
+              allowFullScreen
+              className="absolute inset-0 h-full w-full"
+              style={{ border: 0 }}
+            />
+          ) : (
             // The PGM monitor's chrome (ON AIR badge, CAM label, title, watch
             // button) stays identical either way — YouTube is just this
             // shot's signal source, not a different kind of page section.
-            youtubePlaying ? (
-              <iframe
-                key={active.id}
-                src={`https://www.youtube-nocookie.com/embed/${active.youtubeId}?autoplay=1&modestbranding=1&rel=0`}
-                title={active.title[locale]}
-                allow="autoplay; encrypted-media; fullscreen"
-                allowFullScreen
-                className="absolute inset-0 h-full w-full"
-                style={{ border: 0 }}
-              />
-            ) : (
-              <button
-                type="button"
-                onClick={() => setPlayingYoutubeId(active.id)}
-                aria-label={active.title[locale]}
-                className="group absolute inset-0 h-full w-full"
-              >
+            // Both kinds idle on a silent ~8s preview loop; a YouTube shot's
+            // real player (with sound) only loads once its play button is hit.
+            <>
+              {active.youtubeId ? (
+                <YoutubeThumb id={active.youtubeId} className="absolute inset-0 h-full w-full object-cover" />
+              ) : (
                 <img
                   src={withBasePath(active.thumbnail)}
                   alt=""
                   className="absolute inset-0 h-full w-full object-cover"
                 />
-                <span className="absolute left-1/2 top-1/2 flex h-16 w-16 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border border-white/40 bg-black/50 backdrop-blur-sm transition-transform group-hover:scale-110 group-hover:bg-red-600/90">
-                  <span className="ml-1 h-0 w-0 border-y-[10px] border-l-[17px] border-y-transparent border-l-white" />
-                </span>
-              </button>
-            )
-          ) : (
-            <video
-              key={active.id}
-              ref={pgmVideoRef}
-              src={withBasePath(active.previewSrc || active.videoSrc)}
-              autoPlay
-              muted
-              loop
-              playsInline
-              poster={withBasePath(active.thumbnail)}
-              className="absolute inset-0 h-full w-full object-cover"
-            />
+              )}
+              {pageLoaded && monitorPreview && (
+                <video
+                  key={active.id}
+                  ref={pgmVideoRef}
+                  src={withBasePath(monitorPreview)}
+                  autoPlay
+                  muted
+                  loop
+                  playsInline
+                  onPlaying={() => setPgmReadyId(active.id)}
+                  className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-500 ${
+                    pgmReadyId === active.id ? "opacity-100" : "opacity-0"
+                  }`}
+                />
+              )}
+              {active.youtubeId && (
+                <button
+                  type="button"
+                  onClick={() => setPlayingYoutubeId(active.id)}
+                  aria-label={active.title[locale]}
+                  className="group absolute inset-0 h-full w-full"
+                >
+                  <span className="absolute left-1/2 top-1/2 flex h-16 w-16 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border border-white/40 bg-black/50 backdrop-blur-sm transition-transform group-hover:scale-110 group-hover:bg-red-600/90">
+                    <span className="ml-1 h-0 w-0 border-y-[10px] border-l-[17px] border-y-transparent border-l-white" />
+                  </span>
+                </button>
+              )}
+            </>
           )}
           <div className="pointer-events-none absolute inset-x-0 top-0 flex items-center justify-between bg-gradient-to-b from-black/75 to-transparent p-3 sm:p-4">
             <span className="flex items-center gap-2 bg-red-600 px-2.5 py-1 font-mono text-[10px] tracking-[0.14em] text-white">

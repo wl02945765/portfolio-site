@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useLanguage } from "@/i18n/LanguageProvider";
 import { withBasePath } from "@/lib/basePath";
 import type { LocalizedText } from "@/lib/content";
@@ -24,6 +24,16 @@ type StripPhoto = {
 // eagerly, just without fighting each other for priority.
 const HIGH_PRIORITY_COUNT = 8;
 
+// After the page has finished loading, the resting strips quietly swap their
+// small mini copies for the sharp strip copies, a couple at a time at low
+// priority, so they stop looking soft without competing with anything the
+// visitor is waiting on. Desktop only: on a phone each strip is a few pixels
+// wide (the mini copy is already plenty), and decoding 60+ larger images is
+// exactly the memory pressure that used to crash mobile Safari.
+const UPGRADE_CONCURRENCY = 2;
+const UPGRADE_FLUSH_EVERY = 6;
+const UPGRADE_MEDIA_QUERY = "(hover: hover) and (min-width: 1024px)";
+
 function pseudoRandom(seed: number) {
   const x = Math.sin(seed * 12.9898) * 43758.5453;
   return x - Math.floor(x);
@@ -37,6 +47,60 @@ export function PhotoStripCurtain({ photos }: { photos: StripPhoto[] }) {
   // made this row so heavy — and it stays mounted afterwards so re-opening
   // the same strip doesn't flash.
   const [openedStrips, setOpenedStrips] = useState<Set<number>>(() => new Set());
+  const [sharpStrips, setSharpStrips] = useState<Set<number>>(() => new Set());
+
+  useEffect(() => {
+    if (!window.matchMedia(UPGRADE_MEDIA_QUERY).matches) return;
+    let cancelled = false;
+    const queue = photos
+      .map((photo, i) => ({ i, src: photo.miniSrc && photo.thumbSrc ? withBasePath(photo.thumbSrc) : null }))
+      .filter((item): item is { i: number; src: string } => item.src !== null);
+    const done: number[] = [];
+
+    const flush = () => {
+      if (cancelled || done.length === 0) return;
+      const batch = done.splice(0);
+      setSharpStrips((prev) => {
+        const next = new Set(prev);
+        batch.forEach((i) => next.add(i));
+        return next;
+      });
+    };
+
+    const loadNext = (): Promise<void> => {
+      const item = queue.shift();
+      if (!item || cancelled) return Promise.resolve();
+      return new Promise<void>((resolve) => {
+        const img = new Image();
+        img.fetchPriority = "low";
+        img.decoding = "async";
+        img.onload = () => {
+          done.push(item.i);
+          if (done.length >= UPGRADE_FLUSH_EVERY) flush();
+          resolve();
+        };
+        img.onerror = () => resolve();
+        img.src = item.src;
+      }).then(loadNext);
+    };
+
+    const start = () => {
+      if (cancelled) return;
+      Promise.all(Array.from({ length: UPGRADE_CONCURRENCY }, loadNext)).then(flush);
+    };
+    // Safari has no requestIdleCallback.
+    const kickoff = () => {
+      if (typeof window.requestIdleCallback === "function") window.requestIdleCallback(start, { timeout: 3000 });
+      else setTimeout(start, 1000);
+    };
+
+    if (document.readyState === "complete") kickoff();
+    else window.addEventListener("load", kickoff, { once: true });
+    return () => {
+      cancelled = true;
+      window.removeEventListener("load", kickoff);
+    };
+  }, [photos]);
   const containerRef = useRef<HTMLDivElement>(null);
 
   if (photos.length === 0) return null;
@@ -107,7 +171,11 @@ export function PhotoStripCurtain({ photos }: { photos: StripPhoto[] }) {
                   is what made this strip visibly pop in after the page had
                   already loaded. */}
               <img
-                src={withBasePath(strip.photo.miniSrc || strip.photo.thumbSrc || strip.photo.src)}
+                src={withBasePath(
+                  (sharpStrips.has(i) ? strip.photo.thumbSrc : strip.photo.miniSrc) ||
+                    strip.photo.thumbSrc ||
+                    strip.photo.src,
+                )}
                 alt=""
                 loading="eager"
                 fetchPriority={i < HIGH_PRIORITY_COUNT ? "high" : "auto"}
@@ -133,8 +201,17 @@ export function PhotoStripCurtain({ photos }: { photos: StripPhoto[] }) {
                   src={withBasePath(strip.photo.thumbSrc || strip.photo.src)}
                   alt=""
                   decoding="async"
-                  className="h-full w-full max-w-none object-contain"
-                  style={{ WebkitTouchCallout: "none", WebkitUserSelect: "none", userSelect: "none" }}
+                  className="h-full w-full max-w-none bg-contain bg-center bg-no-repeat object-contain"
+                  // The sharper strip copy only starts downloading once the
+                  // strip opens, and on a slow connection that left the opened
+                  // strip blank for seconds. The mini copy is already loaded
+                  // (it's the resting strip), so paint it underneath as a
+                  // placeholder until the sharp one arrives.
+                  style={
+                    strip.photo.miniSrc
+                      ? { backgroundImage: `url(${withBasePath(strip.photo.miniSrc)})`, WebkitTouchCallout: "none", WebkitUserSelect: "none", userSelect: "none" }
+                      : { WebkitTouchCallout: "none", WebkitUserSelect: "none", userSelect: "none" }
+                  }
                   onContextMenu={(e) => e.preventDefault()}
                   draggable={false}
                 />

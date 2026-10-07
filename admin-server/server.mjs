@@ -71,106 +71,69 @@ function uniqueSlug(base, existing) {
 
 // Camera-original photos (5-8MB, HEIC) were pinning visitors' CPUs and
 // rendering as broken images in every non-Safari browser. Every upload now
-// gets converted to JPEG and downsized to something reasonable for web
-// display, using macOS's built-in `sips` (same pattern as the ffmpeg call
-// below for video thumbnails — a system tool, not another npm dependency).
+// gets converted and downsized for web display.
+//
+// Output is WebP (2026-10-07): the site is served from GitHub Pages, which is
+// slow to reach from Taiwan (~0.3-0.5MB/s measured), so bytes are the main
+// cost — WebP at q80 came out 50-65% smaller than the old JPEGs with no
+// visible difference. `sips` can read WebP but not write it, so every image
+// write goes through ImageMagick (`magick`), which also lets us:
+//   - take only frame [0] (iPhone HEICs carry extra depth-map frames, which
+//     otherwise get written out as -0/-1/-2 files), and
+//   - -auto-orient, baking EXIF rotation into the pixels so the width/height
+//     recorded in content JSON match what the browser actually displays.
 const MAX_PHOTO_DIMENSION = 2400;
-const JPEG_QUALITY = 82;
+const PHOTO_QUALITY = 80;
 
-function getImageDimensions(filePath) {
-  const result = spawnSync("sips", ["-g", "pixelWidth", "-g", "pixelHeight", filePath]);
-  const out = result.stdout?.toString() || "";
-  return {
-    width: Number(out.match(/pixelWidth:\s*(\d+)/)?.[1] || 0),
-    height: Number(out.match(/pixelHeight:\s*(\d+)/)?.[1] || 0),
-  };
+function writeWebp(srcPath, outPath, resize, quality) {
+  const args = [`${srcPath}[0]`, "-auto-orient"];
+  if (resize) args.push("-resize", resize);
+  args.push("-quality", String(quality), "-define", "webp:method=6", outPath);
+  const result = spawnSync("magick", args);
+  return result.status === 0 && fs.existsSync(outPath);
 }
 
-// Converts HEIC/HEIF to JPEG and downsizes anything larger than
-// MAX_PHOTO_DIMENSION, in place. Returns the filename to use (unchanged
-// unless the format was converted). Never upscales smaller images.
-function optimizePhoto(dir, filename) {
-  const ext = path.extname(filename).toLowerCase();
-  let filePath = path.join(dir, filename);
-  let outFilename = filename;
+function webpName(filename, suffix = "") {
+  const ext = path.extname(filename);
+  return `${filename.slice(0, -ext.length || undefined)}${suffix}.webp`;
+}
 
-  if (ext === ".heic" || ext === ".heif") {
-    outFilename = filename.slice(0, -ext.length) + ".jpg";
-    const outPath = path.join(dir, outFilename);
-    spawnSync("sips", ["-s", "format", "jpeg", filePath, "--out", outPath]);
-    fs.unlinkSync(filePath);
-    filePath = outPath;
-  }
+function getImageDimensions(filePath) {
+  const result = spawnSync("magick", ["identify", "-format", "%w %h", `${filePath}[0]`]);
+  const [width, height] = (result.stdout?.toString() || "").trim().split(/\s+/).map(Number);
+  return { width: width || 0, height: height || 0 };
+}
 
-  const { width, height } = getImageDimensions(filePath);
-  if (Math.max(width, height) > MAX_PHOTO_DIMENSION) {
-    spawnSync("sips", [
-      "-Z",
-      String(MAX_PHOTO_DIMENSION),
-      "--setProperty",
-      "formatOptions",
-      String(JPEG_QUALITY),
-      filePath,
-    ]);
-  }
-
+// Converts any upload (JPEG/PNG/HEIC/WebP) to a WebP no larger than
+// MAX_PHOTO_DIMENSION, replacing the original. Returns the new filename, or
+// the original one if conversion failed. Never upscales smaller images.
+function optimizePhoto(dir, filename, maxDimension = MAX_PHOTO_DIMENSION) {
+  const outFilename = webpName(filename);
+  const srcPath = path.join(dir, filename);
+  const outPath = path.join(dir, outFilename);
+  if (!writeWebp(srcPath, outPath, `${maxDimension}x${maxDimension}>`, PHOTO_QUALITY)) return filename;
+  if (outFilename !== filename) fs.unlinkSync(srcPath);
   return outFilename;
 }
 
-// A second, much smaller copy for masonry-grid browsing. The full
-// (MAX_PHOTO_DIMENSION, ~1-3MB) file exists for the lightbox, but every grid
-// tile was downloading that same full file just to display it at ~300-400px
-// wide — the main reason photos felt slow to load, especially over mobile.
-const GRID_THUMB_MAX_DIMENSION = 800;
-const GRID_THUMB_QUALITY = 75;
+// Writes a resized sibling copy (e.g. "x-grid.webp") next to `filename` and
+// returns its filename, or null if it couldn't be made.
+function makeVariant(dir, filename, suffix, resize, quality) {
+  const outFilename = webpName(filename, suffix);
+  return writeWebp(path.join(dir, filename), path.join(dir, outFilename), resize, quality) ? outFilename : null;
+}
 
+// A second, much smaller copy for masonry-grid browsing. The full
+// (MAX_PHOTO_DIMENSION) file exists for the lightbox, but every grid tile was
+// downloading that same full file just to display it at ~300-400px wide.
 function makeGridThumbnail(dir, filename) {
-  const ext = path.extname(filename);
-  const base = filename.slice(0, -ext.length);
-  const thumbFilename = `${base}-grid.jpg`;
-  const srcPath = path.join(dir, filename);
-  const thumbPath = path.join(dir, thumbFilename);
-  spawnSync("sips", [
-    "-s",
-    "format",
-    "jpeg",
-    "-Z",
-    String(GRID_THUMB_MAX_DIMENSION),
-    "--setProperty",
-    "formatOptions",
-    String(GRID_THUMB_QUALITY),
-    srcPath,
-    "--out",
-    thumbPath,
-  ]);
-  return fs.existsSync(thumbPath) ? thumbFilename : null;
+  return makeVariant(dir, filename, "-grid", "800x800>", 75);
 }
 
 // Same idea as the grid thumbnail, sized a bit larger since a strip tile
 // expands up to ~640px on hover and still needs to look sharp there.
-const STRIP_THUMB_MAX_DIMENSION = 1400;
-const STRIP_THUMB_QUALITY = 78;
-
 function makeStripThumbnail(dir, filename) {
-  const ext = path.extname(filename);
-  const base = filename.slice(0, -ext.length);
-  const thumbFilename = `${base}-strip.jpg`;
-  const srcPath = path.join(dir, filename);
-  const thumbPath = path.join(dir, thumbFilename);
-  spawnSync("sips", [
-    "-s",
-    "format",
-    "jpeg",
-    "-Z",
-    String(STRIP_THUMB_MAX_DIMENSION),
-    "--setProperty",
-    "formatOptions",
-    String(STRIP_THUMB_QUALITY),
-    srcPath,
-    "--out",
-    thumbPath,
-  ]);
-  return fs.existsSync(thumbPath) ? thumbFilename : null;
+  return makeVariant(dir, filename, "-strip", "1400x1400>", 78);
 }
 
 // The filmstrip's resting state: dozens of strips each only ~10-40px wide,
@@ -178,33 +141,21 @@ function makeStripThumbnail(dir, filename) {
 // loads eagerly, 60+ of those at once was ~18MB of downloads and hundreds of
 // MB of decoded bitmaps before anyone hovered anything. This copy only needs
 // enough height to fill the 65vh row; the strip copy loads on hover.
-const STRIP_MINI_HEIGHT = 500;
-const STRIP_MINI_QUALITY = 65;
-
 function makeStripMini(dir, filename) {
-  const ext = path.extname(filename);
-  const base = filename.slice(0, -ext.length);
-  const miniFilename = `${base}-mini.jpg`;
-  const miniPath = path.join(dir, miniFilename);
-  spawnSync("sips", [
-    "-s",
-    "format",
-    "jpeg",
-    "--resampleHeight",
-    String(STRIP_MINI_HEIGHT),
-    "--setProperty",
-    "formatOptions",
-    String(STRIP_MINI_QUALITY),
-    path.join(dir, filename),
-    "--out",
-    miniPath,
-  ]);
-  return fs.existsSync(miniPath) ? miniFilename : null;
+  return makeVariant(dir, filename, "-mini", "x500", 65);
 }
 
-// About gallery tiles never show larger than ~a quarter of a 4xl column, so
-// the full MAX_PHOTO_DIMENSION upload is shrunk until its short side is
-// ABOUT_GALLERY_SHORT_SIDE.
+// The Photography grid's before/after wipe tile shows both images at the
+// same on-screen size, so shipping the "before" at its full MAX_PHOTO_DIMENSION
+// while the "after" was the ~530px grid thumbnail made the after side look
+// visibly soft next to it. Both sides of that tile now use a matched,
+// mid-sized thumbnail instead.
+function makeCompareThumbnail(dir, filename) {
+  return makeVariant(dir, filename, "-compare", "1200x1200>", 78);
+}
+
+// About gallery tiles never show larger than ~a third of a 4xl column, so
+// the upload is shrunk until its short side is ABOUT_GALLERY_SHORT_SIDE.
 const ABOUT_GALLERY_SHORT_SIDE = 900;
 
 function shrinkForAboutGallery(dir, filename) {
@@ -213,40 +164,9 @@ function shrinkForAboutGallery(dir, filename) {
   const shortSide = Math.min(width, height);
   if (shortSide > ABOUT_GALLERY_SHORT_SIDE) {
     const longSide = Math.round((Math.max(width, height) * ABOUT_GALLERY_SHORT_SIDE) / shortSide);
-    spawnSync("sips", ["-Z", String(longSide), "--setProperty", "formatOptions", "78", filePath]);
+    writeWebp(filePath, filePath, `${longSide}x${longSide}>`, 78);
   }
   return getImageDimensions(filePath);
-}
-
-// The Photography grid's before/after wipe tile shows both images at the
-// same on-screen size, so shipping the "before" at its full MAX_PHOTO_DIMENSION
-// while the "after" was the ~530px grid thumbnail made the after side look
-// visibly soft next to it. Both sides of that tile now use a matched,
-// mid-sized thumbnail instead — sharp enough for the tile (never shown
-// larger than the masonry column), without the full-size file's weight.
-const COMPARE_THUMB_MAX_DIMENSION = 1200;
-const COMPARE_THUMB_QUALITY = 78;
-
-function makeCompareThumbnail(dir, filename) {
-  const ext = path.extname(filename);
-  const base = filename.slice(0, -ext.length);
-  const thumbFilename = `${base}-compare.jpg`;
-  const srcPath = path.join(dir, filename);
-  const thumbPath = path.join(dir, thumbFilename);
-  spawnSync("sips", [
-    "-s",
-    "format",
-    "jpeg",
-    "-Z",
-    String(COMPARE_THUMB_MAX_DIMENSION),
-    "--setProperty",
-    "formatOptions",
-    String(COMPARE_THUMB_QUALITY),
-    srcPath,
-    "--out",
-    thumbPath,
-  ]);
-  return fs.existsSync(thumbPath) ? thumbFilename : null;
 }
 
 // Camera-original videos (raw H.264/ProRes, hundreds of MB to 1GB+) were
@@ -290,17 +210,23 @@ function probeDurationSeconds(inputPath) {
   return Number.isFinite(seconds) && seconds > 0 ? seconds : null;
 }
 
-// Short, small, silent loop for the Video Work page: the camera tiles'
+// Short, small, silent loops for the Video Work page: the camera tiles'
 // hover preview and the PGM monitor's autoplay both used to stream the full
-// 20-80MB master just to show a few muted seconds. Starts a little into the
-// clip to skip fade-ins/black leaders.
+// 20-80MB master just to show a few muted seconds. Two sizes: 640px for the
+// small tiles, 1280px (bitrate-capped so it stays ~1-1.5MB) for the
+// full-width monitor, where 640px looked soft. Starts a little into the clip
+// to skip fade-ins/black leaders.
 const PREVIEW_SECONDS = 8;
-const PREVIEW_WIDTH = 640;
+const PREVIEW_VARIANTS = {
+  sd: { suffix: "-preview", width: 640, rate: ["-crf", "30"] },
+  hd: { suffix: "-preview-hd", width: 1280, rate: ["-crf", "31", "-maxrate", "1500k", "-bufsize", "3000k"] },
+};
 
-function makeVideoPreview(dir, filename) {
+function makeVideoPreview(dir, filename, variant = "sd", outBase = null) {
+  const { suffix, width, rate } = PREVIEW_VARIANTS[variant];
   const inputPath = path.join(dir, filename);
   const ext = path.extname(filename);
-  const previewFilename = `${filename.slice(0, -ext.length)}-preview.mp4`;
+  const previewFilename = `${outBase || filename.slice(0, -ext.length)}${suffix}.mp4`;
   const previewPath = path.join(dir, previewFilename);
   const duration = probeDurationSeconds(inputPath) || 0;
   const start = duration > PREVIEW_SECONDS * 2 ? Math.min(duration * 0.1, 30) : 0;
@@ -314,11 +240,10 @@ function makeVideoPreview(dir, filename) {
     String(PREVIEW_SECONDS),
     "-an",
     "-vf",
-    `scale=${PREVIEW_WIDTH}:-2`,
+    `scale=${width}:-2`,
     "-c:v",
     "libx264",
-    "-crf",
-    "30",
+    ...rate,
     "-preset",
     "slow",
     "-pix_fmt",
@@ -712,7 +637,7 @@ app.post("/api/sound/cover", soundCoverUpload.single("file"), (req, res) => {
     const oldPath = path.join(ROOT, "public", data.coverImage);
     if (fs.existsSync(oldPath)) fs.unlinkSync(oldPath);
   }
-  data.coverImage = `/media/sound/${req.file.filename}`;
+  data.coverImage = `/media/sound/${optimizePhoto(SOUND_DIR, req.file.filename, 800)}`;
   writeJSON(SOUND_JSON, data);
   schedulePublish();
   res.json(data);
@@ -1468,6 +1393,7 @@ app.post("/api/videos", videoUpload.single("file"), (req, res) => {
   const thumbPath = path.join(THUMBS_DIR, thumbName);
 
   let thumbnail = "";
+  let thumbnailSmall;
   const result = spawnSync("ffmpeg", [
     "-y",
     "-ss",
@@ -1479,17 +1405,23 @@ app.post("/api/videos", videoUpload.single("file"), (req, res) => {
     thumbPath,
   ]);
   if (result.status === 0 && fs.existsSync(thumbPath)) {
-    thumbnail = `/media/videos/thumbs/${thumbName}`;
+    const thumbFilename = optimizePhoto(THUMBS_DIR, thumbName, 1280);
+    thumbnail = `/media/videos/thumbs/${thumbFilename}`;
+    const smallFilename = makeVariant(THUMBS_DIR, thumbFilename, "-sm", "640x>", 78);
+    if (smallFilename) thumbnailSmall = `/media/videos/thumbs/${smallFilename}`;
   }
 
   const previewFilename = makeVideoPreview(VIDEOS_DIR, filename);
+  const previewHdFilename = makeVideoPreview(VIDEOS_DIR, filename, "hd");
 
   const entry = {
     id,
     slug,
     thumbnail,
+    thumbnailSmall,
     videoSrc: `/media/videos/${filename}`,
     previewSrc: previewFilename ? `/media/videos/${previewFilename}` : undefined,
+    previewHdSrc: previewHdFilename ? `/media/videos/${previewHdFilename}` : undefined,
     title: { zh: req.body.title_zh || "", en: req.body.title_en || "" },
     services: {
       zh: req.body.services_zh || "",
@@ -1503,6 +1435,41 @@ app.post("/api/videos", videoUpload.single("file"), (req, res) => {
   schedulePublish();
   res.json(entry);
 });
+
+// YouTube-backed videos get the same silent preview loops as uploads, so
+// their camera tile plays on hover and the PGM monitor can idle on them
+// without loading the YouTube player. The video-only stream (no audio, ≤720p
+// is plenty for a ≤1280px preview) is fetched with yt-dlp into a temp file,
+// cut down, and deleted. Best-effort: if yt-dlp is missing or YouTube refuses,
+// the video simply has no preview and stays on its thumbnail.
+function makeYoutubePreviews(youtubeId) {
+  const tmpName = `yt-${youtubeId}.source.mp4`;
+  const tmpPath = path.join(VIDEOS_DIR, tmpName);
+  const result = spawnSync(
+    "yt-dlp",
+    [
+      "-q",
+      "--no-warnings",
+      "-f",
+      "bv*[height<=720][vcodec^=avc1]/bv*[height<=720]",
+      "--remux-video",
+      "mp4",
+      "-o",
+      tmpPath,
+      `https://www.youtube.com/watch?v=${youtubeId}`,
+    ],
+    { timeout: 180000 },
+  );
+  if (result.status !== 0 || !fs.existsSync(tmpPath)) return {};
+  const outBase = `yt-${youtubeId}`;
+  const sd = makeVideoPreview(VIDEOS_DIR, tmpName, "sd", outBase);
+  const hd = makeVideoPreview(VIDEOS_DIR, tmpName, "hd", outBase);
+  fs.unlinkSync(tmpPath);
+  return {
+    previewSrc: sd ? `/media/videos/${sd}` : undefined,
+    previewHdSrc: hd ? `/media/videos/${hd}` : undefined,
+  };
+}
 
 // Accepts youtube.com/watch?v=, youtu.be/, and /embed/ links (with or
 // without extra query params) and pulls out the 11-char video id.
@@ -1529,6 +1496,7 @@ app.post("/api/videos/external", (req, res) => {
     thumbnail: `https://img.youtube.com/vi/${youtubeId}/hqdefault.jpg`,
     videoSrc: "",
     youtubeId,
+    ...makeYoutubePreviews(youtubeId),
     title: { zh: req.body.title_zh || "", en: req.body.title_en || "" },
     services: {
       zh: req.body.services_zh || "",
@@ -1564,14 +1532,10 @@ app.delete("/api/videos/:id", (req, res) => {
   if (!item) return res.status(404).json({ error: "not found" });
   // External (YouTube) videos have no local file — videoSrc is "" and
   // thumbnail is a remote img.youtube.com URL, neither backed by a real path.
-  for (const src of [item.videoSrc, item.previewSrc]) {
-    if (!src) continue;
+  for (const src of [item.videoSrc, item.previewSrc, item.previewHdSrc, item.thumbnail, item.thumbnailSmall]) {
+    if (!src || !src.startsWith("/")) continue;
     const filePath = path.join(ROOT, "public", src);
     if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
-  }
-  if (item.thumbnail && item.thumbnail.startsWith("/")) {
-    const thumbPath = path.join(ROOT, "public", item.thumbnail);
-    if (fs.existsSync(thumbPath)) fs.unlinkSync(thumbPath);
   }
   writeJSON(
     VIDEOS_JSON,

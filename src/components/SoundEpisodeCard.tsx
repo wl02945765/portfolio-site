@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useLanguage } from "@/i18n/LanguageProvider";
 import { withBasePath } from "@/lib/basePath";
 import { AudioCompareToggle } from "@/components/AudioCompareToggle";
+import { YoutubeThumb } from "@/components/YoutubeThumb";
 import type { SoundEpisode } from "@/lib/content";
 
 export function SoundEpisodeCard({ episode, channelNumber }: { episode: SoundEpisode; channelNumber: number }) {
@@ -49,11 +50,9 @@ export function SoundEpisodeCard({ episode, channelNumber }: { episode: SoundEpi
                 aria-label={title}
                 className="group absolute inset-0 h-full w-full"
               >
-                <img
-                  src={`https://i.ytimg.com/vi/${episode.youtubeId}/hqdefault.jpg`}
-                  alt=""
+                <YoutubeThumb
+                  id={episode.youtubeId}
                   loading="lazy"
-                  decoding="async"
                   className="absolute inset-0 h-full w-full object-cover opacity-80 transition-opacity group-hover:opacity-100"
                 />
                 <span className="absolute left-1/2 top-1/2 flex h-14 w-14 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-red-600/90 transition-transform group-hover:scale-110">

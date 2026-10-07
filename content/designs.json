@@ -1,7 +1,7 @@
 [
   {
     "id": "2259403f-ca89-4269-99f3-42aa3822fd04",
-    "src": "/media/design/7562acb7-5959-4e69-bca9-c515bb9c22b2.png",
+    "src": "/media/design/7562acb7-5959-4e69-bca9-c515bb9c22b2.webp",
     "categoryId": "389cc25c-d1bb-4a64-9b43-4f39d9a09ace",
     "caption": {
       "zh": "",
@@ -9,11 +9,11 @@
     },
     "width": 2400,
     "height": 2400,
-    "thumbSrc": "/media/design/7562acb7-5959-4e69-bca9-c515bb9c22b2-grid.jpg"
+    "thumbSrc": "/media/design/7562acb7-5959-4e69-bca9-c515bb9c22b2-grid.webp"
   },
   {
     "id": "4a752520-d742-4f2a-be8a-d264cc6eb96c",
-    "src": "/media/design/ef908cb3-1bef-4406-97e4-11074bae19c9.jpg",
+    "src": "/media/design/ef908cb3-1bef-4406-97e4-11074bae19c9.webp",
     "categoryId": "bab6b8b3-e150-4f96-b74c-22067c027edf",
     "caption": {
       "zh": "",
@@ -21,11 +21,11 @@
     },
     "width": 2400,
     "height": 1625,
-    "thumbSrc": "/media/design/ef908cb3-1bef-4406-97e4-11074bae19c9-grid.jpg"
+    "thumbSrc": "/media/design/ef908cb3-1bef-4406-97e4-11074bae19c9-grid.webp"
   },
   {
     "id": "55550a3d-d485-4d43-b78f-2bd65f85b4a8",
-    "src": "/media/design/03b81ba8-273a-45d8-ada9-b67fef050bc0.jpg",
+    "src": "/media/design/03b81ba8-273a-45d8-ada9-b67fef050bc0.webp",
     "categoryId": "bab6b8b3-e150-4f96-b74c-22067c027edf",
     "caption": {
       "zh": "",
@@ -33,11 +33,11 @@
     },
     "width": 1624,
     "height": 2400,
-    "thumbSrc": "/media/design/03b81ba8-273a-45d8-ada9-b67fef050bc0-grid.jpg"
+    "thumbSrc": "/media/design/03b81ba8-273a-45d8-ada9-b67fef050bc0-grid.webp"
   },
   {
     "id": "c461383f-bbb2-4908-9d4f-8fc5f84a3913",
-    "src": "/media/design/1eaf2448-dd2b-4cfc-af83-24d386a97f36.jpg",
+    "src": "/media/design/1eaf2448-dd2b-4cfc-af83-24d386a97f36.webp",
     "categoryId": "bab6b8b3-e150-4f96-b74c-22067c027edf",
     "caption": {
       "zh": "",
@@ -45,11 +45,11 @@
     },
     "width": 2384,
     "height": 1914,
-    "thumbSrc": "/media/design/1eaf2448-dd2b-4cfc-af83-24d386a97f36-grid.jpg"
+    "thumbSrc": "/media/design/1eaf2448-dd2b-4cfc-af83-24d386a97f36-grid.webp"
   },
   {
     "id": "5e9cf156-cc26-4e29-a6e6-68cb7641c3e5",
-    "src": "/media/design/ec4925af-875b-486e-94e4-0e40100a2d63.jpg",
+    "src": "/media/design/ec4925af-875b-486e-94e4-0e40100a2d63.webp",
     "categoryId": "bab6b8b3-e150-4f96-b74c-22067c027edf",
     "caption": {
       "zh": "",
@@ -57,11 +57,11 @@
     },
     "width": 1696,
     "height": 2400,
-    "thumbSrc": "/media/design/ec4925af-875b-486e-94e4-0e40100a2d63-grid.jpg"
+    "thumbSrc": "/media/design/ec4925af-875b-486e-94e4-0e40100a2d63-grid.webp"
   },
   {
     "id": "df05bfbc-b838-49ba-b8c9-445b5de6a746",
-    "src": "/media/design/c889c150-0616-4394-a594-73da1128c9b5.jpg",
+    "src": "/media/design/c889c150-0616-4394-a594-73da1128c9b5.webp",
     "categoryId": "bab6b8b3-e150-4f96-b74c-22067c027edf",
     "caption": {
       "zh": "",
@@ -69,11 +69,11 @@
     },
     "width": 1182,
     "height": 1749,
-    "thumbSrc": "/media/design/c889c150-0616-4394-a594-73da1128c9b5-grid.jpg"
+    "thumbSrc": "/media/design/c889c150-0616-4394-a594-73da1128c9b5-grid.webp"
   },
   {
     "id": "df72c84a-3a7d-4fd1-a679-c6f754931f96",
-    "src": "/media/design/c2ebe3dc-3cc3-4592-913b-d5ed0b09a68f.jpg",
+    "src": "/media/design/c2ebe3dc-3cc3-4592-913b-d5ed0b09a68f.webp",
     "categoryId": "bab6b8b3-e150-4f96-b74c-22067c027edf",
     "caption": {
       "zh": "",
@@ -81,11 +81,11 @@
     },
     "width": 1253,
     "height": 1820,
-    "thumbSrc": "/media/design/c2ebe3dc-3cc3-4592-913b-d5ed0b09a68f-grid.jpg"
+    "thumbSrc": "/media/design/c2ebe3dc-3cc3-4592-913b-d5ed0b09a68f-grid.webp"
   },
   {
     "id": "7873d8b1-6f4a-4178-9b9e-9a091e8fc988",
-    "src": "/media/design/7a8b9468-7935-44d1-b90c-beb104be48af.jpg",
+    "src": "/media/design/7a8b9468-7935-44d1-b90c-beb104be48af.webp",
     "categoryId": "bab6b8b3-e150-4f96-b74c-22067c027edf",
     "caption": {
       "zh": "",
@@ -93,11 +93,11 @@
     },
     "width": 2400,
     "height": 1729,
-    "thumbSrc": "/media/design/7a8b9468-7935-44d1-b90c-beb104be48af-grid.jpg"
+    "thumbSrc": "/media/design/7a8b9468-7935-44d1-b90c-beb104be48af-grid.webp"
   },
   {
     "id": "900689a1-1cf0-469e-9b02-caed0858e9cd",
-    "src": "/media/design/82ffd1c0-85a0-4cfd-9522-ddd8aaab6d13.jpg",
+    "src": "/media/design/82ffd1c0-85a0-4cfd-9522-ddd8aaab6d13.webp",
     "categoryId": "bab6b8b3-e150-4f96-b74c-22067c027edf",
     "caption": {
       "zh": "",
@@ -105,6 +105,6 @@
     },
     "width": 2400,
     "height": 1713,
-    "thumbSrc": "/media/design/82ffd1c0-85a0-4cfd-9522-ddd8aaab6d13-grid.jpg"
+    "thumbSrc": "/media/design/82ffd1c0-85a0-4cfd-9522-ddd8aaab6d13-grid.webp"
   }
 ]

@@ -55,7 +55,14 @@ export type Video = {
   id: string;
   slug: string;
   thumbnail: string;
+  // ≤640px-wide copy of a local thumbnail for the small camera tiles (sharp
+  // even on 2x screens at their largest, ~330px); thumbnail itself (up to
+  // 1280px) is for the big PGM monitor and the detail page poster.
+  thumbnailSmall?: string;
   videoSrc: string;
+  // Same ~8s loop at 1280px for the PGM monitor, where the 640px one looked
+  // soft stretched across the full width.
+  previewHdSrc?: string;
   // ~8s, 640px, silent loop cut from videoSrc for the Video Work page's
   // hover previews and PGM monitor — videoSrc itself is the full master.
   previewSrc?: string;

@@ -14,7 +14,9 @@
       "en": "Sound Effects、BGM、Contribute to storyboard development"
     },
     "year": "2023",
-    "categoryId": "df4fffe0-daa8-45c3-a817-8c4d818f8cc7"
+    "categoryId": "df4fffe0-daa8-45c3-a817-8c4d818f8cc7",
+    "previewSrc": "/media/videos/yt-SO-f3WArlBE-preview.mp4",
+    "previewHdSrc": "/media/videos/yt-SO-f3WArlBE-preview-hd.mp4"
   },
   {
     "id": "408325c2-6f5d-4817-b117-294756a23a82",
@@ -31,7 +33,9 @@
       "en": "Sound Effects、Contribute to storyboard development"
     },
     "year": "2023",
-    "categoryId": "df4fffe0-daa8-45c3-a817-8c4d818f8cc7"
+    "categoryId": "df4fffe0-daa8-45c3-a817-8c4d818f8cc7",
+    "previewSrc": "/media/videos/yt-y2I1wP969jo-preview.mp4",
+    "previewHdSrc": "/media/videos/yt-y2I1wP969jo-preview-hd.mp4"
   },
   {
     "id": "0cd5edd6-662b-4e4c-a5c1-66e3a546f0f9",
@@ -48,7 +52,9 @@
       "en": "Videography、Video Editor"
     },
     "year": "2023",
-    "categoryId": "df4fffe0-daa8-45c3-a817-8c4d818f8cc7"
+    "categoryId": "df4fffe0-daa8-45c3-a817-8c4d818f8cc7",
+    "previewSrc": "/media/videos/yt-aOg5rbqZmzU-preview.mp4",
+    "previewHdSrc": "/media/videos/yt-aOg5rbqZmzU-preview-hd.mp4"
   },
   {
     "id": "2b74cef0-8f52-4a5d-ad88-a7ded8669eed",
@@ -65,12 +71,14 @@
       "en": "Videographer"
     },
     "year": "2021",
-    "categoryId": "df4fffe0-daa8-45c3-a817-8c4d818f8cc7"
+    "categoryId": "df4fffe0-daa8-45c3-a817-8c4d818f8cc7",
+    "previewSrc": "/media/videos/yt-Fr6Y-shIITo-preview.mp4",
+    "previewHdSrc": "/media/videos/yt-Fr6Y-shIITo-preview-hd.mp4"
   },
   {
     "id": "4d89e4ce-d165-4e84-8ce0-38bf60553c77",
     "slug": "china",
-    "thumbnail": "/media/videos/thumbs/4d89e4ce-d165-4e84-8ce0-38bf60553c77.jpg",
+    "thumbnail": "/media/videos/thumbs/4d89e4ce-d165-4e84-8ce0-38bf60553c77.webp",
     "videoSrc": "/media/videos/5c4cee5c-ec16-4584-be3a-7932c0607bf0.mp4",
     "title": {
       "zh": "中國旅行",
@@ -82,12 +90,14 @@
     },
     "year": "2026",
     "categoryId": "18b7cd7c-b5c2-48bf-9920-070605da559a",
-    "previewSrc": "/media/videos/5c4cee5c-ec16-4584-be3a-7932c0607bf0-preview.mp4"
+    "previewSrc": "/media/videos/5c4cee5c-ec16-4584-be3a-7932c0607bf0-preview.mp4",
+    "thumbnailSmall": "/media/videos/thumbs/4d89e4ce-d165-4e84-8ce0-38bf60553c77-sm.webp",
+    "previewHdSrc": "/media/videos/5c4cee5c-ec16-4584-be3a-7932c0607bf0-preview-hd.mp4"
   },
   {
     "id": "6891e03b-eca1-4144-9563-b73c80f8dabe",
     "slug": "untitled",
-    "thumbnail": "/media/videos/thumbs/6891e03b-eca1-4144-9563-b73c80f8dabe.jpg",
+    "thumbnail": "/media/videos/thumbs/6891e03b-eca1-4144-9563-b73c80f8dabe.webp",
     "videoSrc": "/media/videos/c325fa93-2d19-475d-8872-f28c2812b738.mp4",
     "title": {
       "zh": "雪梨-直升機",
@@ -99,12 +109,14 @@
     },
     "year": "2025",
     "categoryId": "18b7cd7c-b5c2-48bf-9920-070605da559a",
-    "previewSrc": "/media/videos/c325fa93-2d19-475d-8872-f28c2812b738-preview.mp4"
+    "previewSrc": "/media/videos/c325fa93-2d19-475d-8872-f28c2812b738-preview.mp4",
+    "thumbnailSmall": "/media/videos/thumbs/6891e03b-eca1-4144-9563-b73c80f8dabe-sm.webp",
+    "previewHdSrc": "/media/videos/c325fa93-2d19-475d-8872-f28c2812b738-preview-hd.mp4"
   },
   {
     "id": "6282c329-0ffe-4e1d-b954-c002d11fef56",
     "slug": "untitled-2",
-    "thumbnail": "/media/videos/thumbs/6282c329-0ffe-4e1d-b954-c002d11fef56.jpg",
+    "thumbnail": "/media/videos/thumbs/6282c329-0ffe-4e1d-b954-c002d11fef56.webp",
     "videoSrc": "/media/videos/e559b0bf-5aa8-4fa8-a9a2-8b21ea91d070.mp4",
     "title": {
       "zh": "華納兄弟電影世界-飛車表演",
@@ -116,12 +128,14 @@
     },
     "year": "2025",
     "categoryId": "18b7cd7c-b5c2-48bf-9920-070605da559a",
-    "previewSrc": "/media/videos/e559b0bf-5aa8-4fa8-a9a2-8b21ea91d070-preview.mp4"
+    "previewSrc": "/media/videos/e559b0bf-5aa8-4fa8-a9a2-8b21ea91d070-preview.mp4",
+    "thumbnailSmall": "/media/videos/thumbs/6282c329-0ffe-4e1d-b954-c002d11fef56-sm.webp",
+    "previewHdSrc": "/media/videos/e559b0bf-5aa8-4fa8-a9a2-8b21ea91d070-preview-hd.mp4"
   },
   {
     "id": "07f59bc3-d93f-485f-819d-252ead46bf0d",
     "slug": "untitled-3",
-    "thumbnail": "/media/videos/thumbs/07f59bc3-d93f-485f-819d-252ead46bf0d.jpg",
+    "thumbnail": "/media/videos/thumbs/07f59bc3-d93f-485f-819d-252ead46bf0d.webp",
     "videoSrc": "/media/videos/0fbb5d6c-54d9-4262-9f2a-462b0a3e2a0f.mp4",
     "title": {
       "zh": "澳洲-公路旅遊",
@@ -133,12 +147,14 @@
     },
     "year": "2025",
     "categoryId": "18b7cd7c-b5c2-48bf-9920-070605da559a",
-    "previewSrc": "/media/videos/0fbb5d6c-54d9-4262-9f2a-462b0a3e2a0f-preview.mp4"
+    "previewSrc": "/media/videos/0fbb5d6c-54d9-4262-9f2a-462b0a3e2a0f-preview.mp4",
+    "thumbnailSmall": "/media/videos/thumbs/07f59bc3-d93f-485f-819d-252ead46bf0d-sm.webp",
+    "previewHdSrc": "/media/videos/0fbb5d6c-54d9-4262-9f2a-462b0a3e2a0f-preview-hd.mp4"
   },
   {
     "id": "ec14202d-3591-4825-9aff-0776bdb296c4",
     "slug": "untitled-7",
-    "thumbnail": "/media/videos/thumbs/ec14202d-3591-4825-9aff-0776bdb296c4.jpg",
+    "thumbnail": "/media/videos/thumbs/ec14202d-3591-4825-9aff-0776bdb296c4.webp",
     "videoSrc": "/media/videos/928ef1b5-ae2a-41d6-be8c-d4a12155ff11.mp4",
     "title": {
       "zh": "澳洲打工度假-Noosa Day2",
@@ -150,12 +166,14 @@
     },
     "year": "2025",
     "categoryId": "18b7cd7c-b5c2-48bf-9920-070605da559a",
-    "previewSrc": "/media/videos/928ef1b5-ae2a-41d6-be8c-d4a12155ff11-preview.mp4"
+    "previewSrc": "/media/videos/928ef1b5-ae2a-41d6-be8c-d4a12155ff11-preview.mp4",
+    "thumbnailSmall": "/media/videos/thumbs/ec14202d-3591-4825-9aff-0776bdb296c4-sm.webp",
+    "previewHdSrc": "/media/videos/928ef1b5-ae2a-41d6-be8c-d4a12155ff11-preview-hd.mp4"
   },
   {
     "id": "ef790bd7-13ee-4308-b219-e73a496dcaa3",
     "slug": "untitled-6",
-    "thumbnail": "/media/videos/thumbs/ef790bd7-13ee-4308-b219-e73a496dcaa3.jpg",
+    "thumbnail": "/media/videos/thumbs/ef790bd7-13ee-4308-b219-e73a496dcaa3.webp",
     "videoSrc": "/media/videos/4a121718-9fbd-4409-b282-7e3a319a25bd.mp4",
     "title": {
       "zh": "澳洲打工度假-Noosa Day3",
@@ -167,12 +185,14 @@
     },
     "year": "2025",
     "categoryId": "18b7cd7c-b5c2-48bf-9920-070605da559a",
-    "previewSrc": "/media/videos/4a121718-9fbd-4409-b282-7e3a319a25bd-preview.mp4"
+    "previewSrc": "/media/videos/4a121718-9fbd-4409-b282-7e3a319a25bd-preview.mp4",
+    "thumbnailSmall": "/media/videos/thumbs/ef790bd7-13ee-4308-b219-e73a496dcaa3-sm.webp",
+    "previewHdSrc": "/media/videos/4a121718-9fbd-4409-b282-7e3a319a25bd-preview-hd.mp4"
   },
   {
     "id": "42a58fdc-adfc-4f0f-9793-cbecf292cd3b",
     "slug": "untitled-4",
-    "thumbnail": "/media/videos/thumbs/42a58fdc-adfc-4f0f-9793-cbecf292cd3b.jpg",
+    "thumbnail": "/media/videos/thumbs/42a58fdc-adfc-4f0f-9793-cbecf292cd3b.webp",
     "videoSrc": "/media/videos/0cc9e305-45bf-48d2-8b32-685c2b3ba1fa.mp4",
     "title": {
       "zh": "澳洲打工度假-Sunshine Coast",
@@ -184,6 +204,8 @@
     },
     "year": "2025",
     "categoryId": "18b7cd7c-b5c2-48bf-9920-070605da559a",
-    "previewSrc": "/media/videos/0cc9e305-45bf-48d2-8b32-685c2b3ba1fa-preview.mp4"
+    "previewSrc": "/media/videos/0cc9e305-45bf-48d2-8b32-685c2b3ba1fa-preview.mp4",
+    "thumbnailSmall": "/media/videos/thumbs/42a58fdc-adfc-4f0f-9793-cbecf292cd3b-sm.webp",
+    "previewHdSrc": "/media/videos/0cc9e305-45bf-48d2-8b32-685c2b3ba1fa-preview-hd.mp4"
   }
 ]

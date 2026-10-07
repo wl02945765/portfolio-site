@@ -370,6 +370,12 @@ function compressVideo(dir, filename) {
 // through the exact same ffmpeg args regardless of caller — the raw/mixed
 // compare pair depends on both sides going through identical encoding so
 // no codec-specific container padding drifts them out of alignment.
+//
+// HE-AAC 64k via macOS AudioToolbox (2026-10-07, was AAC-LC 192k): the live
+// site is on Cloudflare Pages, which only hosts files up to 25 MiB; bigger
+// ones fall back to GitHub Pages, which is too slow from Taiwan to stream
+// even one 192k track, let alone the compare toggle's two at once. 64k
+// HE-AAC keeps a ~45-minute episode around 20MB and still sounds clean.
 function compressAudio(dir, filename) {
   const inputPath = path.join(dir, filename);
   const ext = path.extname(filename).toLowerCase();
@@ -382,9 +388,11 @@ function compressAudio(dir, filename) {
     "-i",
     inputPath,
     "-c:a",
-    "aac",
+    "aac_at",
+    "-profile:a",
+    "4", // HE-AAC
     "-b:a",
-    "192k",
+    "64k",
     "-movflags",
     "+faststart",
     tmpPath,
@@ -773,6 +781,17 @@ function compareDurationWarning(item) {
   return undefined;
 }
 
+// An episode's main audioSrc can point at the very same file as its mixed
+// compare master (they were byte-identical uploads, so they share one copy).
+// Only delete an old file when nothing else on the episode still uses it.
+function unlinkUnlessShared(item, src, field) {
+  const users = [item.audioSrc, item.compare?.rawSrc, item.compare?.mixedSrc];
+  const stillUsed = users.filter((u) => u === src).length > 1;
+  if (stillUsed && field) return;
+  const filePath = path.join(ROOT, "public", src);
+  if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
+}
+
 app.post("/api/sound/episodes/:id/compare/raw", soundCompareRawUpload.single("file"), (req, res) => {
   if (!req.file) return res.status(400).json({ error: "missing file" });
   const filename = compressAudioOrReject(SOUND_DIR, req.file.filename);
@@ -782,10 +801,7 @@ app.post("/api/sound/episodes/:id/compare/raw", soundCompareRawUpload.single("fi
   const episodes = readJSON(SOUND_EPISODES_JSON);
   const item = episodes.find((e) => e.id === req.params.id);
   if (!item) return res.status(404).json({ error: "not found" });
-  if (item.compare?.rawSrc) {
-    const oldPath = path.join(ROOT, "public", item.compare.rawSrc);
-    if (fs.existsSync(oldPath)) fs.unlinkSync(oldPath);
-  }
+  if (item.compare?.rawSrc) unlinkUnlessShared(item, item.compare.rawSrc, "rawSrc");
   item.compare = item.compare || {};
   item.compare.rawSrc = `/media/sound/${filename}`;
   writeJSON(SOUND_EPISODES_JSON, episodes);
@@ -802,10 +818,7 @@ app.post("/api/sound/episodes/:id/compare/mixed", soundCompareMixedUpload.single
   const episodes = readJSON(SOUND_EPISODES_JSON);
   const item = episodes.find((e) => e.id === req.params.id);
   if (!item) return res.status(404).json({ error: "not found" });
-  if (item.compare?.mixedSrc) {
-    const oldPath = path.join(ROOT, "public", item.compare.mixedSrc);
-    if (fs.existsSync(oldPath)) fs.unlinkSync(oldPath);
-  }
+  if (item.compare?.mixedSrc) unlinkUnlessShared(item, item.compare.mixedSrc, "mixedSrc");
   item.compare = item.compare || {};
   item.compare.mixedSrc = `/media/sound/${filename}`;
   writeJSON(SOUND_EPISODES_JSON, episodes);
@@ -817,14 +830,8 @@ app.delete("/api/sound/episodes/:id/compare", (req, res) => {
   const episodes = readJSON(SOUND_EPISODES_JSON);
   const item = episodes.find((e) => e.id === req.params.id);
   if (!item) return res.status(404).json({ error: "not found" });
-  if (item.compare?.rawSrc) {
-    const rawPath = path.join(ROOT, "public", item.compare.rawSrc);
-    if (fs.existsSync(rawPath)) fs.unlinkSync(rawPath);
-  }
-  if (item.compare?.mixedSrc) {
-    const mixedPath = path.join(ROOT, "public", item.compare.mixedSrc);
-    if (fs.existsSync(mixedPath)) fs.unlinkSync(mixedPath);
-  }
+  if (item.compare?.rawSrc) unlinkUnlessShared(item, item.compare.rawSrc, "rawSrc");
+  if (item.compare?.mixedSrc) unlinkUnlessShared(item, item.compare.mixedSrc, "mixedSrc");
   delete item.compare;
   writeJSON(SOUND_EPISODES_JSON, episodes);
   schedulePublish();

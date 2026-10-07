@@ -56,6 +56,9 @@ export type Video = {
   slug: string;
   thumbnail: string;
   videoSrc: string;
+  // ~8s, 640px, silent loop cut from videoSrc for the Video Work page's
+  // hover previews and PGM monitor — videoSrc itself is the full master.
+  previewSrc?: string;
   title: LocalizedText;
   services: LocalizedText;
   year?: string;

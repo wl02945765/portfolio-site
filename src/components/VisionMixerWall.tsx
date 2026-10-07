@@ -80,10 +80,13 @@ function CameraTile({
         }`}
       />
       {/* Hover-scrub preview only exists for uploaded files — a YouTube-backed
-          video has no raw file to loop, so it just stays on the thumbnail. */}
+          video has no raw file to loop, so it just stays on the thumbnail.
+          previewSrc is a short ~0.5MB loop; streaming the full master here
+          meant sweeping the mouse across the grid pulled several 20-80MB
+          files at once. */}
       {video.videoSrc && (
         <video
-          src={withBasePath(video.videoSrc)}
+          src={withBasePath(video.previewSrc || video.videoSrc)}
           muted
           loop
           playsInline
@@ -109,6 +112,10 @@ function CameraTile({
 export function VisionMixerWall({ videos, categories }: { videos: Video[]; categories: VideoCategory[] }) {
   const { t, locale } = useLanguage();
   const [activeId, setActiveId] = useState<string | undefined>(videos[0]?.id);
+  // Which YouTube-backed shot the visitor has pressed play on. Until then the
+  // monitor shows its thumbnail: an autoplaying, looping embed kept the full
+  // YouTube player running (and downloading) the whole time the page was open.
+  const [playingYoutubeId, setPlayingYoutubeId] = useState<string | null>(null);
   const pgmVideoRef = useRef<HTMLVideoElement>(null);
 
   if (videos.length === 0) {
@@ -137,6 +144,7 @@ export function VisionMixerWall({ videos, categories }: { videos: Video[]; categ
     }
   }
   const activeCamNumber = camNumbers.get(active.id) ?? 1;
+  const youtubePlaying = Boolean(active.youtubeId) && playingYoutubeId === active.id;
 
   return (
     <div className="pb-24">
@@ -148,19 +156,38 @@ export function VisionMixerWall({ videos, categories }: { videos: Video[]; categ
             // The PGM monitor's chrome (ON AIR badge, CAM label, title, watch
             // button) stays identical either way — YouTube is just this
             // shot's signal source, not a different kind of page section.
-            <iframe
-              key={active.id}
-              src={`https://www.youtube-nocookie.com/embed/${active.youtubeId}?autoplay=1&mute=1&loop=1&playlist=${active.youtubeId}&controls=0&modestbranding=1&rel=0`}
-              title={active.title[locale]}
-              allow="autoplay; encrypted-media"
-              className="absolute inset-0 h-full w-full"
-              style={{ border: 0 }}
-            />
+            youtubePlaying ? (
+              <iframe
+                key={active.id}
+                src={`https://www.youtube-nocookie.com/embed/${active.youtubeId}?autoplay=1&modestbranding=1&rel=0`}
+                title={active.title[locale]}
+                allow="autoplay; encrypted-media; fullscreen"
+                allowFullScreen
+                className="absolute inset-0 h-full w-full"
+                style={{ border: 0 }}
+              />
+            ) : (
+              <button
+                type="button"
+                onClick={() => setPlayingYoutubeId(active.id)}
+                aria-label={active.title[locale]}
+                className="group absolute inset-0 h-full w-full"
+              >
+                <img
+                  src={withBasePath(active.thumbnail)}
+                  alt=""
+                  className="absolute inset-0 h-full w-full object-cover"
+                />
+                <span className="absolute left-1/2 top-1/2 flex h-16 w-16 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border border-white/40 bg-black/50 backdrop-blur-sm transition-transform group-hover:scale-110 group-hover:bg-red-600/90">
+                  <span className="ml-1 h-0 w-0 border-y-[10px] border-l-[17px] border-y-transparent border-l-white" />
+                </span>
+              </button>
+            )
           ) : (
             <video
               key={active.id}
               ref={pgmVideoRef}
-              src={withBasePath(active.videoSrc)}
+              src={withBasePath(active.previewSrc || active.videoSrc)}
               autoPlay
               muted
               loop
@@ -169,14 +196,18 @@ export function VisionMixerWall({ videos, categories }: { videos: Video[]; categ
               className="absolute inset-0 h-full w-full object-cover"
             />
           )}
-          <div className="absolute inset-x-0 top-0 flex items-center justify-between bg-gradient-to-b from-black/75 to-transparent p-3 sm:p-4">
+          <div className="pointer-events-none absolute inset-x-0 top-0 flex items-center justify-between bg-gradient-to-b from-black/75 to-transparent p-3 sm:p-4">
             <span className="flex items-center gap-2 bg-red-600 px-2.5 py-1 font-mono text-[10px] tracking-[0.14em] text-white">
               <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-white" />
               ON AIR
             </span>
             <OnAirClock />
           </div>
-          <div className="absolute inset-x-0 bottom-0 flex flex-col gap-3 bg-gradient-to-t from-black/85 to-transparent p-3 sm:flex-row sm:items-end sm:justify-between sm:p-4">
+          <div
+            className={`absolute inset-x-0 bottom-0 flex flex-col gap-3 bg-gradient-to-t from-black/85 to-transparent p-3 sm:flex-row sm:items-end sm:justify-between sm:p-4 ${
+              youtubePlaying ? "hidden" : ""
+            }`}
+          >
             <div>
               <p className="font-mono text-[10px] uppercase tracking-[0.15em] text-zinc-400">CAM {activeCamNumber}</p>
               <h2 className="heading-font mt-1 text-xl text-zinc-100 sm:text-2xl">{active.title[locale]}</h2>

@@ -290,6 +290,46 @@ function probeDurationSeconds(inputPath) {
   return Number.isFinite(seconds) && seconds > 0 ? seconds : null;
 }
 
+// Short, small, silent loop for the Video Work page: the camera tiles'
+// hover preview and the PGM monitor's autoplay both used to stream the full
+// 20-80MB master just to show a few muted seconds. Starts a little into the
+// clip to skip fade-ins/black leaders.
+const PREVIEW_SECONDS = 8;
+const PREVIEW_WIDTH = 640;
+
+function makeVideoPreview(dir, filename) {
+  const inputPath = path.join(dir, filename);
+  const ext = path.extname(filename);
+  const previewFilename = `${filename.slice(0, -ext.length)}-preview.mp4`;
+  const previewPath = path.join(dir, previewFilename);
+  const duration = probeDurationSeconds(inputPath) || 0;
+  const start = duration > PREVIEW_SECONDS * 2 ? Math.min(duration * 0.1, 30) : 0;
+  const result = spawnSync("ffmpeg", [
+    "-y",
+    "-ss",
+    String(start),
+    "-i",
+    inputPath,
+    "-t",
+    String(PREVIEW_SECONDS),
+    "-an",
+    "-vf",
+    `scale=${PREVIEW_WIDTH}:-2`,
+    "-c:v",
+    "libx264",
+    "-crf",
+    "30",
+    "-preset",
+    "slow",
+    "-pix_fmt",
+    "yuv420p",
+    "-movflags",
+    "+faststart",
+    previewPath,
+  ]);
+  return result.status === 0 && fs.existsSync(previewPath) ? previewFilename : null;
+}
+
 function compressVideo(dir, filename) {
   const inputPath = path.join(dir, filename);
   const ext = path.extname(filename).toLowerCase();
@@ -1442,11 +1482,14 @@ app.post("/api/videos", videoUpload.single("file"), (req, res) => {
     thumbnail = `/media/videos/thumbs/${thumbName}`;
   }
 
+  const previewFilename = makeVideoPreview(VIDEOS_DIR, filename);
+
   const entry = {
     id,
     slug,
     thumbnail,
     videoSrc: `/media/videos/${filename}`,
+    previewSrc: previewFilename ? `/media/videos/${previewFilename}` : undefined,
     title: { zh: req.body.title_zh || "", en: req.body.title_en || "" },
     services: {
       zh: req.body.services_zh || "",
@@ -1521,9 +1564,10 @@ app.delete("/api/videos/:id", (req, res) => {
   if (!item) return res.status(404).json({ error: "not found" });
   // External (YouTube) videos have no local file — videoSrc is "" and
   // thumbnail is a remote img.youtube.com URL, neither backed by a real path.
-  if (item.videoSrc) {
-    const videoPath = path.join(ROOT, "public", item.videoSrc);
-    if (fs.existsSync(videoPath)) fs.unlinkSync(videoPath);
+  for (const src of [item.videoSrc, item.previewSrc]) {
+    if (!src) continue;
+    const filePath = path.join(ROOT, "public", src);
+    if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
   }
   if (item.thumbnail && item.thumbnail.startsWith("/")) {
     const thumbPath = path.join(ROOT, "public", item.thumbnail);

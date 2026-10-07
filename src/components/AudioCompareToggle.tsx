@@ -105,10 +105,13 @@ export function AudioCompareToggle({
 
   return (
     <div className="border border-white/15 bg-black p-4 font-mono sm:p-5">
+      {/* metadata only: each master is ~45-60MB, and "auto" let the browser
+          start pulling all of them the moment the page opened. play()
+          fetches what it needs. */}
       <audio
         ref={rawRef}
         src={withBasePath(rawSrc)}
-        preload="auto"
+        preload="metadata"
         playsInline
         muted={active !== "raw"}
         onTimeUpdate={active === "raw" ? handleTimeUpdate : undefined}
@@ -117,7 +120,7 @@ export function AudioCompareToggle({
       <audio
         ref={mixedRef}
         src={withBasePath(mixedSrc)}
-        preload="auto"
+        preload="metadata"
         playsInline
         muted={active !== "mixed"}
         onTimeUpdate={active === "mixed" ? handleTimeUpdate : undefined}

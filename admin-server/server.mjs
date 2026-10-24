@@ -88,7 +88,10 @@ const PHOTO_QUALITY = 80;
 function writeWebp(srcPath, outPath, resize, quality) {
   const args = [`${srcPath}[0]`, "-auto-orient"];
   if (resize) args.push("-resize", resize);
-  args.push("-quality", String(quality), "-define", "webp:method=6", outPath);
+  // Privacy: drop EXIF/XMP/IPTC (GPS location etc.) but keep the ICC colour
+  // profile. Plain `-strip` also removes ICC, which makes Display P3 photos
+  // look washed out in browsers. Orientation is already baked in above.
+  args.push("+profile", "!icc,*", "-quality", String(quality), "-define", "webp:method=6", outPath);
   const result = spawnSync("magick", args);
   return result.status === 0 && fs.existsSync(outPath);
 }
@@ -241,6 +244,8 @@ function makeVideoPreview(dir, filename, variant = "sd", outBase = null) {
     "-an",
     "-vf",
     `scale=${width}:-2`,
+    "-map_metadata",
+    "-1",
     "-c:v",
     "libx264",
     ...rate,
@@ -287,6 +292,8 @@ function makeHls(dir, filename) {
     "-map",
     "[v2]",
     ...(hasAudio ? ["-map", "0:a:0", "-map", "0:a:0", "-c:a", "aac", "-b:a", "128k", "-ac", "2"] : []),
+    "-map_metadata",
+    "-1",
     "-c:v",
     "libx264",
     "-preset",
@@ -371,6 +378,8 @@ function compressVideo(dir, filename) {
       "-i",
       inputPath,
       ...scaleArgs,
+      "-map_metadata",
+      "-1",
       "-c:v",
       "libx264",
       "-b:v",
@@ -392,6 +401,8 @@ function compressVideo(dir, filename) {
         "-i",
         inputPath,
         ...scaleArgs,
+        "-map_metadata",
+        "-1",
         "-c:v",
         "libx264",
         "-b:v",
@@ -422,6 +433,8 @@ function compressVideo(dir, filename) {
       "-i",
       inputPath,
       ...scaleArgs,
+      "-map_metadata",
+      "-1",
       "-c:v",
       "libx264",
       "-crf",
@@ -471,6 +484,8 @@ function compressAudio(dir, filename) {
     "-y",
     "-i",
     inputPath,
+    "-map_metadata",
+    "-1",
     "-c:a",
     "aac_at",
     "-profile:a",
@@ -1491,6 +1506,8 @@ app.post("/api/videos", videoUpload.single("file"), (req, res) => {
     "1",
     "-i",
     videoPath,
+    "-map_metadata",
+    "-1",
     "-frames:v",
     "1",
     thumbPath,

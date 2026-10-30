@@ -40,3 +40,11 @@ admin-server/admin.log
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# personal tooling / secrets
+.claude/
+.github/agents/
+.github/hooks/
+.github/skills/
+*credentials*.json
+client_secret*.json

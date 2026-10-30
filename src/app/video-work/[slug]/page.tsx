@@ -1,6 +1,9 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { VideoDetail } from "@/components/VideoDetail";
 import { getVideos } from "@/lib/content";
+import { pageMeta } from "@/lib/seo";
+import { withBasePath } from "@/lib/basePath";
 
 export const dynamicParams = false;
 
@@ -13,6 +16,20 @@ export async function generateStaticParams() {
     return [{ slug: "_placeholder" }];
   }
   return videos.map((video) => ({ slug: video.slug }));
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const video = getVideos().find((v) => v.slug === slug);
+  const title = video?.title.zh || video?.title.en || "影片作品";
+  const desc = `${title}${video?.year ? `（${video.year}）` : ""}：Ching 的影片作品。`;
+  // 預覽圖用該片自己的縮圖（YouTube 為外部網址，本機上傳的才需要 basePath，withBasePath 已處理）
+  const image = video?.thumbnail ? withBasePath(video.thumbnail) : undefined;
+  return pageMeta(`${title}｜Ching's Profile`, desc, `/video-work/${encodeURI(slug)}/`, image);
 }
 
 export default async function VideoWorkDetailPage({

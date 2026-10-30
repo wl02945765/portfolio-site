@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import Link from "next/link";
 import { motion, useScroll, useTransform, type Variants } from "framer-motion";
 import { useLanguage } from "@/i18n/LanguageProvider";
@@ -13,6 +13,7 @@ import {
   getAboutTimeline,
 } from "@/lib/content";
 import { withBasePath } from "@/lib/basePath";
+import { aiPageCopy, aboutGuitarVideo, aboutGalleryCaption } from "@/i18n/dictionaries";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
@@ -39,6 +40,45 @@ function Placeholder({ label, className = "" }: { label: string; className?: str
         <span className="text-[10px] uppercase tracking-[0.3em] text-zinc-600">{label}</span>
       </div>
     </div>
+  );
+}
+
+/** 點擊才載入／播放：preload="none"＋海報＋播放鈕，不自動播放。 */
+function GuitarVideo() {
+  const { locale } = useLanguage();
+  const ref = useRef<HTMLVideoElement>(null);
+  const [started, setStarted] = useState(false);
+  const g = aboutGuitarVideo[locale];
+  return (
+    <motion.figure variants={fadeUp} className="mt-12">
+      <div className="relative overflow-hidden rounded-sm bg-black">
+        <video
+          ref={ref}
+          src={withBasePath("/media/about/guitar-sea.mp4")}
+          poster={withBasePath("/media/about/guitar-sea-poster.webp")}
+          preload="none"
+          controls
+          playsInline
+          onPlay={() => setStarted(true)}
+          className="aspect-video w-full bg-black"
+        />
+        {!started && (
+          <button
+            type="button"
+            aria-label={g.playLabel}
+            onClick={() => ref.current?.play()}
+            className="absolute inset-0 flex items-center justify-center bg-black/25 transition-colors hover:bg-black/10"
+          >
+            <span className="flex h-16 w-16 items-center justify-center rounded-full border border-zinc-200/70 bg-black/50 sm:h-20 sm:w-20">
+              <svg width="22" height="22" viewBox="0 0 22 22" aria-hidden="true" className="ml-1 text-zinc-100">
+                <path d="M3 1.5v19l17-9.5z" fill="currentColor" />
+              </svg>
+            </span>
+          </button>
+        )}
+      </div>
+      <figcaption className="mt-3 text-sm tracking-wide text-zinc-400">{g.caption}</figcaption>
+    </motion.figure>
   );
 }
 
@@ -276,6 +316,8 @@ export function AboutContent() {
             ))}
           </div>
 
+          <GuitarVideo />
+
           {/* Justified rows: every photo keeps its own aspect ratio (no
               forced 4:5 crop chopping landscape shots), and each row stretches
               to fill the full width. flex-grow = aspect ratio is what makes a
@@ -314,6 +356,12 @@ export function AboutContent() {
             })}
             <div aria-hidden="true" style={{ flexGrow: 10, flexBasis: 0 }} />
           </div>
+          <motion.p
+            variants={fadeUp}
+            className="mt-4 text-sm leading-7 tracking-wide text-zinc-500"
+          >
+            {aboutGalleryCaption[locale]}
+          </motion.p>
         </div>
       </motion.section>
 
@@ -372,6 +420,14 @@ export function AboutContent() {
             className="rounded-full border border-zinc-500 px-10 py-3.5 text-[11px] font-medium uppercase tracking-[0.2em] text-zinc-300 transition-colors hover:bg-zinc-300 hover:text-black"
           >
             {a.ctaButton}
+          </Link>
+        </motion.div>
+        <motion.div variants={fadeUp}>
+          <Link
+            href="/ai-workflow"
+            className="text-sm tracking-[0.05em] text-zinc-400 underline underline-offset-4 transition-colors hover:text-zinc-100"
+          >
+            {aiPageCopy[locale].linkFromAbout}
           </Link>
         </motion.div>
       </motion.section>

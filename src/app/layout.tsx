@@ -6,6 +6,7 @@ import { NavBar } from "@/components/NavBar";
 import { NoiseOverlay } from "@/components/NoiseOverlay";
 import { IntroLoader } from "@/components/IntroLoader";
 import { dictionaries } from "@/i18n/dictionaries";
+import { pageMeta, SITE_URL } from "@/lib/seo";
 import siteText from "../../content/site-text.json";
 
 const inter = Inter({
@@ -42,8 +43,12 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: dictionaries.zh.brandName,
-  description: "Photography, retouching, video editing & audio mixing — Ching's portfolio.",
+  metadataBase: new URL(SITE_URL),
+  ...pageMeta(
+    dictionaries.zh.brandName,
+    "Ching 的作品集：商品攝影、修圖、影片剪輯與聲音後製。Photography, retouching, video editing & audio mixing.",
+    "/",
+  ),
 };
 
 export default function RootLayout({

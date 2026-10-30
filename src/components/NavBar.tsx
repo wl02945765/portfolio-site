@@ -49,7 +49,7 @@ export function NavBar() {
                 key={item.href}
                 href={item.href}
                 className={`font-mono text-[16px] font-medium uppercase tracking-[0.05em] transition-colors ${
-                  active ? "text-[#c9a66b]" : "text-zinc-500 hover:text-zinc-200"
+                  active ? "text-[#c9a66b]" : "text-zinc-400 hover:text-zinc-200"
                 }`}
               >
                 {item.label}
@@ -60,7 +60,7 @@ export function NavBar() {
           <button
             type="button"
             onClick={() => setLocale(locale === "zh" ? "en" : "zh")}
-            className="font-mono text-[16px] font-medium tracking-[0.05em] text-zinc-500 transition-colors hover:text-zinc-200"
+            className="font-mono text-[16px] font-medium tracking-[0.05em] text-zinc-400 transition-colors hover:text-zinc-200"
             aria-label="Switch language"
           >
             {locale === "zh" ? "中 / EN" : "EN / 中"}
@@ -108,7 +108,7 @@ export function NavBar() {
                     key={item.href}
                     href={item.href}
                     className={`font-mono text-sm font-medium uppercase tracking-[0.05em] transition-colors ${
-                      active ? "text-[#c9a66b]" : "text-zinc-500 hover:text-zinc-200"
+                      active ? "text-[#c9a66b]" : "text-zinc-400 hover:text-zinc-200"
                     }`}
                   >
                     {item.label}
@@ -119,7 +119,7 @@ export function NavBar() {
               <button
                 type="button"
                 onClick={() => setLocale(locale === "zh" ? "en" : "zh")}
-                className="w-fit font-mono text-sm font-medium tracking-[0.05em] text-zinc-500 transition-colors hover:text-zinc-200"
+                className="w-fit font-mono text-sm font-medium tracking-[0.05em] text-zinc-400 transition-colors hover:text-zinc-200"
                 aria-label="Switch language"
               >
                 {locale === "zh" ? "中 / EN" : "EN / 中"}

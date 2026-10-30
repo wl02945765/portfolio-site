@@ -16,6 +16,7 @@ export function NavBar() {
     { href: "/photography", label: t.nav.photographyLabel },
     { href: "/video-work", label: t.nav.videoWorkLabel },
     { href: "/sound", label: t.nav.soundLabel },
+    { href: "/ai-workflow", label: "AI" },
     { href: "/contact", label: t.nav.contactLabel },
   ];
 

@@ -14,6 +14,51 @@ import { withBasePath } from "@/lib/basePath";
 const card = "rounded-md border border-white/10 bg-white/[0.03] p-6";
 const h2 = "heading-font text-xl font-medium tracking-[0.08em] text-zinc-100 sm:text-2xl";
 
+const flowBox = "rounded border border-white/20 px-3 py-2 text-center text-xs text-zinc-200";
+
+function FlowArrow() {
+  return (
+    <svg width="16" height="10" viewBox="0 0 16 10" aria-hidden="true" className="shrink-0 rotate-90 text-zinc-500 lg:rotate-0">
+      <path d="M0 5h13M9 1l4 4-4 4" fill="none" stroke="currentColor" strokeWidth="1.2" />
+    </svg>
+  );
+}
+
+/** 純 HTML/CSS 文字方塊流程圖：桌機橫向、手機直向。 */
+function StudioFlow({
+  flow,
+  aria,
+}: {
+  flow: { task: string; assistant: string; specialists: string[]; lead: string; check: string; report: string };
+  aria: string;
+}) {
+  return (
+    <div
+      role="img"
+      aria-label={aria}
+      className="mt-6 flex flex-col items-center gap-2 lg:flex-row lg:justify-between lg:gap-3"
+    >
+      <span className={flowBox}>{flow.task}</span>
+      <FlowArrow />
+      <span className={flowBox}>{flow.assistant}</span>
+      <FlowArrow />
+      <div className="grid grid-cols-2 gap-2 rounded border border-dashed border-white/20 p-2">
+        {flow.specialists.map((n) => (
+          <span key={n} className={flowBox}>
+            {n}
+          </span>
+        ))}
+      </div>
+      <FlowArrow />
+      <span className={flowBox}>{flow.lead}</span>
+      <FlowArrow />
+      <span className={flowBox}>{flow.check}</span>
+      <FlowArrow />
+      <span className={`${flowBox} border-[#c9a66b] text-[#c9a66b]`}>{flow.report}</span>
+    </div>
+  );
+}
+
 export function AiWorkflowContent() {
   const { locale } = useLanguage();
   const c = aiPageCopy[locale];
@@ -164,6 +209,17 @@ export function AiWorkflowContent() {
               )}
             </div>
           ))}
+        </div>
+        {/* 第三張：全寬，文字方塊流程圖取代圖片（零額外流量）；不放連結、截圖 */}
+        <div className={`${card} mt-4`}>
+          <h3 className="text-base font-medium text-zinc-100">{c.builtStudio.title}</h3>
+          <p className="mt-1 text-xs tracking-wide text-zinc-400">{c.builtStudio.subtitle}</p>
+          <p className="mt-4 max-w-3xl text-sm leading-relaxed text-zinc-300">{c.builtStudio.body}</p>
+          <StudioFlow flow={c.builtStudio.flow} aria={c.builtStudio.flowAria} />
+          <p className="mt-5 border-t border-white/10 pt-4 font-mono text-[12px] tracking-[0.2em] text-[#c9a66b]">
+            {c.builtRoleLabel}
+          </p>
+          <p className="mt-2 text-sm leading-relaxed text-zinc-300">{c.builtStudio.role}</p>
         </div>
       </section>
 

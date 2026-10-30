@@ -143,6 +143,14 @@ export type AiPageCopy = {
     linkLabel?: string;
     linkHref?: string;
   }[];
+  builtStudio: {
+    title: string;
+    subtitle: string;
+    body: string;
+    role: string;
+    flowAria: string;
+    flow: { task: string; assistant: string; specialists: string[]; lead: string; check: string; report: string };
+  };
   backHeading: string;
   backLinks: { href: string; label: string }[];
 };
@@ -217,6 +225,21 @@ export const aiPageCopy: Record<Locale, AiPageCopy> = {
         image: "/media/ai-projects/ride-home.webp",
       },
     ],
+    builtStudio: {
+      title: "多角色 AI 協作工作室",
+      subtitle: "個人練習環境",
+      body: "在自己電腦上做的分工練習：一位特助接下任務、判斷難易度，再分給設計、影像、研究、工程等角色；做完先由主管審，最後由另一個角色獨立查核，並重新跑一次證據。",
+      role: "我負責設計這套分工與規則，並驗收結果；AI 協助實作。",
+      flowAria: "流程圖：任務交給特助分級，再分給設計、影像、研究、工程等專業角色，接著由主管審、獨立查核，最後回報給我。",
+      flow: {
+        task: "任務",
+        assistant: "特助（分級）",
+        specialists: ["設計", "影像", "研究", "工程"],
+        lead: "主管審",
+        check: "獨立查核",
+        report: "回報給我",
+      },
+    },
     backHeading: "回到作品",
     backLinks: [
       { href: "/photography", label: "攝影與修圖" },
@@ -308,6 +331,21 @@ export const aiPageCopy: Record<Locale, AiPageCopy> = {
         image: "/media/ai-projects/ride-home.webp",
       },
     ],
+    builtStudio: {
+      title: "Multi-Agent Studio",
+      subtitle: "A personal practice setup",
+      body: "A practice setup on my own computer: an assistant takes a task, judges how hard it is, and hands it to roles such as design, video, research and engineering. A lead reviews the work, then another role checks it independently and reruns the evidence.",
+      role: "I designed the roles and rules and checked the results; AI helped with the implementation.",
+      flowAria: "Flow chart: a task goes to an assistant for triage, then to specialists in design, video, research and engineering, followed by lead review, an independent check, and a report back to me.",
+      flow: {
+        task: "Task",
+        assistant: "Assistant (triage)",
+        specialists: ["Design", "Video", "Research", "Engineering"],
+        lead: "Lead review",
+        check: "Independent check",
+        report: "Report",
+      },
+    },
     backHeading: "Back to the work",
     backLinks: [
       { href: "/photography", label: "Photo & Retouch" },

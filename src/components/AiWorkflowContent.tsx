@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useLanguage } from "@/i18n/LanguageProvider";
 import { aiPageCopy } from "@/i18n/dictionaries";
+import { withBasePath } from "@/lib/basePath";
 
 /**
  * /ai-workflow：我怎麼用 AI 當幫手（純靜態文字，零圖片）。
@@ -125,6 +126,42 @@ export function AiWorkflowContent() {
                 {c.learnTakeawayLabel}
               </p>
               <p className="mt-2 text-sm leading-relaxed text-zinc-300">{card_.takeaway}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* 6.5 我用 AI 做出來的東西（卡片 2 刻意不放連結：站上有即時同步選擇功能） */}
+      <section aria-labelledby="built">
+        <h2 id="built" className={h2}>{c.builtHeading}</h2>
+        <p className="mt-5 max-w-2xl text-sm leading-loose text-zinc-300">{c.builtIntro}</p>
+        <div className="mt-6 grid gap-4 md:grid-cols-2">
+          {c.builtProjects.map((p) => (
+            <div key={p.title} className={`${card} flex flex-col`}>
+              <img
+                src={withBasePath(p.image)}
+                alt={p.title}
+                loading="lazy"
+                decoding="async"
+                className="aspect-[16/9] w-full rounded-sm border border-white/10 object-cover object-top"
+              />
+              <h3 className="mt-5 text-base font-medium text-zinc-100">{p.title}</h3>
+              <p className="mt-1 text-xs tracking-wide text-zinc-400">{p.subtitle}</p>
+              <p className="mt-4 text-sm leading-relaxed text-zinc-300">{p.body}</p>
+              <p className="mt-5 border-t border-white/10 pt-4 font-mono text-[12px] tracking-[0.2em] text-[#c9a66b]">
+                {c.builtRoleLabel}
+              </p>
+              <p className="mt-2 text-sm leading-relaxed text-zinc-300">{p.role}</p>
+              {p.linkHref && (
+                <a
+                  href={p.linkHref}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mt-6 w-fit rounded-full border border-zinc-400 px-6 py-2.5 text-xs font-medium uppercase tracking-[0.18em] text-zinc-200 transition-colors hover:bg-zinc-200 hover:text-black"
+                >
+                  {p.linkLabel} ↗
+                </a>
+              )}
             </div>
           ))}
         </div>

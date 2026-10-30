@@ -131,6 +131,18 @@ export type AiPageCopy = {
   learnHowLabel: string;
   learnTakeawayLabel: string;
   learnCards: { title: string; how: string; takeaway: string }[];
+  builtHeading: string;
+  builtIntro: string;
+  builtRoleLabel: string;
+  builtProjects: {
+    title: string;
+    subtitle: string;
+    body: string;
+    role: string;
+    image: string;
+    linkLabel?: string;
+    linkHref?: string;
+  }[];
   backHeading: string;
   backLinks: { href: string; label: string }[];
 };
@@ -182,6 +194,27 @@ export const aiPageCopy: Record<Locale, AiPageCopy> = {
         title: "自動化流程",
         how: "把每週固定的 Podcast 檔案處理，從偵測、下載、對齊、排軌、匯出到上傳通知，串成一條流程。",
         takeaway: "先自己手動做熟，才知道哪一步可以交給電腦，哪一步要自己聽。",
+      },
+    ],
+    builtHeading: "我用 AI 做出來的東西",
+    builtIntro: "這些是我提出需求與想法、由 AI 協助實作的小專案。我負責說清楚問題、測試結果並回報修正。",
+    builtRoleLabel: "我的角色",
+    builtProjects: [
+      {
+        title: "露營日誌",
+        subtitle: "苗栗懶人露營十選",
+        body: "為 5 位大人一晚的露營行程，從 25 間苗栗營區挑出 10 間，逐一查過能不能訂，整理成可排序、可篩選的比較頁，附 Google 評論整理與導航連結。",
+        role: "我負責提出需求與使用情境，並測試與回報問題；AI 協助實作。",
+        image: "/media/ai-projects/camp-journal.webp",
+        linkLabel: "查看網頁",
+        linkHref: "https://claude.ai/artifact/PfKttqjPTKpFAmGuCWRQtG",
+      },
+      {
+        title: "散場回家指南",
+        subtitle: "高雄回家住宿",
+        body: "演唱會散場後末班車已過，整理高雄 22:30 後的列車、隔天回台北的班次，以及 30 間可半夜入住的台南住宿，兩個人可以即時同步各自的選擇。",
+        role: "我負責提出需求與使用情境，並測試與回報問題；AI 協助實作。",
+        image: "/media/ai-projects/ride-home.webp",
       },
     ],
     backHeading: "回到作品",
@@ -251,6 +284,28 @@ export const aiPageCopy: Record<Locale, AiPageCopy> = {
         title: "Workflow automation",
         how: "I chained the weekly Podcast file handling — detect, download, align, arrange tracks, export, upload and notify — into one workflow.",
         takeaway: "Only after doing it by hand do I know which steps to hand to the computer and which ones I need to listen to myself.",
+      },
+    ],
+    builtHeading: "Things I built with AI",
+    builtIntro:
+      "Small projects where I defined the idea and the problem, and AI helped build them. I explain the need, test the result and report what to fix.",
+    builtRoleLabel: "My role",
+    builtProjects: [
+      {
+        title: "Camp Journal",
+        subtitle: "Miaoli Easy Glamping: Top 10",
+        body: "A comparison page for a one-night trip for five adults: 10 of 25 Miaoli campsites, each checked for availability, sortable and filterable, with review summaries and navigation links.",
+        role: "I defined the needs and use cases and tested the results; AI helped with the implementation.",
+        image: "/media/ai-projects/camp-journal.webp",
+        linkLabel: "View",
+        linkHref: "https://claude.ai/artifact/PfKttqjPTKpFAmGuCWRQtG",
+      },
+      {
+        title: "After-Show Ride Home",
+        subtitle: "Kaohsiung Ride-Home Stay",
+        body: "After a concert ended past the last trains, this page lists trains leaving Kaohsiung after 22:30, next-day trains back to Taipei, and 30 Tainan stays with late check-in. Two people can sync their picks in real time.",
+        role: "I defined the needs and use cases and tested the results; AI helped with the implementation.",
+        image: "/media/ai-projects/ride-home.webp",
       },
     ],
     backHeading: "Back to the work",

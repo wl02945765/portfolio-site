@@ -270,6 +270,23 @@
         <div id="about-gallery-grid" class="grid"></div>
 
         <div class="upload-form" style="margin-top: 40px">
+          <h3>常用工具與熟練度</h3>
+          <p class="hint">
+            About 頁「專業技能」下方的工具清單。熟練度留空的話，前台只列工具名、不顯示熟練度。可拖曳排序，改完點別的地方自動存檔。
+          </p>
+          <form id="about-tool-form" class="fields" style="align-items: flex-end">
+            <label>工具名稱 <input type="text" name="name" placeholder="例如：Adobe Premiere Pro" required /></label>
+            <label>補充（中文，選填） <input type="text" name="note_zh" placeholder="例如：含 HDR 色彩映射" /></label>
+            <label>Note (EN) <input type="text" name="note_en" /></label>
+            <label>熟練度（中文，選填） <input type="text" name="level_zh" placeholder="例如：熟練" /></label>
+            <label>Level (EN) <input type="text" name="level_en" placeholder="e.g. Proficient" /></label>
+            <button type="submit" class="primary-btn">＋ 新增工具</button>
+          </form>
+          <p class="status" id="about-tool-status"></p>
+        </div>
+        <div id="about-tool-list"></div>
+
+        <div class="upload-form" style="margin-top: 40px">
           <h3>專業技能</h3>
           <p class="hint">
             每個分類群組一個標題（例如「設計」）＋多個項目，項目一行一個，中英文行數建議對應。改完點別的地方自動存檔。

@@ -54,7 +54,8 @@
       "beyondBody": "我喜歡旅行，探索陌生的地方。\n\n在澳洲生活與工作的經驗，讓我有機會體驗不同的文化與環境。這些經歷開拓了我的視野，也成為創作靈感的重要來源。\n\n每一趟旅程，都讓我用不同的方式觀看世界，發現新的故事。\n",
       "skillsTitle": "專業技能",
       "ctaText": "感謝你花時間走進我的世界。下一個精彩的故事，讓我們一起寫。",
-      "ctaButton": "聯絡我"
+      "ctaButton": "聯絡我",
+      "toolsTitle": "常用工具"
     },
     "contact": {
       "heading": "CONTACT",
@@ -100,7 +101,37 @@
       "mailType": "類型",
       "mailBudget": "預算",
       "mailTimeline": "希望時程",
-      "mailUnset": "未填"
+      "mailUnset": "未填",
+      "tabHire": "招募洽詢",
+      "tabProject": "案子合作",
+      "tabsAria": "聯絡類型",
+      "tabHint": "全職或長期職缺請選「招募洽詢」，單次案子請選「案子合作」。",
+      "hireTitleLead": "聊聊",
+      "hireTitleAccent": "工作機會",
+      "hireIntro": "我正在找影像、剪輯、多媒體相關的工作。歡迎直接寄信，我會盡快回覆。",
+      "hireCompany": "公司",
+      "hireCompanyPh": "例：某某影像製作公司",
+      "hireRole": "職稱",
+      "hireRolePh": "例：影片剪輯師",
+      "hireLink": "職缺連結",
+      "hireLinkPh": "貼上 104、LinkedIn 或公司網頁連結",
+      "hireMessage": "想聊的事",
+      "hireMessagePh": "例：想約時間聊聊這個職缺",
+      "hireOptionalNote": "以下全部選填。",
+      "hireMailSubject": "求職",
+      "hireMailGreeting": "Ching 你好，",
+      "hireMailIntro": "我想和你聊聊工作機會：",
+      "hireMailCompany": "公司",
+      "hireMailRole": "職稱",
+      "hireMailLink": "職缺連結",
+      "basedIn": "住新北市樹林區",
+      "externalLinks": "外部連結"
+    },
+    "notFound": {
+      "title": "找不到這個頁面",
+      "body": "網址可能打錯了，或這個頁面已經搬家。可以回首頁，或直接看影片作品。",
+      "homeButton": "回首頁",
+      "videoButton": "影片作品"
     }
   },
   "en": {
@@ -155,7 +186,8 @@
       "beyondBody": "I love traveling and exploring unfamiliar places.\n\nLiving and working in Australia gave me the chance to immerse myself in different cultures and environments. Those experiences broadened my perspective and remain a vital source of creative inspiration.\n\nWith every trip, I see the world through a different lens and uncover new stories.",
       "skillsTitle": "Skills",
       "ctaText": "Thank you for exploring my space. Let’s create the next compelling chapter together.",
-      "ctaButton": "Contact Me"
+      "ctaButton": "Contact Me",
+      "toolsTitle": "Tools I use"
     },
     "contact": {
       "heading": "CONTACT",
@@ -201,7 +233,37 @@
       "mailType": "Type",
       "mailBudget": "Budget",
       "mailTimeline": "Timeline",
-      "mailUnset": "Not specified"
+      "mailUnset": "Not specified",
+      "tabHire": "Hiring Inquiries",
+      "tabProject": "Project Collaboration",
+      "tabsAria": "Type of inquiry",
+      "tabHint": "For full-time or long-term roles, choose \"Hiring Inquiries\"; for one-off projects, choose \"Project Collaboration.\"",
+      "hireTitleLead": "Let's talk about",
+      "hireTitleAccent": "opportunities",
+      "hireIntro": "I'm looking for video, editing, and multimedia roles. Feel free to email me directly and I'll reply as soon as I can.",
+      "hireCompany": "Company",
+      "hireCompanyPh": "e.g. a video production studio",
+      "hireRole": "Role",
+      "hireRolePh": "e.g. Video Editor",
+      "hireLink": "Job link",
+      "hireLinkPh": "Paste a 104, LinkedIn, or company page link",
+      "hireMessage": "What you'd like to discuss",
+      "hireMessagePh": "e.g. I'd like to set up a time to talk about this role",
+      "hireOptionalNote": "Everything below is optional.",
+      "hireMailSubject": "Hiring",
+      "hireMailGreeting": "Hi Ching,",
+      "hireMailIntro": "I'd like to talk with you about an opportunity:",
+      "hireMailCompany": "Company",
+      "hireMailRole": "Role",
+      "hireMailLink": "Job link",
+      "basedIn": "Based in Shulin, New Taipei City",
+      "externalLinks": "Links"
+    },
+    "notFound": {
+      "title": "Page not found",
+      "body": "The link may be mistyped, or the page has moved. Head back home, or take a look at the video work.",
+      "homeButton": "Back home",
+      "videoButton": "Video work"
     }
   }
 }

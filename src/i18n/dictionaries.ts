@@ -54,6 +54,7 @@ export type Dictionary = {
     beyondTitle: string;
     beyondBody: string;
     skillsTitle: string;
+    toolsTitle: string;
     ctaText: string;
     ctaButton: string;
   };
@@ -92,6 +93,36 @@ export type Dictionary = {
     mailBudget: string;
     mailTimeline: string;
     mailUnset: string;
+    tabHire: string;
+    tabProject: string;
+    tabsAria: string;
+    tabHint: string;
+    hireTitleLead: string;
+    hireTitleAccent: string;
+    hireIntro: string;
+    hireCompany: string;
+    hireCompanyPh: string;
+    hireRole: string;
+    hireRolePh: string;
+    hireLink: string;
+    hireLinkPh: string;
+    hireMessage: string;
+    hireMessagePh: string;
+    hireOptionalNote: string;
+    hireMailSubject: string;
+    hireMailGreeting: string;
+    hireMailIntro: string;
+    hireMailCompany: string;
+    hireMailRole: string;
+    hireMailLink: string;
+    basedIn: string;
+    externalLinks: string;
+  };
+  notFound: {
+    title: string;
+    body: string;
+    homeButton: string;
+    videoButton: string;
   };
 };
 

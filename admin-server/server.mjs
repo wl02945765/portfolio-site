@@ -27,6 +27,7 @@ const CONTACT_LINKS_JSON = path.join(CONTENT_DIR, "contactLinks.json");
 const ABOUT_TAGS_JSON = path.join(CONTENT_DIR, "aboutTags.json");
 const ABOUT_PHILOSOPHY_JSON = path.join(CONTENT_DIR, "aboutPhilosophy.json");
 const ABOUT_TIMELINE_JSON = path.join(CONTENT_DIR, "aboutTimeline.json");
+const ABOUT_TOOLS_JSON = path.join(CONTENT_DIR, "aboutTools.json");
 const FEATURED_PHOTOS_JSON = path.join(CONTENT_DIR, "featuredPhotos.json");
 const DESIGN_CATEGORIES_JSON = path.join(CONTENT_DIR, "designCategories.json");
 const DESIGNS_JSON = path.join(CONTENT_DIR, "designs.json");
@@ -556,14 +557,29 @@ function schedulePublish() {
   publishTimer = setTimeout(runPublish, PUBLISH_DEBOUNCE_MS);
 }
 
+// 副本（沒有 origin remote）或明確設了 ADMIN_NO_PUSH=1 時，不 commit 也不 push，
+// 改動只留在工作區。正式 repo 有 origin、也沒設旗標，就維持原本的自動 commit＋push。
+function getNoPushReason() {
+  if (process.env.ADMIN_NO_PUSH === "1") return "副本模式：不推送（ADMIN_NO_PUSH=1）";
+  const remotes = spawnSync("git", ["remote"], { cwd: ROOT }).stdout?.toString().split("\n").map((r) => r.trim()) ?? [];
+  if (!remotes.includes("origin")) return "副本模式：不推送（沒有 origin remote）";
+  return null;
+}
+
 function runPublish() {
   publishTimer = null;
   publishState.pending = false;
+  const noPushReason = getNoPushReason();
+  if (noPushReason) {
+    publishState.noPush = noPushReason;
+    console.log(`[publish] skipped: ${noPushReason}；內容已存到檔案，沒有 commit 也沒有 push`);
+    return;
+  }
   publishState.publishing = true;
   publishState.lastError = null;
   try {
     execSync(
-      "git add content/photos.json content/categories.json content/videos.json content/videoCategories.json content/site-text.json content/aiPage.json content/sound.json content/soundEpisodes.json content/aboutGallery.json content/aboutSkills.json content/aboutHero.json content/aboutTags.json content/aboutPhilosophy.json content/aboutTimeline.json content/featuredPhotos.json content/designCategories.json content/designs.json content/contact.json content/contactLinks.json public/media",
+      "git add content/photos.json content/categories.json content/videos.json content/videoCategories.json content/site-text.json content/aiPage.json content/sound.json content/soundEpisodes.json content/aboutGallery.json content/aboutSkills.json content/aboutHero.json content/aboutTags.json content/aboutPhilosophy.json content/aboutTimeline.json content/aboutTools.json content/featuredPhotos.json content/designCategories.json content/designs.json content/contact.json content/contactLinks.json public/media",
       { cwd: ROOT },
     );
     const diff = spawnSync("git", ["diff", "--cached", "--quiet"], { cwd: ROOT });
@@ -711,7 +727,7 @@ const contactVisualUpload = multer({
 });
 
 app.get("/api/publish-status", (_req, res) => {
-  res.json(publishState);
+  res.json({ ...publishState, noPush: getNoPushReason() });
 });
 
 // ---------- Site text ----------
@@ -1966,6 +1982,64 @@ app.delete("/api/about-skills/:id", (req, res) => {
   );
   schedulePublish();
   res.json({ ok: true });
+});
+
+// ---------- About page: tools (name + proficiency level) ----------
+// level 留空＝前台只列工具名、不顯示熟練度。
+
+app.get("/api/about-tools", (_req, res) => {
+  res.json(readJSON(ABOUT_TOOLS_JSON));
+});
+
+app.post("/api/about-tools", (req, res) => {
+  const tools = readJSON(ABOUT_TOOLS_JSON);
+  const entry = {
+    id: randomUUID(),
+    name: req.body.name || "",
+    note: { zh: req.body.note_zh || "", en: req.body.note_en || "" },
+    level: { zh: req.body.level_zh || "", en: req.body.level_en || "" },
+  };
+  tools.push(entry);
+  writeJSON(ABOUT_TOOLS_JSON, tools);
+  schedulePublish();
+  res.json(entry);
+});
+
+app.patch("/api/about-tools/:id", (req, res) => {
+  const tools = readJSON(ABOUT_TOOLS_JSON);
+  const item = tools.find((t) => t.id === req.params.id);
+  if (!item) return res.status(404).json({ error: "not found" });
+  const b = req.body;
+  if (b.name !== undefined) item.name = b.name;
+  item.note = item.note || { zh: "", en: "" };
+  item.level = item.level || { zh: "", en: "" };
+  if (b.note_zh !== undefined) item.note.zh = b.note_zh;
+  if (b.note_en !== undefined) item.note.en = b.note_en;
+  if (b.level_zh !== undefined) item.level.zh = b.level_zh;
+  if (b.level_en !== undefined) item.level.en = b.level_en;
+  writeJSON(ABOUT_TOOLS_JSON, tools);
+  schedulePublish();
+  res.json(item);
+});
+
+app.delete("/api/about-tools/:id", (req, res) => {
+  const tools = readJSON(ABOUT_TOOLS_JSON);
+  writeJSON(
+    ABOUT_TOOLS_JSON,
+    tools.filter((t) => t.id !== req.params.id),
+  );
+  schedulePublish();
+  res.json({ ok: true });
+});
+
+app.post("/api/about-tools/reorder", (req, res) => {
+  const { order } = req.body;
+  const tools = readJSON(ABOUT_TOOLS_JSON);
+  const byId = new Map(tools.map((t) => [t.id, t]));
+  const reordered = order.map((id) => byId.get(id)).filter(Boolean);
+  writeJSON(ABOUT_TOOLS_JSON, reordered);
+  schedulePublish();
+  res.json(reordered);
 });
 
 // ---------- About page: hero portrait ----------

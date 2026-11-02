@@ -5,7 +5,6 @@ import { motion, type Variants } from "framer-motion";
 import { useLanguage } from "@/i18n/LanguageProvider";
 import { PageHeading } from "@/components/PageHeading";
 import { btnPrimary } from "@/lib/buttonStyles";
-import { contactCopy } from "@/i18n/jobhunt";
 import { getContactLinks, getContactVisual } from "@/lib/content";
 import { withBasePath } from "@/lib/basePath";
 
@@ -72,9 +71,9 @@ const smallBtnClass =
 const submitClass = btnPrimary;
 
 export function ContactContent() {
-  const { t, locale } = useLanguage();
+  const { t } = useLanguage();
   const c = t.contact;
-  const h = contactCopy[locale];
+  const h = c;
   const visual = getContactVisual();
   const links = getContactLinks();
   const { copiedKey, copy } = useCopied();

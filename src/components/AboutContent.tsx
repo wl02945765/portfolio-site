@@ -15,7 +15,6 @@ import {
 } from "@/lib/content";
 import { withBasePath } from "@/lib/basePath";
 import { aiPageCopy, aboutGalleryCaption } from "@/i18n/dictionaries";
-import { aboutExtraCopy } from "@/i18n/jobhunt";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
@@ -56,7 +55,6 @@ export function AboutContent() {
   const philosophyLines = getAboutPhilosophy();
   const timeline = getAboutTimeline();
   const tools = getAboutTools();
-  const toolsHeading = aboutExtraCopy[locale].toolsHeading;
 
   const timelineRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
@@ -412,7 +410,7 @@ export function AboutContent() {
           {/* 工具熟悉度：只列工具名；熟練度資料（content/aboutTools.json 的 level）有填才顯示 */}
           <motion.div variants={fadeUp} className="mt-14">
             <p className="border-b border-zinc-800 pb-3 text-xs uppercase tracking-[0.2em] text-zinc-400">
-              {toolsHeading}
+              {a.toolsTitle}
             </p>
             <ul className="mt-4 flex flex-col divide-y divide-white/10">
               {tools.map((tool) => (

@@ -19,6 +19,8 @@ function renderSyncStatus(state) {
     });
     syncIndicator.textContent = `✅ 已同步 ${t}`;
     syncIndicator.classList.add("done");
+  } else if (state.noPush) {
+    syncIndicator.textContent = `🛈 ${state.noPush}`;
   } else {
     syncIndicator.textContent = "";
   }
@@ -961,6 +963,7 @@ const TEXT_SCHEMA = [
       { path: "about.beyondTitle", label: "「工作之外」段落標題" },
       { path: "about.beyondBody", label: "「工作之外」內文（空行分段）", type: "textarea" },
       { path: "about.skillsTitle", label: "技能段落標題" },
+      { path: "about.toolsTitle", label: "「常用工具」小標題（工具清單在上方「常用工具與熟練度」編輯）" },
       { path: "about.ctaText", label: "結尾標語" },
       { path: "about.ctaButton", label: "結尾按鈕文字" },
     ],
@@ -974,6 +977,72 @@ const TEXT_SCHEMA = [
       { path: "contact.locationLabel", label: "地點欄位標籤" },
       { path: "contact.location", label: "地點內容" },
       { path: "contact.ctaButton", label: "「寄送 Email」按鈕文字" },
+    ],
+  },
+  {
+    section: "Contact 頁：分頁與提示",
+    fields: [
+      { path: "contact.tabHire", label: "分頁一名稱（招募洽詢）" },
+      { path: "contact.tabProject", label: "分頁二名稱（案子合作）" },
+      { path: "contact.tabsAria", label: "分頁區塊的無障礙說明（螢幕閱讀器用）" },
+      { path: "contact.tabHint", label: "分頁下方的提示句", type: "textarea" },
+      { path: "contact.basedIn", label: "招募洽詢的所在地文字" },
+      { path: "contact.externalLinks", label: "外部連結區的小標題" },
+    ],
+  },
+  {
+    section: "Contact 頁：招募洽詢模式",
+    fields: [
+      { path: "contact.hireTitleLead", label: "標題前半（一般色）" },
+      { path: "contact.hireTitleAccent", label: "標題後半（金色斜體）" },
+      { path: "contact.hireIntro", label: "開場白", type: "textarea" },
+      { path: "contact.hireOptionalNote", label: "表單上方的「全部選填」提示" },
+      { path: "contact.hireCompany", label: "欄位「公司」標籤" },
+      { path: "contact.hireCompanyPh", label: "公司欄位的範例文字" },
+      { path: "contact.hireRole", label: "欄位「職稱」標籤" },
+      { path: "contact.hireRolePh", label: "職稱欄位的範例文字" },
+      { path: "contact.hireLink", label: "欄位「職缺連結」標籤" },
+      { path: "contact.hireLinkPh", label: "職缺連結欄位的範例文字" },
+      { path: "contact.hireMessage", label: "欄位「想聊的事」標籤" },
+      { path: "contact.hireMessagePh", label: "想聊的事欄位的範例文字" },
+    ],
+  },
+  {
+    section: "Contact 頁：案子合作模式",
+    fields: [
+      { path: "contact.titleLead", label: "標題前半（一般色）" },
+      { path: "contact.titleAccent", label: "標題後半（金色斜體）" },
+      { path: "contact.typeQuestion", label: "問題一標籤（想合作的類型）" },
+      { path: "contact.budgetQuestion", label: "問題二標籤（預算區間）" },
+      { path: "contact.descQuestion", label: "問題三標籤（簡單說說案子）" },
+      { path: "contact.descPlaceholder", label: "案子說明欄位的範例文字" },
+      { path: "contact.nameLabel", label: "「你的稱呼」標籤" },
+      { path: "contact.namePlaceholder", label: "稱呼欄位的範例文字" },
+      { path: "contact.timelineLabel", label: "「希望時程」標籤" },
+      { path: "contact.timelinePlaceholder", label: "時程欄位的範例文字" },
+      { path: "contact.submitButton", label: "送出按鈕文字" },
+      { path: "contact.formError", label: "沒填必填欄位時的提示", type: "textarea" },
+    ],
+  },
+  {
+    section: "Contact 頁：信件內容（寄出的 Email 文字）",
+    fields: [
+      { path: "contact.hireMailSubject", label: "招募洽詢：主旨前綴（例如「求職」→ [求職] 公司－職稱）" },
+      { path: "contact.mailSubject", label: "案子合作：主旨前綴（例如「合作」→ [合作] 類型）" },
+      { path: "contact.hireMailGreeting", label: "招募洽詢：信件開頭問候" },
+      { path: "contact.hireMailIntro", label: "招募洽詢：信件第一句" },
+      { path: "contact.hireMailCompany", label: "招募洽詢：信件「公司」項目名" },
+      { path: "contact.hireMailRole", label: "招募洽詢：信件「職稱」項目名" },
+      { path: "contact.hireMailLink", label: "招募洽詢：信件「職缺連結」項目名" },
+    ],
+  },
+  {
+    section: "404 找不到頁面",
+    fields: [
+      { path: "notFound.title", label: "標題" },
+      { path: "notFound.body", label: "說明文字", type: "textarea" },
+      { path: "notFound.homeButton", label: "按鈕「回首頁」文字" },
+      { path: "notFound.videoButton", label: "按鈕「影片作品」文字" },
     ],
   },
 ];
@@ -1411,6 +1480,79 @@ document.getElementById("skill-group-form").addEventListener("submit", async (e)
 });
 
 loadSkillGroups();
+
+// --- About page: tools (name + proficiency level) ---
+const aboutToolList = document.getElementById("about-tool-list");
+const aboutToolStatus = document.getElementById("about-tool-status");
+
+async function loadAboutTools() {
+  const tools = await fetch("/api/about-tools").then((r) => r.json());
+  aboutToolList.innerHTML = "";
+  tools.forEach((tool) => aboutToolList.appendChild(renderAboutTool(tool)));
+}
+
+function renderAboutTool(tool) {
+  const wrap = document.createElement("div");
+  wrap.className = "card text-section";
+  wrap.draggable = true;
+  wrap.dataset.id = tool.id;
+  wrap.innerHTML = `
+    <div class="fields">
+      <label>工具名稱 <input type="text" data-field="name" value="${escapeHtml(tool.name)}" /></label>
+      <label>補充（中文） <input type="text" data-field="note_zh" value="${escapeHtml(tool.note?.zh ?? "")}" /></label>
+      <label>Note (EN) <input type="text" data-field="note_en" value="${escapeHtml(tool.note?.en ?? "")}" /></label>
+    </div>
+    <div class="fields">
+      <label>熟練度（中文，留空＝不顯示） <input type="text" data-field="level_zh" value="${escapeHtml(tool.level?.zh ?? "")}" /></label>
+      <label>Level (EN) <input type="text" data-field="level_en" value="${escapeHtml(tool.level?.en ?? "")}" /></label>
+    </div>
+    <button class="delete-btn">刪除這個工具</button>
+  `;
+  wrap.querySelectorAll("input").forEach((el) => {
+    el.addEventListener("blur", () =>
+      fetch(`/api/about-tools/${tool.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ [el.dataset.field]: el.value }),
+      }),
+    );
+  });
+  wrap.querySelector(".delete-btn").addEventListener("click", async () => {
+    if (!confirm("確定要刪除這個工具嗎？")) return;
+    await fetch(`/api/about-tools/${tool.id}`, { method: "DELETE" });
+    loadAboutTools();
+  });
+  return wrap;
+}
+
+wireReorder(aboutToolList, (order) =>
+  fetch("/api/about-tools/reorder", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ order }),
+  }),
+);
+
+document.getElementById("about-tool-form").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const form = e.target;
+  aboutToolStatus.textContent = "新增中…";
+  try {
+    const res = await fetch("/api/about-tools", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(Object.fromEntries(new FormData(form))),
+    });
+    if (!res.ok) throw new Error(await res.text());
+    aboutToolStatus.textContent = "";
+    form.reset();
+    loadAboutTools();
+  } catch (err) {
+    aboutToolStatus.textContent = `新增失敗：${err.message}`;
+  }
+});
+
+loadAboutTools();
 
 // --- About page: hero portrait ---
 wireDropzone(

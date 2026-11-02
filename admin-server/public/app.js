@@ -1057,18 +1057,136 @@ function renderTextSections() {
   });
 
   textSectionsEl.querySelectorAll("input, textarea").forEach((el) => {
+    let original = el.value;
+    el.addEventListener("focus", () => (original = el.value));
     el.addEventListener("blur", async () => {
+      if (el.value === original) return;
       const { lang, path } = el.dataset;
-      await fetch("/api/site-text", {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ [lang]: nestedFromPath(path, el.value) }),
-      });
+      const enEl = lang === "zh" ? el.closest(".text-field-pair").querySelector('[data-lang="en"]') : null;
+      if (enEl) enEl.disabled = true;
+      try {
+        const res = await fetch("/api/site-text", {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ [lang]: nestedFromPath(path, el.value) }),
+        }).then((r) => r.json());
+        original = el.value;
+        siteText[lang] = siteText[lang] || {};
+        if (enEl) {
+          enEl.value = getPath(res.en, path);
+          if (res._translateFailed?.length) alert("英文翻譯失敗，請手動輸入英文。");
+        }
+      } finally {
+        if (enEl) enEl.disabled = false;
+      }
     });
   });
 }
 
 loadSiteText();
+
+// --- AI page copy (content/aiPage.json): zh edits auto-translate into en ---
+const AI_KEY_LABELS = {
+  linkFromAbout: "About 頁連到此頁的連結文字", title: "頁面標題", titleEn: "英文副標", intro: "開場白",
+  splitHeading: "「分工」標題", handTitle: "「我親手做」標題", handItems: "我親手做的項目", handNote: "手作補充說明",
+  handNoteLink: "手作補充的連結文字", aiTitle: "「AI 幫我做」標題", aiItems: "AI 幫我做的項目", editHeading: "「剪輯的幫手」標題",
+  cardSubtitleTitle: "卡片：自動字幕 標題", cardSubtitleBody: "卡片：自動字幕 內文", cardMixTitle: "卡片：音軌排列 標題",
+  cardMixBody: "卡片：音軌排列 內文", flowHeading: "「流程自動化」標題", flowBadge: "標籤", flowBody: "內文",
+  flowSteps: "流程步驟", flowFootnote: "註腳", siteHeading: "「這個網站」標題", siteBody: "內文", sitePoints: "重點項目",
+  learnHeading: "「正在學的 AI」標題", learnIntro: "開場說明", learnHowLabel: "「做法」標籤", learnTakeawayLabel: "「心得」標籤",
+  learnCards: "學習卡片", builtHeading: "「我用 AI 做出來的東西」標題", builtIntro: "開場說明", builtRoleLabel: "「我的角色」標籤",
+  builtProjects: "小專案", builtStudio: "多角色 AI 協作工作室", backHeading: "「回到作品」標題", backLinks: "回到作品的連結",
+  title_: "標題", subtitle: "副標", body: "內文", role: "我的角色", how: "做法", takeaway: "心得", label: "文字",
+  linkLabel: "連結文字", flowAria: "流程圖文字說明（給螢幕閱讀器）", task: "起點", assistant: "特助", specialists: "專業角色",
+  lead: "主管", check: "查核", report: "回報", flow: "流程圖",
+};
+const AI_SHARED_KEYS = new Set(["href", "image", "linkHref"]);
+let aiPage = { zh: {}, en: {} };
+const aiSectionsEl = document.getElementById("ai-sections");
+const aiStatusEl = document.getElementById("ai-status");
+
+function aiLeaves(node, parts = []) {
+  if (typeof node === "string") return [parts];
+  if (Array.isArray(node)) return node.flatMap((v, i) => aiLeaves(v, [...parts, i]));
+  if (node && typeof node === "object") return Object.keys(node).flatMap((k) => aiLeaves(node[k], [...parts, k]));
+  return [];
+}
+
+function aiLabel(parts) {
+  return parts
+    .map((k) => (typeof k === "number" ? `#${k + 1}` : (AI_KEY_LABELS[k] ?? k)))
+    .join(" › ");
+}
+
+function aiGet(lang, parts) {
+  return parts.reduce((o, k) => (o == null ? "" : o[k]), aiPage[lang]) ?? "";
+}
+
+async function loadAiPage() {
+  aiPage = await fetch("/api/ai-page").then((r) => r.json());
+  aiSectionsEl.innerHTML = "";
+  Object.keys(aiPage.zh).forEach((top) => {
+    const leaves = aiLeaves(aiPage.zh[top], [top]);
+    if (!leaves.length) return;
+    const section = document.createElement("div");
+    section.className = "text-section";
+    section.innerHTML = `<h3>${escapeHtml(AI_KEY_LABELS[top] ?? top)}</h3>`;
+    leaves.forEach((parts) => {
+      if (AI_SHARED_KEYS.has(String(parts[parts.length - 1]))) {
+        const row = document.createElement("div");
+        row.className = "text-field-pair";
+        row.innerHTML = `<label>${escapeHtml(aiLabel(parts))}（中英文共用，不翻譯）<input type="text" data-lang="zh" data-path="${parts.join(".")}" value="${escapeHtml(aiGet("zh", parts))}" /></label>`;
+        section.appendChild(row);
+        return;
+      }
+      const long = String(aiGet("zh", parts)).length > 40;
+      const row = document.createElement("div");
+      row.className = "text-field-pair";
+      row.innerHTML = ["zh", "en"]
+        .map((lang) => {
+          const v = escapeHtml(aiGet(lang, parts));
+          const attrs = `data-lang="${lang}" data-path="${parts.join(".")}"`;
+          const ctl = long
+            ? `<textarea ${attrs} rows="3">${v}</textarea>`
+            : `<input type="text" ${attrs} value="${v}" />`;
+          return `<label>${escapeHtml(aiLabel(parts))}（${lang === "zh" ? "中文" : "English"}）${ctl}</label>`;
+        })
+        .join("");
+      section.appendChild(row);
+    });
+    aiSectionsEl.appendChild(section);
+  });
+
+  aiSectionsEl.querySelectorAll("input, textarea").forEach((el) => {
+    let original = el.value;
+    el.addEventListener("focus", () => (original = el.value));
+    el.addEventListener("blur", async () => {
+      if (el.value === original) return;
+      const { lang, path } = el.dataset;
+      const pair = el.closest(".text-field-pair");
+      const enEl = lang === "zh" ? pair.querySelector('[data-lang="en"]') : null;
+      if (enEl) enEl.disabled = true;
+      aiStatusEl.textContent = enEl ? "儲存並翻譯中…" : "儲存中…";
+      try {
+        const r = await fetch("/api/ai-page", {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ lang, path, value: el.value }),
+        });
+        const j = await r.json();
+        if (!r.ok) throw new Error(j.error || r.status);
+        original = el.value;
+        if (enEl && typeof j.en === "string") enEl.value = j.en;
+        aiStatusEl.textContent = j.failed ? "中文已存，但英文翻譯失敗（可手動輸入英文）" : "已儲存";
+      } catch (err) {
+        aiStatusEl.textContent = `儲存失敗：${err.message}`;
+      } finally {
+        if (enEl) enEl.disabled = false;
+      }
+    });
+  });
+}
+loadAiPage();
 
 function escapeHtml(str) {
   return String(str ?? "").replace(
@@ -1626,3 +1744,43 @@ document.getElementById("about-timeline-form").addEventListener("submit", async 
 });
 
 loadAboutTimeline();
+
+// --- Auto-translate: any "xxx_zh" field (captions, titles, descriptions…) fills its "xxx_en" sibling ---
+(() => {
+  const originals = new WeakMap();
+  document.addEventListener("focusin", (e) => {
+    if (e.target.dataset?.field?.endsWith("_zh")) originals.set(e.target, e.target.value);
+  });
+  document.addEventListener("focusout", async (e) => {
+    const el = e.target;
+    const field = el.dataset?.field;
+    if (!field || !field.endsWith("_zh") || el.value === originals.get(el)) return;
+    originals.set(el, el.value);
+    const target = `[data-field="${field.replace(/_zh$/, "_en")}"]`;
+    let enEl = null;
+    for (let box = el.parentElement, i = 0; box && i < 4 && !enEl; box = box.parentElement, i++) {
+      enEl = box.querySelector(target);
+    }
+    if (!enEl || !el.value.trim()) return;
+    let text = el.value;
+    if (/[㐀-鿿]/.test(text)) {
+      enEl.disabled = true;
+      try {
+        const r = await fetch("/api/translate", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ text }),
+        });
+        if (!r.ok) throw new Error();
+        text = (await r.json()).text;
+      } catch {
+        enEl.disabled = false;
+        alert("英文翻譯失敗，請手動輸入英文。");
+        return;
+      }
+      enEl.disabled = false;
+    }
+    enEl.value = text;
+    enEl.dispatchEvent(new Event("blur")); // 沿用原本欄位的儲存邏輯
+  });
+})();

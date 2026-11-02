@@ -20,6 +20,7 @@
         <button class="tab-btn" data-tab="videos">影片</button>
         <button class="tab-btn" data-tab="sound">Sound</button>
         <button class="tab-btn" data-tab="about">About 頁</button>
+        <button class="tab-btn" data-tab="ai">AI 頁</button>
         <button class="tab-btn" data-tab="text">文字內容</button>
       </nav>
       <span id="sync-indicator" class="sync-indicator"></span>
@@ -282,6 +283,15 @@
         </div>
 
         <div id="skill-group-list"></div>
+      </section>
+
+      <section id="panel-ai" class="panel">
+        <div class="upload-form">
+          <h3>AI 頁文字</h3>
+          <p class="hint">改左邊中文、點到別處就會存檔，右邊英文會自動翻譯（翻完可以再手動修英文）。連結與圖片路徑不翻譯。</p>
+          <p class="status" id="ai-status"></p>
+        </div>
+        <div id="ai-sections"></div>
       </section>
 
       <section id="panel-text" class="panel">

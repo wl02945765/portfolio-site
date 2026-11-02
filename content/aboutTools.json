@@ -24,18 +24,6 @@
     }
   },
   {
-    "id": "tool-ae",
-    "name": "Adobe After Effects",
-    "note": {
-      "zh": "",
-      "en": ""
-    },
-    "level": {
-      "zh": "",
-      "en": ""
-    }
-  },
-  {
     "id": "tool-audition",
     "name": "Adobe Audition",
     "note": {

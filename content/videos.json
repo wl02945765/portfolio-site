@@ -76,6 +76,25 @@
     "previewHdSrc": "/media/videos/yt-Fr6Y-shIITo-preview-hd.mp4"
   },
   {
+    "id": "728cdac1-4efb-424c-b5c7-5e73f1877aa8",
+    "slug": "taiwan-motorcycle-road-racing",
+    "thumbnail": "/media/videos/thumbs/728cdac1-4efb-424c-b5c7-5e73f1877aa8.webp",
+    "thumbnailSmall": "/media/videos/thumbs/728cdac1-4efb-424c-b5c7-5e73f1877aa8-sm.webp",
+    "videoSrc": "/media/videos/42319bdf-bb2a-4198-8b19-d2cf2c812b6e-hls/index.m3u8",
+    "previewSrc": "/media/videos/42319bdf-bb2a-4198-8b19-d2cf2c812b6e-preview.mp4",
+    "previewHdSrc": "/media/videos/42319bdf-bb2a-4198-8b19-d2cf2c812b6e-preview-hd.mp4",
+    "title": {
+      "zh": "台灣檔車錦標賽",
+      "en": "Taiwan Motorcycle Road Racing "
+    },
+    "services": {
+      "zh": "企劃、攝影、剪輯、配樂",
+      "en": "Producer、Videography、Video Editor、BGM"
+    },
+    "year": "2026",
+    "categoryId": "18b7cd7c-b5c2-48bf-9920-070605da559a"
+  },
+  {
     "id": "4d89e4ce-d165-4e84-8ce0-38bf60553c77",
     "slug": "china",
     "thumbnail": "/media/videos/thumbs/4d89e4ce-d165-4e84-8ce0-38bf60553c77.webp",
@@ -150,25 +169,6 @@
     "previewSrc": "/media/videos/0fbb5d6c-54d9-4262-9f2a-462b0a3e2a0f-preview.mp4",
     "thumbnailSmall": "/media/videos/thumbs/07f59bc3-d93f-485f-819d-252ead46bf0d-sm.webp",
     "previewHdSrc": "/media/videos/0fbb5d6c-54d9-4262-9f2a-462b0a3e2a0f-preview-hd.mp4"
-  },
-  {
-    "id": "728cdac1-4efb-424c-b5c7-5e73f1877aa8",
-    "slug": "taiwan-motorcycle-road-racing",
-    "thumbnail": "/media/videos/thumbs/728cdac1-4efb-424c-b5c7-5e73f1877aa8.webp",
-    "thumbnailSmall": "/media/videos/thumbs/728cdac1-4efb-424c-b5c7-5e73f1877aa8-sm.webp",
-    "videoSrc": "/media/videos/42319bdf-bb2a-4198-8b19-d2cf2c812b6e-hls/index.m3u8",
-    "previewSrc": "/media/videos/42319bdf-bb2a-4198-8b19-d2cf2c812b6e-preview.mp4",
-    "previewHdSrc": "/media/videos/42319bdf-bb2a-4198-8b19-d2cf2c812b6e-preview-hd.mp4",
-    "title": {
-      "zh": "台灣檔車錦標賽",
-      "en": "Taiwan Motorcycle Road Racing "
-    },
-    "services": {
-      "zh": "企劃、攝影、剪輯、配樂",
-      "en": "Producer、Videography、Video Editor、BGM"
-    },
-    "year": "2026",
-    "categoryId": "18b7cd7c-b5c2-48bf-9920-070605da559a"
   },
   {
     "id": "ec14202d-3591-4825-9aff-0776bdb296c4",

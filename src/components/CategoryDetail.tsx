@@ -40,7 +40,7 @@ export function CategoryDetail({
       )}
 
       <div className="mt-10">
-        <PhotoCategoryGrid photos={photos} />
+        <PhotoCategoryGrid photos={photos} albumName={category.name[locale]} />
       </div>
     </div>
   );

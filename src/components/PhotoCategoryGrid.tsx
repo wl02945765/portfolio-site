@@ -6,8 +6,12 @@ import { useLanguage } from "@/i18n/LanguageProvider";
 import { withBasePath } from "@/lib/basePath";
 import type { Photo } from "@/lib/content";
 
-export function PhotoCategoryGrid({ photos }: { photos: Photo[] }) {
+export function PhotoCategoryGrid({ photos, albumName }: { photos: Photo[]; albumName?: string }) {
   const { locale } = useLanguage();
+  // 照片沒有說明文字時，alt 預設用「相簿名＋第 N 張」，避免作品圖被螢幕閱讀器當成裝飾圖略過
+  const altFor = (photo: Photo, i: number) =>
+    photo.caption[locale] ||
+    (albumName ? (locale === "zh" ? `${albumName} 第 ${i + 1} 張` : `${albumName} — photo ${i + 1}`) : "");
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
 
   const closeLightbox = () => setLightboxIndex(null);
@@ -79,7 +83,7 @@ export function PhotoCategoryGrid({ photos }: { photos: Photo[] }) {
                 <div className="relative">
                   <Image
                     src={withBasePath(photo.beforeSrc)}
-                    alt={photo.caption[locale]}
+                    alt={altFor(photo, i)}
                     width={photo.width || 800}
                     height={photo.height || 1000}
                     unoptimized
@@ -105,7 +109,7 @@ export function PhotoCategoryGrid({ photos }: { photos: Photo[] }) {
               ) : (
                 <Image
                   src={withBasePath(photo.thumbSrc || photo.src)}
-                  alt={photo.caption[locale]}
+                  alt={altFor(photo, i)}
                   width={photo.width || 800}
                   height={photo.height || 1000}
                   unoptimized
@@ -169,7 +173,7 @@ export function PhotoCategoryGrid({ photos }: { photos: Photo[] }) {
             >
               <Image
                 src={withBasePath(photos[lightboxIndex].src)}
-                alt={photos[lightboxIndex].caption[locale]}
+                alt={altFor(photos[lightboxIndex], lightboxIndex)}
                 width={1600}
                 height={1200}
                 unoptimized

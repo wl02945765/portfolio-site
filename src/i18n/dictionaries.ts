@@ -17,6 +17,14 @@ export type Dictionary = {
   heroSlogan: string;
   heroCtaPhotography: string;
   heroCtaVideoWork: string;
+  heroLocation: string;
+  heroRoleParts: string[];
+  heroRoleAria: string;
+  heroSub: string;
+  heroCtaWork: string;
+  heroCtaContact: string;
+  heroResumeHint: string;
+  heroResumeSubject: string;
   photography: {
     heading: string;
     empty: string;

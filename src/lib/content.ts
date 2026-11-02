@@ -15,6 +15,8 @@ import designCategoriesData from "../../content/designCategories.json";
 import designsData from "../../content/designs.json";
 import contactData from "../../content/contact.json";
 import contactLinksData from "../../content/contactLinks.json";
+import projectsData from "../../content/projects.json";
+import aboutToolsData from "../../content/aboutTools.json";
 
 export type LocalizedText = {
   zh: string;
@@ -148,6 +150,27 @@ export type AboutTimelineStep = {
   period: LocalizedText;
   title: LocalizedText;
   items: { zh: string[]; en: string[] };
+  // 資料還沒補齊時顯示虛線框「【待補：…】」用的說明文字（例：專業經歷的期間與類型）
+  placeholder?: LocalizedText;
+};
+
+export type AboutTool = {
+  id: string;
+  name: string;
+  note: LocalizedText;
+};
+
+// 專案說明頁（/work/[slug]）。videoId 指向 videos.json 的影片，不複製影片資料。
+// 文字欄位留空字串／空陣列＝還沒補，頁面會顯示「【待補：…】」佔位，不編造內容。
+export type Project = {
+  slug: string;
+  videoId: string;
+  type: LocalizedText;
+  background: LocalizedText;
+  tools: { zh: string[]; en: string[] };
+  process: { zh: string[]; en: string[] };
+  length: LocalizedText;
+  outcome: LocalizedText;
 };
 
 export type FeaturedPhoto = {
@@ -164,16 +187,31 @@ export type FeaturedPhoto = {
   caption: LocalizedText;
 };
 
+// 動態路由網址片段只能是純 ASCII 英數與連字號（中文會讓靜態站悄悄變成 404）。
+// 資料不合規就在建置時直接失敗，並指出是哪一筆。
+const SLUG_PATTERN = /^[A-Za-z0-9-]+$/;
+function assertAsciiSlugs<T>(items: T[], source: string, pick: (item: T) => string): T[] {
+  for (const item of items) {
+    const slug = pick(item);
+    if (!SLUG_PATTERN.test(slug)) {
+      throw new Error(
+        `[slug 檢查] ${source} 有不合規的 slug：「${slug}」。動態路由片段只能用英數與連字號（純 ASCII）。`,
+      );
+    }
+  }
+  return items;
+}
+
 export function getPhotos(): Photo[] {
   return photosData as Photo[];
 }
 
 export function getCategories(): Category[] {
-  return categoriesData as Category[];
+  return assertAsciiSlugs(categoriesData as Category[], "content/categories.json（id）", (c) => c.id);
 }
 
 export function getVideos(): Video[] {
-  return videosData as Video[];
+  return assertAsciiSlugs(videosData as Video[], "content/videos.json（slug）", (v) => v.slug);
 }
 
 export function getVideoCategories(): VideoCategory[] {
@@ -233,4 +271,23 @@ export function getDesignCategories(): Category[] {
 
 export function getDesignPhotos(): Photo[] {
   return designsData as Photo[];
+}
+
+export function getProjects(): Project[] {
+  const projects = assertAsciiSlugs(projectsData as Project[], "content/projects.json（slug）", (p) => p.slug);
+  const videoIds = new Set((videosData as Video[]).map((v) => v.id));
+  for (const p of projects) {
+    if (!videoIds.has(p.videoId)) {
+      throw new Error(`[專案檢查] content/projects.json 的「${p.slug}」找不到對應影片 videoId：${p.videoId}`);
+    }
+  }
+  return projects;
+}
+
+export function getProjectByVideoId(videoId: string): Project | undefined {
+  return getProjects().find((p) => p.videoId === videoId);
+}
+
+export function getAboutTools(): AboutTool[] {
+  return aboutToolsData as AboutTool[];
 }

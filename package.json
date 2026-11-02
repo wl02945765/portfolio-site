@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "admin": "node admin-server/server.mjs",
+    "admin": "echo \"副本已停用後台，避免自動 push\" && exit 1",
     "export": "STATIC_EXPORT=true next build",
     "build:cloudflare": "STATIC_EXPORT=true next build && node scripts/cloudflare-postbuild.mjs"
   },

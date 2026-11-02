@@ -17,7 +17,7 @@ export function SoundEpisodeCard({ episode, channelNumber }: { episode: SoundEpi
   return (
     <div className="border border-white/10 bg-black">
       <div className="flex items-center justify-between border-b border-white/10 px-4 py-3 sm:px-5">
-        <span className="font-mono text-[11px] uppercase tracking-[0.1em] text-zinc-500">
+        <span className="font-mono text-[11px] uppercase tracking-[0.1em] text-zinc-400">
           CH.{String(channelNumber).padStart(2, "0")} {title}
         </span>
         <span className="flex items-center gap-2 bg-red-600 px-2.5 py-1 font-mono text-[10px] tracking-[0.14em] text-white">

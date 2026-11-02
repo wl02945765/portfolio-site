@@ -3,7 +3,8 @@
 import { useLayoutEffect, useRef, useState } from "react";
 
 const SESSION_KEY = "cp-intro-shown";
-const STATIC_DURATION_MS = 1680;
+// 開場總長 ≈1.2 秒（雜訊 450ms + 收尾 720ms），可點一下或按任意鍵跳過（求職版縮短，原本約 3 秒）。
+const STATIC_DURATION_MS = 450;
 const STATIC_CANVAS_WIDTH = 120;
 
 // A previous version of this component tried to hold the intro open until
@@ -40,7 +41,8 @@ export function IntroLoader() {
       setVisible(false);
       return;
     }
-    if (alreadyShown) {
+    // 系統設定「減少動態效果」：直接略過開場
+    if (alreadyShown || window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) {
       setVisible(false);
       return;
     }
@@ -110,30 +112,42 @@ export function IntroLoader() {
             "transform 260ms cubic-bezier(.2,.9,.3,1), opacity 180ms ease";
           line!.style.transform = "translate(-50%, -50%) scaleX(1)";
           line!.style.opacity = "1";
-        }, 120),
+        }, 80),
       );
 
       timers.push(
         window.setTimeout(() => {
-          barTop!.style.transition = "transform 480ms cubic-bezier(.5,0,.15,1)";
-          barBottom!.style.transition = "transform 480ms cubic-bezier(.5,0,.15,1)";
+          barTop!.style.transition = "transform 360ms cubic-bezier(.5,0,.15,1)";
+          barBottom!.style.transition = "transform 360ms cubic-bezier(.5,0,.15,1)";
           barTop!.style.transform = "scaleY(0)";
           barBottom!.style.transform = "scaleY(0)";
-          line!.style.transition = "opacity 320ms ease 80ms";
+          line!.style.transition = "opacity 240ms ease 60ms";
           line!.style.opacity = "0";
-        }, 750),
+        }, 300),
       );
 
       timers.push(
         window.setTimeout(() => {
           setVisible(false);
           document.body.style.overflow = "";
-        }, 1320),
+        }, 720),
       );
     }
 
+    // 點一下或按任意鍵就直接進站
+    const skip = () => {
+      cancelAnimationFrame(raf);
+      timers.forEach((id) => window.clearTimeout(id));
+      setVisible(false);
+      document.body.style.overflow = "";
+    };
+    window.addEventListener("pointerdown", skip, { once: true });
+    window.addEventListener("keydown", skip, { once: true });
+
     raf = requestAnimationFrame(animate);
     return () => {
+      window.removeEventListener("pointerdown", skip);
+      window.removeEventListener("keydown", skip);
       cancelAnimationFrame(raf);
       timers.forEach((id) => window.clearTimeout(id));
       // Whatever point the sequence was at, unmounting must never leave the

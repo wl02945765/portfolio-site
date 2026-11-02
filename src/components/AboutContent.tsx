@@ -11,9 +11,12 @@ import {
   getAboutTags,
   getAboutPhilosophy,
   getAboutTimeline,
+  getAboutTools,
 } from "@/lib/content";
 import { withBasePath } from "@/lib/basePath";
 import { aiPageCopy, aboutGalleryCaption } from "@/i18n/dictionaries";
+import { aboutExtraCopy, pending } from "@/i18n/jobhunt";
+import { ResumeButton } from "@/components/ResumeButton";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
@@ -43,7 +46,7 @@ function Placeholder({ label, className = "" }: { label: string; className?: str
   );
 }
 
-export function AboutContent() {
+export function AboutContent({ resumeAvailable = false }: { resumeAvailable?: boolean }) {
   const { t, locale } = useLanguage();
   const a = t.about;
   const galleryPhotos = getAboutGallery();
@@ -53,6 +56,8 @@ export function AboutContent() {
   const heroTags = getAboutTags();
   const philosophyLines = getAboutPhilosophy();
   const timeline = getAboutTimeline();
+  const tools = getAboutTools();
+  const x = aboutExtraCopy[locale];
 
   const timelineRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
@@ -88,6 +93,49 @@ export function AboutContent() {
               {a.heroDescription}
             </motion.p>
 
+            <motion.p variants={fadeUp} className="-mt-4 max-w-md text-base leading-8 tracking-wide text-zinc-200">
+              {x.statusLine}
+            </motion.p>
+
+            {/* 職能先行：招募者最想先看到的「會用什麼工具」。熟練度由本人確認前一律標【待補】 */}
+            <motion.div variants={fadeUp}>
+              <p className="font-mono text-xs uppercase tracking-[0.2em] text-zinc-400">{x.toolsHeading}</p>
+              <ul className="mt-3 flex flex-col divide-y divide-white/10 border-y border-white/10">
+                {tools.map((tool) => (
+                  <li key={tool.id} className="flex flex-wrap items-baseline justify-between gap-x-4 py-2 text-sm">
+                    <span className="text-zinc-200">
+                      {tool.name}
+                      {tool.note[locale] && <span className="ml-2 text-zinc-400">{tool.note[locale]}</span>}
+                    </span>
+                    <span className="border border-dashed border-zinc-500 px-2 py-0.5 font-mono text-xs text-zinc-400">
+                      {x.proficiencyPending}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </motion.div>
+
+            <motion.div variants={fadeUp} className="flex flex-wrap items-start gap-3">
+              <ResumeButton
+                available={resumeAvailable}
+                label={x.resumeButton}
+                pendingLabel={x.resumePending}
+                pendingNote={x.resumePendingNote}
+              />
+              <Link
+                href="/contact?mode=hire"
+                className="inline-flex min-h-[44px] items-center rounded-full border border-zinc-500 px-6 text-xs font-medium uppercase tracking-[0.15em] text-zinc-300 transition-colors hover:bg-zinc-300 hover:text-black"
+              >
+                {x.contactHire}
+              </Link>
+              <Link
+                href="/work"
+                className="inline-flex min-h-[44px] items-center px-2 text-sm text-zinc-400 underline underline-offset-4 hover:text-zinc-100"
+              >
+                {x.projectsLink}
+              </Link>
+            </motion.div>
+
             <motion.div variants={fadeUp} className="flex flex-wrap gap-2">
               {heroTags.map((tag) => (
                 <span
@@ -109,7 +157,9 @@ export function AboutContent() {
               <div className="relative aspect-[3/4] w-full overflow-hidden rounded-sm bg-black">
                 <img
                   src={withBasePath(hero.portraitSrc)}
-                  alt=""
+                  alt={locale === "zh" ? "Ching 的肖像照" : "Portrait of Ching"}
+                  fetchPriority="high"
+                  decoding="async"
                   className="absolute inset-0 h-full w-full object-cover"
                 />
               </div>
@@ -120,7 +170,7 @@ export function AboutContent() {
         </div>
       </section>
 
-      {/* Section 2 — My Story */}
+      {/* Section 2 — Skills（求職版：職能與技能前移，童年故事移到後面） */}
       <motion.section
         initial="hidden"
         whileInView="visible"
@@ -133,17 +183,23 @@ export function AboutContent() {
             variants={fadeUp}
             className="heading-font text-3xl font-medium text-zinc-100 sm:text-4xl"
           >
-            {a.storyTitle}
+            {a.skillsTitle}
           </motion.h2>
-          <div className="mt-10 flex max-w-2xl flex-col gap-6">
-            {paragraphs(a.storyBody).map((p, i) => (
-              <motion.p
-                key={i}
-                variants={fadeUp}
-                className="text-base leading-8 tracking-wide text-zinc-400 sm:text-lg"
-              >
-                {p}
-              </motion.p>
+
+          <div className="mt-14 grid gap-12 sm:grid-cols-3">
+            {skillGroups.map((group) => (
+              <motion.div key={group.id} variants={fadeUp}>
+                <p className="border-b border-zinc-800 pb-3 text-xs uppercase tracking-[0.2em] text-zinc-400">
+                  {group.category[locale]}
+                </p>
+                <ul className="mt-4 flex flex-col gap-2.5">
+                  {group.items[locale].map((item, i) => (
+                    <li key={i} className="text-sm text-zinc-300">
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </motion.div>
             ))}
           </div>
         </div>
@@ -180,12 +236,17 @@ export function AboutContent() {
                   className="relative"
                 >
                   <span className="absolute -left-[41px] top-1.5 h-2.5 w-2.5 rounded-full bg-zinc-400 sm:-left-[49px]" />
-                  <p className="text-xs uppercase tracking-[0.2em] text-zinc-500">
+                  <p className="text-xs uppercase tracking-[0.2em] text-zinc-400">
                     {step.period[locale]}
                   </p>
                   {step.title[locale] && (
                     <p className="heading-font mt-2 text-xl text-zinc-100 sm:text-2xl">
                       {step.title[locale]}
+                    </p>
+                  )}
+                  {step.placeholder && (
+                    <p className="mt-3 w-fit border border-dashed border-zinc-500 px-3 py-2 font-mono text-xs leading-6 text-zinc-400">
+                      {pending(locale, step.placeholder[locale])}
                     </p>
                   )}
                   {step.items[locale].length > 0 && (
@@ -204,7 +265,36 @@ export function AboutContent() {
         </div>
       </section>
 
-      {/* Section 4 — Philosophy */}
+      {/* Section 4 — My Story（原本緊接 Hero，現移到時間軸之後） */}
+      <motion.section
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, margin: "-100px" }}
+        variants={stagger}
+        className="px-6 py-28 sm:px-10 sm:py-36"
+      >
+        <div className="mx-auto max-w-4xl">
+          <motion.h2
+            variants={fadeUp}
+            className="heading-font text-3xl font-medium text-zinc-100 sm:text-4xl"
+          >
+            {a.storyTitle}
+          </motion.h2>
+          <div className="mt-10 flex max-w-2xl flex-col gap-6">
+            {paragraphs(a.storyBody).map((p, i) => (
+              <motion.p
+                key={i}
+                variants={fadeUp}
+                className="text-base leading-8 tracking-wide text-zinc-400 sm:text-lg"
+              >
+                {p}
+              </motion.p>
+            ))}
+          </div>
+        </div>
+      </motion.section>
+
+      {/* Section 5 — Philosophy */}
       <motion.section
         initial="hidden"
         whileInView="visible"
@@ -250,7 +340,7 @@ export function AboutContent() {
         </div>
       </motion.section>
 
-      {/* Section 5 — Beyond Work */}
+      {/* Section 6 — Beyond Work */}
       <motion.section
         initial="hidden"
         whileInView="visible"
@@ -369,41 +459,6 @@ export function AboutContent() {
           >
             {aboutGalleryCaption[locale]}
           </motion.p>
-        </div>
-      </motion.section>
-
-      {/* Section 6 — Skills */}
-      <motion.section
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true, margin: "-100px" }}
-        variants={stagger}
-        className="px-6 py-28 sm:px-10 sm:py-36"
-      >
-        <div className="mx-auto max-w-4xl">
-          <motion.h2
-            variants={fadeUp}
-            className="heading-font text-3xl font-medium text-zinc-100 sm:text-4xl"
-          >
-            {a.skillsTitle}
-          </motion.h2>
-
-          <div className="mt-14 grid gap-12 sm:grid-cols-3">
-            {skillGroups.map((group) => (
-              <motion.div key={group.id} variants={fadeUp}>
-                <p className="border-b border-zinc-800 pb-3 text-xs uppercase tracking-[0.2em] text-zinc-500">
-                  {group.category[locale]}
-                </p>
-                <ul className="mt-4 flex flex-col gap-2.5">
-                  {group.items[locale].map((item, i) => (
-                    <li key={i} className="text-sm text-zinc-300">
-                      {item}
-                    </li>
-                  ))}
-                </ul>
-              </motion.div>
-            ))}
-          </div>
         </div>
       </motion.section>
 

@@ -38,7 +38,7 @@ function VuMeter({ delays, label }: { delays: number[]; label: string }) {
           <span key={i} className={`vu-bar flex-1 ${barColor(i)}`} style={{ animationDelay: `-${d}s` }} />
         ))}
       </div>
-      <span className="font-mono text-[11px] uppercase tracking-[0.15em] text-zinc-500">{label}</span>
+      <span className="font-mono text-[11px] uppercase tracking-[0.15em] text-zinc-400">{label}</span>
     </div>
   );
 }
@@ -60,7 +60,7 @@ function Channel({
     <div
       className={`flex min-w-0 flex-col gap-1.5 border-b border-r border-white/10 px-4 py-3.5 ${wide ? "sm:col-span-2" : ""}`}
     >
-      <span className="font-mono text-[11px] uppercase tracking-[0.15em] text-zinc-500">
+      <span className="font-mono text-[11px] uppercase tracking-[0.15em] text-zinc-400">
         CH {index} · {label}
       </span>
       {wide ? (
@@ -103,7 +103,7 @@ export function SoundContent({ sound, episodes }: { sound: Sound; episodes: Soun
         <div className="border border-white/10 bg-black">
           {/* Top bar — same header language as the episode cards below */}
           <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/10 px-4 py-3 sm:px-5">
-            <span className="font-mono text-[11px] uppercase tracking-[0.1em] text-zinc-500">
+            <span className="font-mono text-[11px] uppercase tracking-[0.1em] text-zinc-400">
               MASTER · {showName}
               {altName && altName !== showName ? ` ${altName}` : ""}
             </span>
@@ -138,7 +138,7 @@ export function SoundContent({ sound, episodes }: { sound: Sound; episodes: Soun
                   </h2>
                 )}
                 {altName && altName !== showName && (
-                  <p className="heading-font mt-1 text-xl italic text-zinc-500">{altName}</p>
+                  <p className="heading-font mt-1 text-xl italic text-zinc-400">{altName}</p>
                 )}
               </div>
 

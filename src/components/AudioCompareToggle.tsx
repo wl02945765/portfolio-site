@@ -127,7 +127,7 @@ export function AudioCompareToggle({
         onEnded={handleEnded}
       />
 
-      <p className="mb-3 text-[10px] uppercase tracking-[0.14em] text-zinc-500">Before / After</p>
+      <p className="mb-3 text-[10px] uppercase tracking-[0.14em] text-zinc-400">Before / After</p>
       <div className="mb-4 flex gap-[2px]">
         <button
           type="button"
@@ -135,7 +135,7 @@ export function AudioCompareToggle({
           className={`flex-1 py-2.5 text-[11px] uppercase tracking-[0.1em] transition-colors ${
             active === "raw"
               ? "bg-[#c9a66b] font-semibold text-black"
-              : "border border-zinc-700 bg-zinc-900 text-zinc-500 hover:text-zinc-300"
+              : "border border-zinc-700 bg-zinc-900 text-zinc-400 hover:text-zinc-300"
           }`}
         >
           {rawLabel}
@@ -146,7 +146,7 @@ export function AudioCompareToggle({
           className={`flex-1 py-2.5 text-[11px] uppercase tracking-[0.1em] transition-colors ${
             active === "mixed"
               ? "bg-[#c9a66b] font-semibold text-black"
-              : "border border-zinc-700 bg-zinc-900 text-zinc-500 hover:text-zinc-300"
+              : "border border-zinc-700 bg-zinc-900 text-zinc-400 hover:text-zinc-300"
           }`}
         >
           {mixedLabel}
@@ -170,7 +170,7 @@ export function AudioCompareToggle({
           />
         </div>
       </div>
-      <div className="flex justify-between text-[10px] text-zinc-500">
+      <div className="flex justify-between text-[10px] text-zinc-400">
         <span>{formatTime(duration * progress)}</span>
         <span>{formatTime(duration)}</span>
       </div>

@@ -6,7 +6,7 @@ import { useLanguage } from "@/i18n/LanguageProvider";
 import { PageHeading } from "@/components/PageHeading";
 import { withBasePath } from "@/lib/basePath";
 import { YoutubeThumb } from "@/components/YoutubeThumb";
-import type { Video, VideoCategory } from "@/lib/content";
+import { getProjectByVideoId, type Video, type VideoCategory } from "@/lib/content";
 
 type Row = { key: string; label: string; videos: Video[] };
 
@@ -177,6 +177,10 @@ export function VisionMixerWall({ videos, categories }: { videos: Video[]; categ
   return (
     <div className="pb-24">
       <PageHeading>{t.videoWork.heading}</PageHeading>
+      {/* 原首頁主標移到這裡保留品牌感 */}
+      <p className="heading-font px-6 pt-2 text-lg italic tracking-wide text-zinc-400 sm:px-10 sm:text-xl">
+        {t.heroTitle}
+      </p>
 
       <div className="mt-8 px-6 sm:px-10">
         <div className="relative aspect-video w-full overflow-hidden bg-black">
@@ -252,12 +256,22 @@ export function VisionMixerWall({ videos, categories }: { videos: Video[]; categ
               <h2 className="heading-font mt-1 text-xl text-zinc-100 sm:text-2xl">{active.title[locale]}</h2>
               <p className="mt-0.5 text-xs text-zinc-400 sm:text-sm">{active.services[locale]}</p>
             </div>
-            <Link
-              href={`/video-work/${active.slug}`}
-              className="shrink-0 border border-white/30 px-4 py-2 text-center font-mono text-[11px] uppercase tracking-[0.1em] text-zinc-100 transition-colors hover:border-white hover:bg-white/10"
-            >
-              {locale === "zh" ? "觀看完整版 ↗" : "Watch Full ↗"}
-            </Link>
+            <div className="flex shrink-0 flex-wrap gap-2">
+              {getProjectByVideoId(active.id) && (
+                <Link
+                  href={`/work/${getProjectByVideoId(active.id)!.slug}`}
+                  className="shrink-0 border border-white/30 px-4 py-2 text-center font-mono text-[11px] uppercase tracking-[0.1em] text-zinc-100 transition-colors hover:border-white hover:bg-white/10"
+                >
+                  {locale === "zh" ? "專案說明 →" : "Project Notes →"}
+                </Link>
+              )}
+              <Link
+                href={`/video-work/${active.slug}`}
+                className="shrink-0 border border-white/30 px-4 py-2 text-center font-mono text-[11px] uppercase tracking-[0.1em] text-zinc-100 transition-colors hover:border-white hover:bg-white/10"
+              >
+                {locale === "zh" ? "觀看完整版 ↗" : "Watch Full ↗"}
+              </Link>
+            </div>
           </div>
         </div>
       </div>
@@ -265,7 +279,7 @@ export function VisionMixerWall({ videos, categories }: { videos: Video[]; categ
       <div className="mt-10 flex flex-col gap-10 px-6 sm:gap-14 sm:px-10">
         {rows.map((row) => (
           <div key={row.key}>
-            <p className="mb-3 font-mono text-[11px] uppercase tracking-[0.3em] text-zinc-500">{row.label}</p>
+            <p className="mb-3 font-mono text-[11px] uppercase tracking-[0.3em] text-zinc-400">{row.label}</p>
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-5">
               {row.videos.map((video) => (
                 <CameraTile

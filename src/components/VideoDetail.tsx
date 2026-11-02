@@ -45,7 +45,7 @@ function parseMasterPlaylist(text: string, masterUrl: string): QualityOption[] {
   return found.sort((a, b) => a.height - b.height).map((q, id) => ({ id, ...q }));
 }
 
-export function VideoDetail({ video }: { video: Video }) {
+export function VideoDetail({ video, projectSlug }: { video: Video; projectSlug?: string }) {
   const { t, locale } = useLanguage();
 
   const containerRef = useRef<HTMLDivElement>(null);
@@ -341,6 +341,16 @@ export function VideoDetail({ video }: { video: Video }) {
         <motion.p variants={fadeUp} className="mt-2 text-sm tracking-wide text-zinc-400">
           {video.services[locale]}
         </motion.p>
+        {projectSlug && (
+          <motion.div variants={fadeUp} className="mt-4">
+            <Link
+              href={`/work/${projectSlug}`}
+              className="inline-flex min-h-[44px] items-center text-sm tracking-wide text-[#c9a66b] underline-offset-4 hover:underline"
+            >
+              {locale === "zh" ? "專案說明（背景、角色、工具、流程）→" : "Project notes (background, role, tools, process) →"}
+            </Link>
+          </motion.div>
+        )}
         {isExternal && (
           <motion.a
             variants={fadeUp}

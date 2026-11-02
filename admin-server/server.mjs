@@ -131,8 +131,9 @@ function makeVariant(dir, filename, suffix, resize, quality) {
 // A second, much smaller copy for masonry-grid browsing. The full
 // (MAX_PHOTO_DIMENSION) file exists for the lightbox, but every grid tile was
 // downloading that same full file just to display it at ~300-400px wide.
+// 1200px keeps tiles sharp on Retina screens (800px/q75 looked soft).
 function makeGridThumbnail(dir, filename) {
-  return makeVariant(dir, filename, "-grid", "800x800>", 75);
+  return makeVariant(dir, filename, "-grid", "1200x1200>", 82);
 }
 
 // Same idea as the grid thumbnail, sized a bit larger since a strip tile

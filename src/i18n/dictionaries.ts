@@ -356,12 +356,6 @@ export const aiPageCopy: Record<Locale, AiPageCopy> = {
   },
 };
 
-/** About「生活與旅行」的吉他影片說明（同上，分開放避免被後台覆蓋）。 */
-export const aboutGuitarVideo: Record<Locale, { caption: string; playLabel: string }> = {
-  zh: { caption: "夜晚的海邊，和弟弟、媽媽一起彈吉他（左邊第一位是我）", playLabel: "播放影片" },
-  en: { caption: "An evening by the sea, playing guitar with my brother and mom (I'm first from the left)", playLabel: "Play video" },
-};
-
 export const aboutGalleryCaption: Record<Locale, string> = {
   zh: "澳洲的朋友們｜在工作與生活之間，我認識了來自各國的朋友。",
   en: "Friends in Australia — people from all over the world I met through work and everyday life.",

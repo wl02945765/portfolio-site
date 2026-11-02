@@ -3,7 +3,7 @@
     "linkFromAbout": "我也會用 AI 當幫手 →",
     "title": "我怎麼用 AI 當幫手",
     "titleEn": "Working with AI",
-    "intro": "修圖、攝影、剪輯與聲音後製，是我親手做的事。AI 是我的幫手，幫我產生字幕初稿、排好音軌、處理下載上傳這類重複步驟；畫面和聲音怎麼取捨，由我決定。這個網站則是我和 AI 一起寫出來的。這一頁說明我們怎麼分工。",
+    "intro": "修圖、攝影、剪輯與聲音後製，是我親手做的事。AI 是我的幫手，幫我素材整理、產生字幕初稿、排好音軌、處理下載上傳這類重複步驟；畫面和聲音怎麼取捨，由我決定。這個網站則是我和 AI 一起寫出來的。這一頁說明我們怎麼分工。",
     "splitHeading": "分工",
     "handTitle": "我親手做",
     "handItems": [
@@ -133,7 +133,7 @@
     "linkFromAbout": "I also work with AI as an assistant →",
     "title": "Working with AI",
     "titleEn": "我怎麼用 AI 當幫手",
-    "intro": "Retouching, photography, editing and sound are what I do by hand. AI is my assistant for subtitle drafts, track layout and repetitive file steps; the creative calls are mine. This website is the one thing I built together with AI. Here is how we split the work.",
+    "intro": "Image editing, photography, video editing, and audio post-production are all things I do myself. AI is my assistant, helping me organize materials, generate subtitle drafts, arrange audio tracks, and handle repetitive steps like downloading and uploading; I decide how to balance visuals and sound. This website was written by AI and me together. This page explains how we divide the work.",
     "splitHeading": "Who does what",
     "handTitle": "By my hand",
     "handItems": [

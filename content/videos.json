@@ -152,25 +152,6 @@
     "previewHdSrc": "/media/videos/0fbb5d6c-54d9-4262-9f2a-462b0a3e2a0f-preview-hd.mp4"
   },
   {
-    "id": "ec14202d-3591-4825-9aff-0776bdb296c4",
-    "slug": "untitled-7",
-    "thumbnail": "/media/videos/thumbs/ec14202d-3591-4825-9aff-0776bdb296c4.webp",
-    "videoSrc": "/media/videos/928ef1b5-ae2a-41d6-be8c-d4a12155ff11-hls/index.m3u8",
-    "title": {
-      "zh": "澳洲打工度假-Noosa Day2",
-      "en": "Working Holiday-Australia Noosa"
-    },
-    "services": {
-      "zh": "企劃、攝影、剪輯、配樂",
-      "en": "Producer、Videography、Video Editor、BGM"
-    },
-    "year": "2025",
-    "categoryId": "18b7cd7c-b5c2-48bf-9920-070605da559a",
-    "previewSrc": "/media/videos/928ef1b5-ae2a-41d6-be8c-d4a12155ff11-preview.mp4",
-    "thumbnailSmall": "/media/videos/thumbs/ec14202d-3591-4825-9aff-0776bdb296c4-sm.webp",
-    "previewHdSrc": "/media/videos/928ef1b5-ae2a-41d6-be8c-d4a12155ff11-preview-hd.mp4"
-  },
-  {
     "id": "728cdac1-4efb-424c-b5c7-5e73f1877aa8",
     "slug": "taiwan-motorcycle-road-racing",
     "thumbnail": "/media/videos/thumbs/728cdac1-4efb-424c-b5c7-5e73f1877aa8.webp",
@@ -188,6 +169,25 @@
     },
     "year": "2026",
     "categoryId": "18b7cd7c-b5c2-48bf-9920-070605da559a"
+  },
+  {
+    "id": "ec14202d-3591-4825-9aff-0776bdb296c4",
+    "slug": "untitled-7",
+    "thumbnail": "/media/videos/thumbs/ec14202d-3591-4825-9aff-0776bdb296c4.webp",
+    "videoSrc": "/media/videos/928ef1b5-ae2a-41d6-be8c-d4a12155ff11-hls/index.m3u8",
+    "title": {
+      "zh": "澳洲打工度假-Noosa Day2",
+      "en": "Working Holiday-Australia Noosa"
+    },
+    "services": {
+      "zh": "企劃、攝影、剪輯、配樂",
+      "en": "Producer、Videography、Video Editor、BGM"
+    },
+    "year": "2025",
+    "categoryId": "18b7cd7c-b5c2-48bf-9920-070605da559a",
+    "previewSrc": "/media/videos/928ef1b5-ae2a-41d6-be8c-d4a12155ff11-preview.mp4",
+    "thumbnailSmall": "/media/videos/thumbs/ec14202d-3591-4825-9aff-0776bdb296c4-sm.webp",
+    "previewHdSrc": "/media/videos/928ef1b5-ae2a-41d6-be8c-d4a12155ff11-preview-hd.mp4"
   },
   {
     "id": "ef790bd7-13ee-4308-b219-e73a496dcaa3",

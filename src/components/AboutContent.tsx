@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import Link from "next/link";
 import { motion, useScroll, useTransform, type Variants } from "framer-motion";
 import { useLanguage } from "@/i18n/LanguageProvider";
@@ -47,6 +47,7 @@ export function AboutContent() {
   const { t, locale } = useLanguage();
   const a = t.about;
   const galleryPhotos = getAboutGallery();
+  const [playingId, setPlayingId] = useState<string | null>(null);
   const skillGroups = getAboutSkills();
   const hero = getAboutHero();
   const heroTags = getAboutTags();
@@ -285,6 +286,53 @@ export function AboutContent() {
           <div className="mt-14 flex flex-wrap gap-3 [--row-h:130px] sm:[--row-h:200px]">
             {galleryPhotos.map((photo) => {
               const ratio = photo.width && photo.height ? photo.width / photo.height : 4 / 5;
+              if (photo.videoSrc) {
+                return (
+                  <motion.figure key={photo.id} variants={fadeUp} className="w-full">
+                    <div
+                      className="relative mx-auto w-full overflow-hidden rounded-sm bg-black"
+                      style={{ aspectRatio: ratio }}
+                    >
+                      {playingId === photo.id ? (
+                        <video
+                          src={withBasePath(photo.videoSrc)}
+                          poster={withBasePath(photo.src)}
+                          controls
+                          autoPlay
+                          playsInline
+                          preload="none"
+                          className="absolute inset-0 h-full w-full bg-black object-contain"
+                        />
+                      ) : (
+                        <>
+                          <img
+                            src={withBasePath(photo.src)}
+                            alt={photo.caption[locale]}
+                            loading="lazy"
+                            decoding="async"
+                            className="absolute inset-0 h-full w-full object-cover"
+                          />
+                          <button
+                            type="button"
+                            aria-label="Play video"
+                            onClick={() => setPlayingId(photo.id)}
+                            className="absolute inset-0 flex items-center justify-center bg-black/20 transition-colors hover:bg-black/40"
+                          >
+                            <span className="flex h-14 w-14 items-center justify-center rounded-full border border-white/70 text-xl text-white">
+                              ▶
+                            </span>
+                          </button>
+                        </>
+                      )}
+                    </div>
+                    {photo.caption[locale] && (
+                      <figcaption className="mt-3 text-sm leading-7 tracking-wide text-zinc-400">
+                        {photo.caption[locale]}
+                      </figcaption>
+                    )}
+                  </motion.figure>
+                );
+              }
               return (
                 <motion.div
                   key={photo.id}

@@ -111,6 +111,7 @@ export type SoundEpisode = {
 export type AboutGalleryPhoto = {
   id: string;
   src: string;
+  videoSrc?: string;
   caption: LocalizedText;
   width?: number;
   height?: number;

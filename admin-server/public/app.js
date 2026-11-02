@@ -1298,7 +1298,7 @@ function renderAboutGalleryCard(photo) {
   card.dataset.id = photo.id;
   card.innerHTML = `
     <div class="thumb-wrap">
-      ${photo.src ? `<img class="card-thumb" src="${photo.src}" alt="" />` : '<div class="card-thumb" style="display:flex;align-items:center;justify-content:center;color:#666;font-size:12px;">尚未上傳照片</div>'}
+      ${photo.src ? `<img class="card-thumb" src="${photo.src}" alt="" />${photo.videoSrc ? '<span style="position:absolute;top:6px;left:6px;background:rgba(0,0,0,.7);color:#fff;font-size:11px;padding:2px 6px;border-radius:3px;">▶ 影片</span>' : ""}` : '<div class="card-thumb" style="display:flex;align-items:center;justify-content:center;color:#666;font-size:12px;">尚未上傳照片</div>'}
     </div>
     <div class="card-body">
       <input type="text" data-field="caption_zh" value="${escapeHtml(photo.caption.zh)}" placeholder="中文說明" />
@@ -1318,7 +1318,7 @@ function renderAboutGalleryCard(photo) {
     );
   });
   card.querySelector(".delete-btn").addEventListener("click", async () => {
-    if (!confirm("確定要刪除這張照片嗎？")) return;
+    if (!confirm(photo.videoSrc ? "確定要刪除這支影片嗎？" : "確定要刪除這張照片嗎？")) return;
     await fetch(`/api/about-gallery/${photo.id}`, { method: "DELETE" });
     loadAboutGallery();
   });
@@ -1336,7 +1336,7 @@ wireReorder(aboutGalleryGrid, (order) =>
 async function uploadAboutGallery(files) {
   const fd = new FormData();
   files.forEach((f) => fd.append("files", f));
-  aboutGalleryStatus.textContent = `上傳 ${files.length} 張中…`;
+  aboutGalleryStatus.textContent = `上傳 ${files.length} 個檔案中…（影片壓縮較久，請稍候）`;
   try {
     const res = await fetch("/api/about-gallery", { method: "POST", body: fd });
     if (!res.ok) throw new Error(await res.text());
@@ -1771,11 +1771,12 @@ loadAboutTimeline();
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ text }),
         });
-        if (!r.ok) throw new Error();
-        text = (await r.json()).text;
-      } catch {
+        const j = await r.json().catch(() => ({}));
+        if (!r.ok) throw new Error(j.error || `HTTP ${r.status}`);
+        text = j.text;
+      } catch (err) {
         enEl.disabled = false;
-        alert("英文翻譯失敗，請手動輸入英文。");
+        alert(`英文翻譯失敗（${err.message}），請手動輸入英文。`);
         return;
       }
       enEl.disabled = false;

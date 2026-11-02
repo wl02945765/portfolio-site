@@ -16,7 +16,7 @@ export function NavBar() {
     { href: "/photography", label: t.nav.photographyLabel },
     { href: "/video-work", label: t.nav.videoWorkLabel },
     { href: "/sound", label: t.nav.soundLabel },
-    { href: "/ai-workflow", label: "AI Workflow" },
+    { href: "/ai-workflow", label: "AI" },
     { href: "/contact", label: t.nav.contactLabel },
   ];
 
@@ -42,7 +42,7 @@ export function NavBar() {
         </Link>
 
         {/* Desktop nav */}
-        <nav className="hidden items-center gap-5 md:flex lg:gap-8">
+        <nav className="hidden items-center gap-5 md:flex md:gap-8">
           {navItems.map((item) => {
             const active = isActive(item.href);
             return (

@@ -5,7 +5,6 @@ import { motion, type Variants } from "framer-motion";
 import { useLanguage } from "@/i18n/LanguageProvider";
 import { PageHeading } from "@/components/PageHeading";
 import { btnPrimary } from "@/lib/buttonStyles";
-import { ResumeButton } from "@/components/ResumeButton";
 import { contactCopy } from "@/i18n/jobhunt";
 import { getContactLinks, getContactVisual } from "@/lib/content";
 import { withBasePath } from "@/lib/basePath";
@@ -72,7 +71,7 @@ const smallBtnClass =
   "rounded-full border border-white/10 px-3 py-2 font-mono text-xs uppercase tracking-[0.12em] text-zinc-400 transition-colors hover:border-white/35 hover:text-zinc-200";
 const submitClass = btnPrimary;
 
-export function ContactContent({ resumeAvailable = false }: { resumeAvailable?: boolean }) {
+export function ContactContent() {
   const { t, locale } = useLanguage();
   const c = t.contact;
   const h = contactCopy[locale];
@@ -266,15 +265,6 @@ export function ContactContent({ resumeAvailable = false }: { resumeAvailable?: 
             <span className="font-mono text-xs tracking-[0.1em] text-zinc-400">
               {mode === "hire" ? h.basedIn : c.location}
             </span>
-            {mode === "hire" && (
-              <ResumeButton
-                available={resumeAvailable}
-                label={h.resumeButton}
-                pendingLabel={h.resumePending}
-                pendingNote={h.resumePendingNote}
-                className="mt-2"
-              />
-            )}
             {links.length > 0 && (
               <div className="mt-2 flex flex-col gap-1">
                 <span className="font-mono text-xs uppercase tracking-[0.15em] text-zinc-400">{h.externalLinks}</span>

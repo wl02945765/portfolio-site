@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { pageMeta } from "@/lib/seo";
 import { ContactContent } from "@/components/ContactContent";
-import { hasResume } from "@/lib/resume";
 
 export const metadata: Metadata = pageMeta(
   "聯絡我｜Ching's Profile",
@@ -10,5 +9,5 @@ export const metadata: Metadata = pageMeta(
 );
 
 export default function ContactPage() {
-  return <ContactContent resumeAvailable={hasResume()} />;
+  return <ContactContent />;
 }

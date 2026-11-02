@@ -15,7 +15,6 @@ import designCategoriesData from "../../content/designCategories.json";
 import designsData from "../../content/designs.json";
 import contactData from "../../content/contact.json";
 import contactLinksData from "../../content/contactLinks.json";
-import projectsData from "../../content/projects.json";
 import aboutToolsData from "../../content/aboutTools.json";
 
 export type LocalizedText = {
@@ -150,27 +149,14 @@ export type AboutTimelineStep = {
   period: LocalizedText;
   title: LocalizedText;
   items: { zh: string[]; en: string[] };
-  // 資料還沒補齊時顯示虛線框「【待補：…】」用的說明文字（例：專業經歷的期間與類型）
-  placeholder?: LocalizedText;
 };
 
+// 工具熟悉度：level 還沒填（空字串）時，前台只列工具名，不顯示熟練度欄位。
 export type AboutTool = {
   id: string;
   name: string;
   note: LocalizedText;
-};
-
-// 專案說明頁（/work/[slug]）。videoId 指向 videos.json 的影片，不複製影片資料。
-// 文字欄位留空字串／空陣列＝還沒補，頁面會顯示「【待補：…】」佔位，不編造內容。
-export type Project = {
-  slug: string;
-  videoId: string;
-  type: LocalizedText;
-  background: LocalizedText;
-  tools: { zh: string[]; en: string[] };
-  process: { zh: string[]; en: string[] };
-  length: LocalizedText;
-  outcome: LocalizedText;
+  level: LocalizedText;
 };
 
 export type FeaturedPhoto = {
@@ -271,21 +257,6 @@ export function getDesignCategories(): Category[] {
 
 export function getDesignPhotos(): Photo[] {
   return designsData as Photo[];
-}
-
-export function getProjects(): Project[] {
-  const projects = assertAsciiSlugs(projectsData as Project[], "content/projects.json（slug）", (p) => p.slug);
-  const videoIds = new Set((videosData as Video[]).map((v) => v.id));
-  for (const p of projects) {
-    if (!videoIds.has(p.videoId)) {
-      throw new Error(`[專案檢查] content/projects.json 的「${p.slug}」找不到對應影片 videoId：${p.videoId}`);
-    }
-  }
-  return projects;
-}
-
-export function getProjectByVideoId(videoId: string): Project | undefined {
-  return getProjects().find((p) => p.videoId === videoId);
 }
 
 export function getAboutTools(): AboutTool[] {

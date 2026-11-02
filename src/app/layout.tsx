@@ -46,7 +46,7 @@ export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   ...pageMeta(
     dictionaries.zh.brandName,
-    "Ching 的作品集：影像創作者，做影片製作、剪輯、攝影修圖與聲音後製，住新北市樹林，正在找影像、多媒體相關工作。Video editing, photography & audio post-production.",
+    "Ching 的作品集：商品攝影、修圖、影片剪輯與聲音後製。Photography, retouching, video editing & audio mixing.",
     "/",
   ),
 };

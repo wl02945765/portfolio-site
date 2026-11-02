@@ -43,7 +43,7 @@
     },
     "about": {
       "heading": "ABOUT ME",
-      "heroDescription": "我是一位影像創作者，大學主修影視設計，做過影片製作、商品攝影、修圖與 Podcast 音訊製作。",
+      "heroDescription": "我是一位透過設計、影像與聲音探索故事的創作者。",
       "storyTitle": "我的故事",
       "storyBody": "創作，從童年就已經是我生活的一部分。\n\n成長過程中，我深受父親對攝影及繪畫的熱愛所影響。他經常帶著相機捕捉日常片刻或者畫下他眼中所看見或感受到的作品，讓我很早就與影像、觀察和說故事建立起連結。\n\n除了攝影，我也喜歡畫畫、動手創作，並經常參觀展覽。這些經驗逐漸形塑了我對視覺表達與美感的理解。",
       "timelineTitle": "從視覺到聲音",
@@ -58,7 +58,7 @@
     },
     "contact": {
       "heading": "CONTACT",
-      "intro": "三個問題，一分鐘填完。我會盡快回覆報價與檔期。",
+      "intro": "三個問題，一分鐘填完。我會在一個工作天內回覆報價與檔期。",
       "emailLabel": "Email",
       "locationLabel": "Location",
       "location": "新北市樹林區",
@@ -101,19 +101,7 @@
       "mailBudget": "預算",
       "mailTimeline": "希望時程",
       "mailUnset": "未填"
-    },
-    "heroLocation": "新北市樹林 · Shulin, New Taipei",
-    "heroRoleParts": [
-      "影像製作",
-      "攝影",
-      "聲音後製"
-    ],
-    "heroRoleAria": "影像製作、攝影、聲音後製",
-    "heroSub": "正在找影像、多媒體相關工作，也接少量案子。",
-    "heroCtaWork": "看影像作品",
-    "heroCtaContact": "聯絡我",
-    "heroResumeHint": "需要履歷？寄信給我",
-    "heroResumeSubject": "履歷申請"
+    }
   },
   "en": {
     "brandName": "Ching's Profile",
@@ -156,7 +144,7 @@
     },
     "about": {
       "heading": "ABOUT ME",
-      "heroDescription": "I'm a visual creator with a degree in film design. My work covers video production, product photography, retouching, and podcast audio production.",
+      "heroDescription": "I am a creator who explores stories through design, image, and sound.",
       "storyTitle": "My Journey",
       "storyBody": "Creativity has been part of my life since childhood.\n\nGrowing up, I was influenced by my father's passion for photography. He often brought a camera to capture everyday moments, which allowed me to develop an early connection with images, observation, and storytelling.\n\nAlongside photography, I enjoyed drawing, creating, and visiting exhibitions. These experiences gradually shaped my understanding of visual expression and aesthetics.",
       "timelineTitle": "From Vision to Voice",
@@ -171,7 +159,7 @@
     },
     "contact": {
       "heading": "CONTACT",
-      "intro": "Three quick questions, about a minute. I'll get back to you with a quote and my availability.",
+      "intro": "Three quick questions, about a minute. I'll reply with a quote and availability within one business day.",
       "emailLabel": "Email",
       "locationLabel": "Location",
       "location": "Shulin, New Taipei City",
@@ -214,18 +202,6 @@
       "mailBudget": "Budget",
       "mailTimeline": "Timeline",
       "mailUnset": "Not specified"
-    },
-    "heroLocation": "Shulin, New Taipei · 新北市樹林",
-    "heroRoleParts": [
-      "Video Production",
-      "Photography",
-      "Sound Post-Production"
-    ],
-    "heroRoleAria": "Video Production, Photography, Sound Post-Production",
-    "heroSub": "Open to video and multimedia roles, and select freelance work.",
-    "heroCtaWork": "See my video work",
-    "heroCtaContact": "Get in touch",
-    "heroResumeHint": "Need my résumé? Email me",
-    "heroResumeSubject": "Résumé request"
+    }
   }
 }

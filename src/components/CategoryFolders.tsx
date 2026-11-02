@@ -43,7 +43,7 @@ export function CategoryFolders({
         </div>
       ) : (
         <div className="mt-10 grid grid-cols-2 gap-4 px-6 sm:px-10 sm:grid-cols-3 lg:grid-cols-4">
-          {folders.map(({ category, cover, count }, index) => (
+          {folders.map(({ category, cover, count }) => (
             <Link
               key={category.id}
               href={`${basePath}/${category.id}`}
@@ -52,9 +52,7 @@ export function CategoryFolders({
               <img
                 src={withBasePath(cover.thumbSrc || cover.src)}
                 alt={category.name[locale]}
-                // 第一張是首屏最大圖：不 lazy，並提示瀏覽器優先抓；其餘維持 lazy
-                loading={index === 0 ? undefined : "lazy"}
-                fetchPriority={index === 0 ? "high" : undefined}
+                loading="lazy"
                 decoding="async"
                 className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
               />

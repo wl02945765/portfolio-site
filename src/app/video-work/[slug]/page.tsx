@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { VideoDetail } from "@/components/VideoDetail";
-import { getProjectByVideoId, getVideos } from "@/lib/content";
+import { getVideos } from "@/lib/content";
 import { pageMeta } from "@/lib/seo";
 import { withBasePath } from "@/lib/basePath";
 
@@ -44,5 +44,5 @@ export default async function VideoWorkDetailPage({
     notFound();
   }
 
-  return <VideoDetail video={video} projectSlug={getProjectByVideoId(video.id)?.slug} />;
+  return <VideoDetail video={video} />;
 }

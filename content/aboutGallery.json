@@ -118,5 +118,15 @@
     },
     "width": 1200,
     "height": 900
+  },
+  {
+    "id": "7e5c9b30-0c37-4e49-9590-6697552c591e",
+    "src": "/media/about/0e6966e4-f517-40f8-8d9d-37996b66277f.webp",
+    "caption": {
+      "zh": "",
+      "en": ""
+    },
+    "width": 1600,
+    "height": 900
   }
 ]

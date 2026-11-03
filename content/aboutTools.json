@@ -1,15 +1,15 @@
 [
   {
-    "id": "tool-premiere",
-    "name": "Adobe Premiere Pro",
+    "id": "tool-davinci",
+    "name": "DaVinci Resolve",
     "note": {
-      "zh": "含 HDR 色彩映射",
-      "en": "incl. HDR tone mapping"
+      "zh": "",
+      "en": ""
     }
   },
   {
-    "id": "tool-davinci",
-    "name": "DaVinci Resolve",
+    "id": "tool-premiere",
+    "name": "Adobe Premiere Pro",
     "note": {
       "zh": "",
       "en": ""

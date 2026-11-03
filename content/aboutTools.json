@@ -8,6 +8,14 @@
     }
   },
   {
+    "id": "tool-ps",
+    "name": "Adobe Photoshop",
+    "note": {
+      "zh": "",
+      "en": ""
+    }
+  },
+  {
     "id": "tool-premiere",
     "name": "Adobe Premiere Pro",
     "note": {
@@ -18,14 +26,6 @@
   {
     "id": "tool-audition",
     "name": "Adobe Audition",
-    "note": {
-      "zh": "",
-      "en": ""
-    }
-  },
-  {
-    "id": "tool-ps",
-    "name": "Adobe Photoshop",
     "note": {
       "zh": "",
       "en": ""

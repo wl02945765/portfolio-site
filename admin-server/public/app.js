@@ -963,7 +963,7 @@ const TEXT_SCHEMA = [
       { path: "about.beyondTitle", label: "「工作之外」段落標題" },
       { path: "about.beyondBody", label: "「工作之外」內文（空行分段）", type: "textarea" },
       { path: "about.skillsTitle", label: "技能段落標題" },
-      { path: "about.toolsTitle", label: "「常用工具」小標題（工具清單在上方「常用工具與熟練度」編輯）" },
+      { path: "about.toolsTitle", label: "「常用工具」小標題（工具清單在上方「常用工具」編輯）" },
       { path: "about.ctaText", label: "結尾標語" },
       { path: "about.ctaButton", label: "結尾按鈕文字" },
     ],
@@ -1481,7 +1481,7 @@ document.getElementById("skill-group-form").addEventListener("submit", async (e)
 
 loadSkillGroups();
 
-// --- About page: tools (name + proficiency level) ---
+// --- About page: tools (name + note, no levels) ---
 const aboutToolList = document.getElementById("about-tool-list");
 const aboutToolStatus = document.getElementById("about-tool-status");
 
@@ -1502,11 +1502,11 @@ function renderAboutTool(tool) {
       <label>補充（中文） <input type="text" data-field="note_zh" value="${escapeHtml(tool.note?.zh ?? "")}" /></label>
       <label>Note (EN) <input type="text" data-field="note_en" value="${escapeHtml(tool.note?.en ?? "")}" /></label>
     </div>
-    <div class="fields">
-      <label>熟練度（中文，留空＝不顯示） <input type="text" data-field="level_zh" value="${escapeHtml(tool.level?.zh ?? "")}" /></label>
-      <label>Level (EN) <input type="text" data-field="level_en" value="${escapeHtml(tool.level?.en ?? "")}" /></label>
+    <div class="fields" style="align-items: center">
+      <button type="button" class="move-up">↑ 上移</button>
+      <button type="button" class="move-down">↓ 下移</button>
+      <button class="delete-btn">刪除這個工具</button>
     </div>
-    <button class="delete-btn">刪除這個工具</button>
   `;
   wrap.querySelectorAll("input").forEach((el) => {
     el.addEventListener("blur", () =>
@@ -1517,6 +1517,19 @@ function renderAboutTool(tool) {
       }),
     );
   });
+  const move = (dir) => {
+    const sib = dir < 0 ? wrap.previousElementSibling : wrap.nextElementSibling;
+    if (!sib) return;
+    if (dir < 0) aboutToolList.insertBefore(wrap, sib);
+    else aboutToolList.insertBefore(sib, wrap);
+    fetch("/api/about-tools/reorder", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ order: Array.from(aboutToolList.children).map((c) => c.dataset.id) }),
+    });
+  };
+  wrap.querySelector(".move-up").addEventListener("click", () => move(-1));
+  wrap.querySelector(".move-down").addEventListener("click", () => move(1));
   wrap.querySelector(".delete-btn").addEventListener("click", async () => {
     if (!confirm("確定要刪除這個工具嗎？")) return;
     await fetch(`/api/about-tools/${tool.id}`, { method: "DELETE" });

@@ -407,7 +407,7 @@ export function AboutContent() {
             ))}
           </div>
 
-          {/* 工具熟悉度：只列工具名；熟練度資料（content/aboutTools.json 的 level）有填才顯示 */}
+          {/* 常用工具：只列工具名，不分級；順序在後台調整 */}
           <motion.div variants={fadeUp} className="mt-14">
             <p className="border-b border-zinc-800 pb-3 text-xs uppercase tracking-[0.2em] text-zinc-400">
               {a.toolsTitle}
@@ -419,7 +419,6 @@ export function AboutContent() {
                     {tool.name}
                     {tool.note[locale] && <span className="ml-2 text-zinc-400">{tool.note[locale]}</span>}
                   </span>
-                  {tool.level[locale] && <span className="text-zinc-400">{tool.level[locale]}</span>}
                 </li>
               ))}
             </ul>

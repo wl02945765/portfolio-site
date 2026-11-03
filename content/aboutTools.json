@@ -5,20 +5,12 @@
     "note": {
       "zh": "含 HDR 色彩映射",
       "en": "incl. HDR tone mapping"
-    },
-    "level": {
-      "zh": "",
-      "en": ""
     }
   },
   {
     "id": "tool-davinci",
     "name": "DaVinci Resolve",
     "note": {
-      "zh": "",
-      "en": ""
-    },
-    "level": {
       "zh": "",
       "en": ""
     }
@@ -29,20 +21,12 @@
     "note": {
       "zh": "",
       "en": ""
-    },
-    "level": {
-      "zh": "",
-      "en": ""
     }
   },
   {
     "id": "tool-ps",
     "name": "Adobe Photoshop",
     "note": {
-      "zh": "",
-      "en": ""
-    },
-    "level": {
       "zh": "",
       "en": ""
     }

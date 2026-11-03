@@ -1984,8 +1984,7 @@ app.delete("/api/about-skills/:id", (req, res) => {
   res.json({ ok: true });
 });
 
-// ---------- About page: tools (name + proficiency level) ----------
-// level 留空＝前台只列工具名、不顯示熟練度。
+// ---------- About page: tools (name + note, no levels) ----------
 
 app.get("/api/about-tools", (_req, res) => {
   res.json(readJSON(ABOUT_TOOLS_JSON));
@@ -1997,7 +1996,6 @@ app.post("/api/about-tools", (req, res) => {
     id: randomUUID(),
     name: req.body.name || "",
     note: { zh: req.body.note_zh || "", en: req.body.note_en || "" },
-    level: { zh: req.body.level_zh || "", en: req.body.level_en || "" },
   };
   tools.push(entry);
   writeJSON(ABOUT_TOOLS_JSON, tools);
@@ -2012,11 +2010,8 @@ app.patch("/api/about-tools/:id", (req, res) => {
   const b = req.body;
   if (b.name !== undefined) item.name = b.name;
   item.note = item.note || { zh: "", en: "" };
-  item.level = item.level || { zh: "", en: "" };
   if (b.note_zh !== undefined) item.note.zh = b.note_zh;
   if (b.note_en !== undefined) item.note.en = b.note_en;
-  if (b.level_zh !== undefined) item.level.zh = b.level_zh;
-  if (b.level_en !== undefined) item.level.en = b.level_en;
   writeJSON(ABOUT_TOOLS_JSON, tools);
   schedulePublish();
   res.json(item);

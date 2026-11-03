@@ -151,12 +151,11 @@ export type AboutTimelineStep = {
   items: { zh: string[]; en: string[] };
 };
 
-// 工具熟悉度：level 還沒填（空字串）時，前台只列工具名，不顯示熟練度欄位。
+// 工具熟悉度：只列工具名（與補充），不分級。
 export type AboutTool = {
   id: string;
   name: string;
   note: LocalizedText;
-  level: LocalizedText;
 };
 
 export type FeaturedPhoto = {

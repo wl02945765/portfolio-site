@@ -16,16 +16,16 @@
     }
   },
   {
-    "id": "tool-premiere",
-    "name": "Adobe Premiere Pro",
+    "id": "tool-audition",
+    "name": "Adobe Audition",
     "note": {
       "zh": "",
       "en": ""
     }
   },
   {
-    "id": "tool-audition",
-    "name": "Adobe Audition",
+    "id": "tool-premiere",
+    "name": "Adobe Premiere Pro",
     "note": {
       "zh": "",
       "en": ""

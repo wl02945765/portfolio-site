@@ -1,15 +1,15 @@
 [
   {
-    "id": "tool-davinci",
-    "name": "DaVinci Resolve",
+    "id": "tool-ps",
+    "name": "Adobe Photoshop",
     "note": {
       "zh": "",
       "en": ""
     }
   },
   {
-    "id": "tool-ps",
-    "name": "Adobe Photoshop",
+    "id": "tool-davinci",
+    "name": "DaVinci Resolve",
     "note": {
       "zh": "",
       "en": ""

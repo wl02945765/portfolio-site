@@ -8,16 +8,16 @@
     }
   },
   {
-    "id": "tool-davinci",
-    "name": "DaVinci Resolve",
+    "id": "tool-audition",
+    "name": "Adobe Audition",
     "note": {
       "zh": "",
       "en": ""
     }
   },
   {
-    "id": "tool-audition",
-    "name": "Adobe Audition",
+    "id": "tool-davinci",
+    "name": "DaVinci Resolve",
     "note": {
       "zh": "",
       "en": ""
